@@ -16,7 +16,7 @@ This repository contains a single, self-contained HTML file with **24 interactiv
 ## Live Demo
 
 The site is hosted on GitHub Pages at:
-**https://YOUR_USERNAME.github.io/REPO_NAME/**
+**https://phishinchips67-lang.github.io/Electronics_Bible/**
 
 ## How to Use
 
