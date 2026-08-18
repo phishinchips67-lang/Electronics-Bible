@@ -12,7 +12,6 @@ This repository contains a single, self-contained HTML file with **24 interactiv
 - **Part IV — Digital & Microcontrollers** (4.1–4.7): Logic, CPU architecture, memory, GPIO, communication protocols
 - **Part V — Advanced Theory** (5.1–5.7): Control systems, digital design, embedded processors, secure hardware, nanoelectronics
 
-Ideas for second edition: dedicated chapters for flipflops, chemistry & manufacturing of electronic components and battery management systems.
 
 ## Live Demo
 
