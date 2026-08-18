@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>1.5 Electromagnetic Induction — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,60px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:620px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);} .readout.b .rv{color:var(--violet);} .readout.d .rv{color:var(--danger);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .frac{
+    display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center;
+    margin:0 4px; line-height:1.15; font-family:'JetBrains Mono',monospace; font-size:0.95em; position:relative; top:0.15em;
+  }
+  .frac .num{padding:0 4px 2px; border-bottom:1.4px solid currentColor;}
+  .frac .den{padding:2px 4px 0;}
+  .eq{
+    font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.25); border:1px solid var(--line);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:15px; color:var(--white); text-align:center;
+    max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .eq .lbl{display:block; font-size:10px; letter-spacing:.1em; color:var(--dim); margin-top:8px; text-transform:uppercase;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part I · Foundations · Chapter 1.5 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 1.5 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Nature refuses to let<br/>flux change for <span class="hl">free</span>.</h1>
+  <p class="hero-sub">Chapter 1.4 built magnetic fields from steady currents. This is the reverse trick, done properly — a <i>changing</i> magnetic field writing a voltage into anything nearby, and the universe always making sure that voltage fights back against whatever caused it.</p>
+  <div class="hero-chip"><span class="pulse"></span> FARADAY'S LAW · LENZ'S LAW · EDDY CURRENTS · HYSTERESIS</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c7_sec-faraday">Faraday's Law</a>
+    <a class="btn chip" href="#c7_sec-lenz">Lenz's Law</a>
+    <a class="btn chip" href="#c7_sec-eddy">Eddy Currents</a>
+    <a class="btn chip" href="#c7_sec-hysteresis">Hysteresis</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 7.1 FARADAY'S LAW ══════════════ -->
+<section class="section" id="c7_sec-faraday">
+  <div class="sec-label">01 · Faraday's Law</div>
+  <h2 class="sec-title">A changing flux writes a voltage into any nearby loop.</h2>
+  <p class="sec-body">
+    <b>Flux, Φ = B·A·cos θ</b>, is a measure of how much magnetic field passes through a loop. Faraday's Law says any <i>change</i> in that flux induces an EMF (voltage) around the loop — and critically, it's the <b>rate</b> of change that matters, not the field strength itself. Hold an enormously strong magnet perfectly still inside a coil and you'll measure exactly zero volts. Whip a weak magnet in and out fast, and you'll see a real voltage spike. (You saw a first taste of this in 1.3 — this is the properly stated version.)
+  </p>
+  <div class="eq">EMF = −<span class="frac"><span class="num">dΦ</span><span class="den">dt</span></span><span class="lbl">induced voltage = negative rate of change of flux through the loop</span></div>
+  <div class="panel">
+    <div class="panel-tag">Push the Magnet Through a Coil</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="300" y="60" width="100" height="80" fill="var(--paper)" stroke="var(--line)" stroke-width="1"/>
+      <g id="c7f_coilTicks"></g>
+      <rect id="c7f_magnet" x="90" y="90" width="50" height="20" fill="var(--danger)"/>
+      <text id="c7f_magnetLbl" x="115" y="104" text-anchor="middle" fill="#0c1a2e" font-family="JetBrains Mono" font-weight="700" font-size="10">N&nbsp;&nbsp;S</text>
+      <g transform="translate(350,180)">
+        <path d="M-30 0 A 30 30 0 0 1 30 0" fill="none" stroke="var(--line)" stroke-width="2"/>
+        <line id="c7f_needle" x1="0" y1="0" x2="0" y2="-26" stroke="var(--amber)" stroke-width="3"/>
+        <circle cx="0" cy="0" r="3" fill="var(--amber)"/>
+        <text x="0" y="16" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">EMF METER</text>
+      </g>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Push speed <span class="val" id="c7f_speedVal">5</span></label><input type="range" id="c7f_speed" min="1" max="10" step="1" value="5"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c7f_btnPush">➡️ Push Magnet Through</button>
+      <button class="btn" id="c7f_btnReset">↺ Reset</button>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Flux Φ (relative)</div><div class="rv" id="c7f_fluxOut">0.00</div></div>
+      <div class="readout p"><div class="rl">Induced EMF (relative)</div><div class="rv" id="c7f_emfOut">0.00</div></div>
+    </div>
+    <div class="callout" id="c7f_faradayCallout">Try pushing at speed 1, then at speed 10. Same magnet, same coil, same total flux change end-to-end — but the peak EMF is dramatically bigger at high speed. It's the rate that counts.</div>
+  </div>
+  <div class="quiz" id="c7_quiz1">
+    <div class="quiz-q">A strong magnet sits perfectly still, centered inside a coil. What voltage does the coil read?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">A large constant voltage, proportional to the magnet's strength</button>
+      <button class="quiz-opt" data-correct="true">Zero — flux isn't changing, so dΦ/dt = 0, no matter how strong the field is</button>
+      <button class="quiz-opt" data-correct="false">A small but nonzero constant voltage</button>
+      <button class="quiz-opt" data-correct="false">It depends on the coil's resistance</button>
+    </div>
+    <div class="quiz-fb" id="c7_quiz1fb">Faraday's Law only cares about change. A static field, however strong, produces zero induced EMF — motion (or some other change) is non-negotiable.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 7.2 LENZ'S LAW ══════════════ -->
+<section class="section" id="c7_sec-lenz">
+  <div class="sec-label">02 · Lenz's Law</div>
+  <h2 class="sec-title">The induced current always fights back.</h2>
+  <p class="sec-body">
+    Lenz's Law is the minus sign in Faraday's equation, made physically vivid: the induced current always flows in the direction that <b>opposes</b> the change that created it. A magnet approaching a coil induces a current whose own field pushes back, repelling the approach. A magnet retreating induces a current whose field instead pulls it back, resisting the departure. This isn't an extra rule bolted onto Faraday's Law — it's a direct requirement of energy conservation. If induced currents ever assisted the change instead of opposing it, you could build a loop that accelerates itself forever, for free.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Approach vs. Retreat</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <defs><marker id="c7lenzarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0 0, 7 4, 0 8" fill="var(--cyan)"/></marker>
+      <marker id="c7forcearrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0 0, 7 4, 0 8" fill="var(--amber)"/></marker></defs>
+      <circle cx="350" cy="110" r="50" fill="none" stroke="var(--line)" stroke-width="2"/>
+      <path id="c7l_lenzArc" d="" fill="none" stroke="var(--cyan)" stroke-width="2.5" marker-end="url(#c7lenzarrow)" opacity="0"/>
+      <rect id="c7l_magnet" x="95" y="100" width="50" height="20" fill="var(--danger)"/>
+      <text id="c7l_magnetLbl" x="120" y="114" text-anchor="middle" fill="#0c1a2e" font-family="JetBrains Mono" font-weight="700" font-size="10">N&nbsp;&nbsp;S</text>
+      <path id="c7l_forceArrow" d="" stroke="var(--amber)" stroke-width="3" fill="none" marker-end="url(#c7forcearrow)" opacity="0"/>
+    </svg>
+    <div class="btn-row">
+      <button class="btn" id="c7l_btnIn">➡️ Push In (Approach)</button>
+      <button class="btn" id="c7l_btnOut">⬅️ Pull Out (Retreat)</button>
+    </div>
+    <div class="callout" id="c7l_lenzCallout">Push the magnet toward the coil, then pull it away — watch both the current-loop arrow and the force arrow reverse direction between the two cases. Stop moving, and both vanish: no change, no induced current.</div>
+  </div>
+  <div class="quiz" id="c7_quiz2">
+    <div class="quiz-q">A magnet is being pulled away from a coil. Which way does the induced current's own magnetic field act, according to Lenz's Law?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It pushes the magnet away even faster</button>
+      <button class="quiz-opt" data-correct="true">It tries to attract the departing magnet back, opposing the decrease in flux</button>
+      <button class="quiz-opt" data-correct="false">It has no effect on the magnet at all</button>
+      <button class="quiz-opt" data-correct="false">It points in a random, unpredictable direction</button>
+    </div>
+    <div class="quiz-fb" id="c7_quiz2fb">Whatever the change is, the induced effect opposes it. Flux decreasing (magnet leaving) → induced current tries to keep the flux up → that means trying to keep the magnet from leaving, i.e., an attractive pull.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 7.3 EDDY CURRENTS ══════════════ -->
+<section class="section" id="c7_sec-eddy">
+  <div class="sec-label">03 · Eddy Currents</div>
+  <h2 class="sec-title">Lenz's Law, but the "coil" is just a solid chunk of metal.</h2>
+  <p class="sec-body">
+    A discrete wire loop isn't required for induction — drop a magnet through a solid conductive pipe, and the bulk metal itself hosts countless overlapping circulating currents, called <b>eddy currents</b>, induced by the same Faraday/Lenz mechanism. Those currents dissipate real energy as heat (I²R losses in the metal) and, by Lenz's Law, create a drag force that opposes whatever caused them — the classic demo is a magnet falling dramatically slower through a copper or aluminum tube than through an otherwise identical plastic one, despite copper not being magnetic at all.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Drop the Magnet</div>
+    <svg viewBox="0 0 300 220" style="width:220px; height:auto; margin:0 auto; display:block;">
+      <rect x="120" y="20" width="60" height="180" fill="none" id="c7e_tube" stroke="var(--line)" stroke-width="3"/>
+      <g id="c7e_slotGroup"></g>
+      <circle id="c7e_magnet" cx="150" cy="35" r="14" fill="var(--danger)"/>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" data-tube="plastic" data-k="0">Plastic (insulator)</button>
+      <button class="btn" data-tube="copper" data-k="14">Solid Copper</button>
+      <button class="btn" data-tube="slotted" data-k="0">Slotted Copper</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c7e_btnDrop">⬇️ Drop the Magnet</button>
+      <button class="btn" id="c7e_btnReset">↺ Reset</button>
+    </div>
+    <div class="readout-row">
+      <div class="readout d"><div class="rl">Time to fall</div><div class="rv" id="c7e_timeOut">—</div></div>
+    </div>
+    <div class="callout" id="c7e_eddyCallout">Choose a tube material, then drop the magnet. Solid copper — despite being completely non-magnetic — dramatically slows the fall. Slotting the same copper tube lengthwise breaks the closed current loops eddy currents depend on, and the fast fall returns.</div>
+  </div>
+  <div class="callout info"><b>Why transformer cores are laminated:</b> a solid iron core sitting in a 50/60 Hz AC field would host large, wasteful eddy currents throughout its bulk, turning good electricity into unwanted heat. Real cores are instead built from thin, individually-insulated sheets stacked together — breaking up the large-scale loops (just like the slotted tube) without weakening the core's magnetic permeability at all. More on this in 2.3.</div>
+  <div class="quiz" id="c7_quiz3">
+    <div class="quiz-q">Why does cutting a slot lengthwise down a conductive tube restore a dropped magnet's fast fall, compared to an identical solid tube?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">The slot makes the tube magnetic</button>
+      <button class="quiz-opt" data-correct="true">The slot interrupts the closed current loops that eddy currents need to form</button>
+      <button class="quiz-opt" data-correct="false">The slot reduces the tube's weight, so gravity wins more easily</button>
+      <button class="quiz-opt" data-correct="false">It doesn't — the fall speed stays the same either way</button>
+    </div>
+    <div class="quiz-fb" id="c7_quiz3fb">Eddy currents need an unbroken conductive loop to circulate in. Cut that loop anywhere, and there's no closed path left for them to flow — the braking effect disappears almost entirely, even though it's still the exact same conductive metal.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 7.4 HYSTERESIS ══════════════ -->
+<section class="section" id="c7_sec-hysteresis">
+  <div class="sec-label">04 · Hysteresis</div>
+  <h2 class="sec-title">Ferromagnetic materials remember where they've been.</h2>
+  <p class="sec-body">
+    Sweep an external field <b>H</b> up and down through a ferromagnetic material and plot the resulting internal field <b>B</b> — it doesn't retrace the same curve. It lags behind, tracing out a loop. Key landmarks: <b>saturation</b> (B stops climbing once nearly all domains are aligned), <b>remanence Bᵣ</b> (the B left behind when H returns to zero — this is what makes a permanent magnet permanent), and <b>coercivity Hc</b> (how much reverse field it takes to erase B back to zero). The loop's enclosed <b>area</b> is real energy, lost as heat, every single cycle.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Trace a Full B–H Loop</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="50" y1="110" x2="650" y2="110" stroke="var(--line)" stroke-width="1"/>
+      <text x="655" y="114" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">H →</text>
+      <line x1="350" y1="20" x2="350" y2="200" stroke="var(--line)" stroke-width="1"/>
+      <text x="358" y="28" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">B ↑</text>
+      <polyline id="c7h_loop" points="" fill="none" stroke="var(--violet)" stroke-width="2"/>
+      <circle id="c7h_point" cx="350" cy="110" r="5" fill="var(--amber)"/>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" data-hc="0.15" data-w="0.6" data-name="Soft (transformer core)">Soft (transformer core)</button>
+      <button class="btn" data-hc="0.7" data-w="0.5" data-name="Hard (permanent magnet)">Hard (permanent magnet)</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c7h_btnSweep">🔁 Sweep Full Loop</button>
+      <button class="btn" id="c7h_btnReset">↺ Reset</button>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">H (applied field)</div><div class="rv" id="c7h_hOut">0.00</div></div>
+      <div class="readout p"><div class="rl">B (internal field)</div><div class="rv" id="c7h_bOut">0.00</div></div>
+      <div class="readout d"><div class="rl">Energy lost / cycle (rel.)</div><div class="rv" id="c7h_areaOut">—</div></div>
+    </div>
+    <div class="callout" id="c7h_hystCallout">Pick a material, then sweep a full loop. "Soft" materials trace a thin loop with little enclosed area — cheap to flip back and forth, ideal for transformer and motor cores cycling 50–60+ times a second. "Hard" materials trace a fat loop — expensive to flip, but that's exactly what makes a permanent magnet stay magnetized.</div>
+  </div>
+  <div class="quiz" id="c7_quiz4">
+    <div class="quiz-q">Physically, what does the area enclosed by a material's B–H hysteresis loop represent?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">The material's maximum possible field strength</button>
+      <button class="quiz-opt" data-correct="false">How magnetic the material is at rest</button>
+      <button class="quiz-opt" data-correct="true">Energy dissipated as heat during each complete magnetization cycle</button>
+      <button class="quiz-opt" data-correct="false">The material's electrical resistance</button>
+    </div>
+    <div class="quiz-fb" id="c7_quiz4fb">Every trip around the loop costs real energy, converted to heat — which is exactly why transformer and motor designers obsess over using "soft" core materials with a thin loop, minimizing that repeated cost across millions of cycles per hour.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 1.5</div>
+  <h2 class="outro-title">Four ideas: change writes voltage, the response always fights back, bulk metal counts too, and materials remember.</h2>
+  <p>Next: <b>1.6 — Semiconductors: Band Theory</b> — why silicon sometimes conducts and sometimes doesn't, and how doping engineers that on purpose. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="04-magnetic-materials.html">← Chapter 1.4</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 1.5 OF 34 · PART I: FOUNDATIONS</footer>
+
+<script>
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  // ══════ 7.1 FARADAY'S LAW ══════
+  function buildCoilTicksF(){
+    const g = document.getElementById('c7f_coilTicks');
+    g.innerHTML = '';
+    for(let i=0; i<6; i++){
+      const x = 305 + i*15;
+      const t1 = document.createElementNS(svgNS,'line');
+      t1.setAttribute('x1',x); t1.setAttribute('y1',52); t1.setAttribute('x2',x+8); t1.setAttribute('y2',68);
+      t1.setAttribute('stroke','var(--copper)'); t1.setAttribute('stroke-width','2');
+      g.appendChild(t1);
+      const t2 = document.createElementNS(svgNS,'line');
+      t2.setAttribute('x1',x); t2.setAttribute('y1',132); t2.setAttribute('x2',x+8); t2.setAttribute('y2',148);
+      t2.setAttribute('stroke','var(--copper)'); t2.setAttribute('stroke-width','2');
+      g.appendChild(t2);
+    }
+  }
+  buildCoilTicksF();
+  function fluxAtF(centerX){ return 1/(1+Math.pow((centerX-350)/40,2)); }
+  function updateNeedleF(emf){
+    const clamped = Math.max(-60, Math.min(60, emf*70));
+    document.getElementById('c7f_needle').setAttribute('transform', `rotate(${clamped})`);
+  }
+  let animF = null;
+  function animatePushF(speed){
+    if(animF) cancelAnimationFrame(animF);
+    const duration = (3.2/speed)*1000 + 200;
+    const startX = 90, endX = 560;
+    const t0 = performance.now();
+    let prevPhi = fluxAtF(startX+25), prevT = t0;
+    document.getElementById('c7f_faradayCallout').innerHTML = "Watch the meter needle — it swings one way as the magnet approaches (flux rising), then the other way as it leaves (flux falling), and rests at zero once it's clear.";
+    function step(now){
+      const t = Math.min(1, (now-t0)/duration);
+      const centerX = (startX+25) + t*(endX-startX);
+      document.getElementById('c7f_magnet').setAttribute('x', centerX-25);
+      const phi = fluxAtF(centerX);
+      const dt = Math.max(0.001, (now-prevT)/1000);
+      const emf = -(phi-prevPhi)/dt;
+      prevPhi = phi; prevT = now;
+      document.getElementById('c7f_fluxOut').textContent = phi.toFixed(2);
+      document.getElementById('c7f_emfOut').textContent = emf.toFixed(2);
+      updateNeedleF(emf);
+      if(t < 1){
+        animF = requestAnimationFrame(step);
+      } else {
+        updateNeedleF(0);
+        document.getElementById('c7f_emfOut').textContent = '0.00';
+        document.getElementById('c7f_faradayCallout').innerHTML = "Magnet has cleared the coil and stopped moving — flux is constant again, so EMF drops back to zero. Try speed 1 vs. speed 10 next: same total flux swing, wildly different peak voltage.";
+      }
+    }
+    animF = requestAnimationFrame(step);
+  }
+  document.getElementById('c7f_btnPush').onclick = function(){
+    animatePushF(+document.getElementById('c7f_speed').value);
+  };
+  document.getElementById('c7f_speed').oninput = function(){
+    document.getElementById('c7f_speedVal').textContent = this.value;
+  };
+  document.getElementById('c7f_btnReset').onclick = function(){
+    if(animF) cancelAnimationFrame(animF);
+    document.getElementById('c7f_magnet').setAttribute('x', 90);
+    document.getElementById('c7f_fluxOut').textContent = '0.00';
+    document.getElementById('c7f_emfOut').textContent = '0.00';
+    updateNeedleF(0);
+  };
+
+  // ══════ 7.2 LENZ'S LAW ══════
+  const OUT_X = 95, IN_X = 235;
+  let magnetX = OUT_X, animL = null;
+  function buildLenzArc(direction){
+    const cx=350, cy=110, r=50;
+    const a1 = 200*Math.PI/180, a2 = -20*Math.PI/180;
+    const p1 = [cx+r*Math.cos(a1), cy+r*Math.sin(a1)];
+    const p2 = [cx+r*Math.cos(a2), cy+r*Math.sin(a2)];
+    const sweep = direction==='cw' ? 1 : 0;
+    const d = `M${p1[0]} ${p1[1]} A ${r} ${r} 0 1 ${sweep} ${p2[0]} ${p2[1]}`;
+    document.getElementById('c7l_lenzArc').setAttribute('d', d);
+  }
+  function buildForceArrowL(direction, centerX){
+    const y = 110;
+    const path = document.getElementById('c7l_forceArrow');
+    if(direction === 'in'){
+      path.setAttribute('d', `M${centerX-30} ${y} L${centerX-60} ${y}`);
+    } else {
+      path.setAttribute('d', `M${centerX+30} ${y} L${centerX+60} ${y}`);
+    }
+  }
+  function animateLenz(toX, direction){
+    if(animL) cancelAnimationFrame(animL);
+    const fromX = magnetX;
+    const duration = 1200;
+    const t0 = performance.now();
+    document.getElementById('c7l_lenzArc').setAttribute('opacity','1');
+    document.getElementById('c7l_forceArrow').setAttribute('opacity','1');
+    buildLenzArc(direction === 'in' ? 'cw' : 'ccw');
+    document.getElementById('c7l_lenzCallout').innerHTML = direction === 'in'
+      ? "<b>Approaching.</b> Flux through the coil is increasing, so the induced current opposes that increase — its field pushes back against the incoming magnet, repelling it (watch the amber arrow)."
+      : "<b>Retreating.</b> Flux is now decreasing, so the induced current reverses to try to maintain it — its field pulls the departing magnet back, attracting it (watch the amber arrow flip direction).";
+    function step(now){
+      const t = Math.min(1, (now-t0)/duration);
+      const x = fromX + t*(toX-fromX);
+      document.getElementById('c7l_magnet').setAttribute('x', x);
+      document.getElementById('c7l_magnetLbl').setAttribute('x', x+25);
+      buildForceArrowL(direction, x+25);
+      if(t < 1){
+        animL = requestAnimationFrame(step);
+      } else {
+        magnetX = toX;
+        setTimeout(()=>{
+          document.getElementById('c7l_lenzArc').setAttribute('opacity','0');
+          document.getElementById('c7l_forceArrow').setAttribute('opacity','0');
+          document.getElementById('c7l_lenzCallout').innerHTML = "Motion stopped — flux is no longer changing, so the induced current (and both arrows) vanish. No motion, no EMF.";
+        }, 400);
+      }
+    }
+    animL = requestAnimationFrame(step);
+  }
+  document.getElementById('c7l_btnIn').onclick = () => animateLenz(IN_X, 'in');
+  document.getElementById('c7l_btnOut').onclick = () => animateLenz(OUT_X, 'out');
+
+  // ══════ 7.3 EDDY CURRENTS ══════
+  let selectedK = 0, selectedTube = 'plastic', animE = null;
+  function updateTubeVisual(tube){
+    const el = document.getElementById('c7e_tube');
+    el.setAttribute('stroke', tube === 'plastic' ? 'var(--dim)' : 'var(--copper)');
+    const g = document.getElementById('c7e_slotGroup');
+    g.innerHTML = '';
+    if(tube === 'slotted'){
+      const s = document.createElementNS(svgNS,'rect');
+      s.setAttribute('x',177); s.setAttribute('y',20); s.setAttribute('width',6); s.setAttribute('height',180);
+      s.setAttribute('fill','var(--paper)');
+      g.appendChild(s);
+    }
+  }
+  document.querySelectorAll('#c7_sec-eddy .btn-row .btn[data-tube]').forEach(btn=>{
+    btn.onclick = function(){
+      document.querySelectorAll('#c7_sec-eddy .btn-row .btn[data-tube]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      selectedK = +this.dataset.k;
+      selectedTube = this.dataset.tube;
+      updateTubeVisual(selectedTube);
+    };
+  });
+  updateTubeVisual('plastic');
+  function dropMagnet(){
+    if(animE) cancelAnimationFrame(animE);
+    let v = 0, y = 35;
+    const g = 700, yEnd = 185;
+    const t0 = performance.now();
+    let prevT = t0;
+    document.getElementById('c7e_timeOut').textContent = '—';
+    function step(now){
+      const dt = Math.min(0.05, (now-prevT)/1000);
+      prevT = now;
+      v += (g - selectedK*v)*dt;
+      y += v*dt;
+      document.getElementById('c7e_magnet').setAttribute('cy', Math.min(yEnd,y));
+      if(y < yEnd){
+        animE = requestAnimationFrame(step);
+      } else {
+        const elapsed = (now-t0)/1000;
+        document.getElementById('c7e_timeOut').textContent = elapsed.toFixed(2)+' s';
+        const cal = document.getElementById('c7e_eddyCallout');
+        if(selectedTube === 'copper'){
+          cal.innerHTML = `<b>${elapsed.toFixed(2)}s</b> — dramatically slower. Eddy currents circulating in the copper wall create a drag force purely from induction, with zero physical contact and zero permanent magnetism in the copper itself.`;
+        } else if(selectedTube === 'slotted'){
+          cal.innerHTML = `<b>${elapsed.toFixed(2)}s</b> — fast again, almost like plastic. Same copper, same conductivity — but the slot broke the closed current loops, so eddy currents can no longer circulate effectively.`;
+        } else {
+          cal.innerHTML = `<b>${elapsed.toFixed(2)}s</b> — ordinary free fall. Plastic doesn't conduct, so there's nothing for a changing flux to induce a current in.`;
+        }
+      }
+    }
+    animE = requestAnimationFrame(step);
+  }
+  document.getElementById('c7e_btnDrop').onclick = dropMagnet;
+  document.getElementById('c7e_btnReset').onclick = function(){
+    if(animE) cancelAnimationFrame(animE);
+    document.getElementById('c7e_magnet').setAttribute('cy', 35);
+    document.getElementById('c7e_timeOut').textContent = '—';
+  };
+
+  // ══════ 7.4 HYSTERESIS ══════
+  let Hc = 0.15, Wd = 0.6, Bsat = 1, animH = null;
+  let loopPts = [];
+  function upperBranch(H){ return Bsat*Math.tanh((H+Hc)/Wd); }
+  function lowerBranch(H){ return Bsat*Math.tanh((H-Hc)/Wd); }
+  function xForH(H){ return 350 + H*180; }
+  function yForB(B){ return 110 - B*80; }
+  function shoelaceArea(pts){
+    let area = 0;
+    for(let i=0; i<pts.length; i++){
+      const [x1,y1] = pts[i], [x2,y2] = pts[(i+1)%pts.length];
+      area += (x1*y2 - x2*y1);
+    }
+    return Math.abs(area/2);
+  }
+  document.querySelectorAll('#c7_sec-hysteresis .btn-row .btn[data-hc]').forEach(btn=>{
+    btn.onclick = function(){
+      document.querySelectorAll('#c7_sec-hysteresis .btn-row .btn[data-hc]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      Hc = +this.dataset.hc; Wd = +this.dataset.w;
+      resetLoop();
+    };
+  });
+  function resetLoop(){
+    if(animH) cancelAnimationFrame(animH);
+    loopPts = [];
+    document.getElementById('c7h_loop').setAttribute('points','');
+    document.getElementById('c7h_point').setAttribute('cx',350);
+    document.getElementById('c7h_point').setAttribute('cy',110);
+    document.getElementById('c7h_hOut').textContent = '0.00';
+    document.getElementById('c7h_bOut').textContent = '0.00';
+    document.getElementById('c7h_areaOut').textContent = '—';
+  }
+  function sweepLoop(){
+    if(animH) cancelAnimationFrame(animH);
+    loopPts = [];
+    const Hmax = 1.5;
+    const legs = [
+      {from:0, to:Hmax, branch:lowerBranch},
+      {from:Hmax, to:-Hmax, branch:upperBranch},
+      {from:-Hmax, to:Hmax, branch:lowerBranch}
+    ];
+    let legIndex = 0, stepsPerLeg = 90, stepIndex = 0;
+    function frame(){
+      const leg = legs[legIndex];
+      const frac = stepIndex/stepsPerLeg;
+      const H = leg.from + frac*(leg.to-leg.from);
+      const B = leg.branch(H);
+      const x = xForH(H), y = yForB(B);
+      loopPts.push([x,y]);
+      document.getElementById('c7h_loop').setAttribute('points', loopPts.map(p=>p[0]+','+p[1]).join(' '));
+      document.getElementById('c7h_point').setAttribute('cx', x);
+      document.getElementById('c7h_point').setAttribute('cy', y);
+      document.getElementById('c7h_hOut').textContent = H.toFixed(2);
+      document.getElementById('c7h_bOut').textContent = B.toFixed(2);
+      stepIndex++;
+      if(stepIndex > stepsPerLeg){
+        stepIndex = 0; legIndex++;
+      }
+      if(legIndex < legs.length){
+        animH = requestAnimationFrame(frame);
+      } else {
+        const areaPx = shoelaceArea(loopPts);
+        const areaRel = areaPx / 10000;
+        document.getElementById('c7h_areaOut').textContent = areaRel.toFixed(2);
+        document.getElementById('c7h_hystCallout').innerHTML = `Full loop traced. Enclosed area (a genuine energy-per-cycle measure): <b>${areaRel.toFixed(2)}</b> relative units. Switch materials and re-sweep — the "hard" material's fatter loop costs noticeably more energy per cycle, which is exactly why you'd never build a transformer core out of permanent-magnet material.`;
+      }
+    }
+    animH = requestAnimationFrame(frame);
+  }
+  document.getElementById('c7h_btnSweep').onclick = sweepLoop;
+  document.getElementById('c7h_btnReset').onclick = resetLoop;
+  resetLoop();
+
+  // ══════ QUIZZES ══════
+  ['c7_quiz1','c7_quiz2','c7_quiz3','c7_quiz4'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

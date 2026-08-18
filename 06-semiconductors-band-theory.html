@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>1.6 Semiconductors: Band Theory — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,60px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:620px; color:var(--dim); font-size:16px;}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);} .readout.b .rv{color:var(--violet);} .readout.d .rv{color:var(--danger);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+
+  .three-col{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media(max-width:820px){.three-col{grid-template-columns:1fr;}}
+
+  .legend-row{display:flex; flex-wrap:wrap; gap:16px; margin-top:16px;}
+  .legend-item{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim);}
+  .legend-sq{width:10px; height:10px; flex-shrink:0;}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part I · Foundations · Chapter 1.6 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 1.6 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">A crystal that can't<br/>quite decide if it <span class="hl">conducts</span>.</h1>
+  <p class="hero-sub">Every transistor on Earth is built on a material that's neither a proper conductor nor a proper insulator — and that indecision, tuned on purpose, is the entire trick. This chapter also settles a genuinely great question: if pure silicon barely conducts at room temperature, how does a laptop even turn on in a Siberian winter?</p>
+  <div class="hero-chip"><span class="pulse"></span> BAND THEORY · DOPING · N-TYPE / P-TYPE · WHY COLD CHIPS STILL WORK</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c5_sec-bands">Energy Bands</a>
+    <a class="btn chip" href="#c5_sec-doping">Doping: N-Type &amp; P-Type</a>
+    <a class="btn chip" href="#c5_sec-cold">Why Chips Work in the Cold</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 5.1 ENERGY BANDS ══════════════ -->
+<section class="section" id="c5_sec-bands">
+  <div class="sec-label">01 · Energy Bands</div>
+  <h2 class="sec-title">Every electron in a crystal is stuck on one of two floors.</h2>
+  <p class="sec-body">
+    Pack atoms into a crystal and their individual, sharp electron energy levels smear together into two big allowed "floors," separated by a forbidden gap: the <b>valence band</b> (electrons bound to atoms, going nowhere) and the <b>conduction band</b> (electrons free to roam and carry current). Whether a material conducts depends almost entirely on how wide that forbidden gap is, and how full each floor already is.
+  </p>
+  <div class="three-col">
+    <div class="panel" style="padding:16px;">
+      <svg viewBox="0 0 200 160" style="width:100%;height:auto;">
+        <rect x="40" y="20" width="120" height="120" fill="var(--cyan)" opacity="0.25"/>
+        <text x="100" y="85" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="9">BANDS OVERLAP</text>
+      </svg>
+      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--cyan); margin-top:4px;">CONDUCTOR</div>
+      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim);">no gap — always conducts</div>
+    </div>
+    <div class="panel" style="padding:16px;">
+      <svg viewBox="0 0 200 160" style="width:100%;height:auto;">
+        <rect x="40" y="20" width="120" height="35" fill="var(--amber)" opacity="0.3"/>
+        <rect x="40" y="105" width="120" height="35" fill="var(--amber)" opacity="0.3"/>
+        <text x="100" y="82" text-anchor="middle" fill="var(--amber)" font-family="JetBrains Mono" font-size="9">Eg ≈ 1.12 eV</text>
+      </svg>
+      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber); margin-top:4px;">SEMICONDUCTOR</div>
+      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim);">small gap — sometimes conducts</div>
+    </div>
+    <div class="panel" style="padding:16px;">
+      <svg viewBox="0 0 200 160" style="width:100%;height:auto;">
+        <rect x="40" y="20" width="120" height="12" fill="var(--danger)" opacity="0.3"/>
+        <rect x="40" y="128" width="120" height="12" fill="var(--danger)" opacity="0.3"/>
+        <text x="100" y="82" text-anchor="middle" fill="var(--danger)" font-family="JetBrains Mono" font-size="9">Eg ≈ 5–9 eV</text>
+      </svg>
+      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--danger); margin-top:4px;">INSULATOR</div>
+      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim);">huge gap — never conducts</div>
+    </div>
+  </div>
+  <p class="sec-body" style="margin-top:28px;">
+    Silicon's gap (1.12 eV) is small enough that ordinary heat can occasionally kick an electron across it. At <b>absolute zero</b>, no electron has any thermal energy at all — the valence band is completely full, the conduction band completely empty, and pure silicon behaves exactly like an insulator. Warm it to room temperature, and a small fraction of electrons pick up enough random thermal energy to leap the gap, each leaving behind a "hole" in the valence band — giving pure (intrinsic) silicon its famously weak, temperature-hungry conductivity.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Intrinsic Silicon vs. Temperature</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="150" y="20" width="400" height="45" fill="var(--cyan)" opacity="0.12" stroke="var(--cyan)" stroke-width="1"/>
+      <text x="140" y="46" text-anchor="end" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">Ec</text>
+      <rect x="150" y="140" width="400" height="45" fill="var(--copper)" opacity="0.12" stroke="var(--copper)" stroke-width="1"/>
+      <text x="140" y="166" text-anchor="end" fill="var(--copper)" font-family="JetBrains Mono" font-size="10">Ev</text>
+      <text x="560" y="46" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">CONDUCTION BAND</text>
+      <text x="560" y="166" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">VALENCE BAND</text>
+      <text x="350" y="100" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">Eg = 1.12 eV</text>
+      <g id="c5_bandElectrons"></g>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Temperature <span class="val" id="c5_tempVal">300 K (≈27°C)</span></label><input type="range" id="c5_temp" min="0" max="400" step="5" value="300"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Conduction electrons</div><div class="rv" id="c5_carrierOut">×1.0 (room-temp baseline)</div></div>
+      <div class="readout d"><div class="rl">Behaves like</div><div class="rv" id="c5_stateOut" style="font-size:14px;">WEAK CONDUCTOR</div></div>
+    </div>
+    <div class="callout" id="c5_bandsCallout">Drag toward 0K and every electron freezes into the valence band — a perfect insulator. Drag up and a few start leaping the gap, each leaving a hole behind. Hold this picture — Section 03 depends on it.</div>
+  </div>
+  <div class="quiz" id="c5_quiz1">
+    <div class="quiz-q">At absolute zero (0 K), how does pure (intrinsic) silicon behave electrically?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Like a perfect conductor — cold metals conduct better, so silicon should too</button>
+      <button class="quiz-opt" data-correct="true">Like a near-perfect insulator — no electron has enough thermal energy to cross the 1.12 eV gap</button>
+      <button class="quiz-opt" data-correct="false">Exactly the same as at room temperature</button>
+      <button class="quiz-opt" data-correct="false">It becomes magnetic instead of conductive</button>
+    </div>
+    <div class="quiz-fb" id="c5_quiz1fb">With zero thermal energy available, the valence band stays completely full and the conduction band stays completely empty — textbook insulator behavior. This is real, and it's the starting point for the cold-weather-chip question in Section 03.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 5.2 DOPING ══════════════ -->
+<section class="section" id="c5_sec-doping">
+  <div class="sec-label">02 · Doping: N-Type &amp; P-Type</div>
+  <h2 class="sec-title">Sprinkle in the right impurity, and conduction stops being rare.</h2>
+  <p class="sec-body">
+    <b>Doping</b> means deliberately contaminating the silicon crystal with a tiny trace of a different element — often as little as one dopant atom per million silicon atoms. Swap in <b>phosphorus</b> (5 valence electrons, one more than silicon's 4) and each dopant atom contributes one extra electron that's only loosely tied to its parent atom — this is <b>n-type</b> silicon. Swap in <b>boron</b> (3 valence electrons, one fewer) and each dopant atom leaves a bond short an electron — a mobile <b>hole</b> — giving <b>p-type</b> silicon.
+  </p>
+  <p class="sec-body">
+    The reason this matters so much: those donor and acceptor states sit in energy-level terms <b>extremely close</b> to the band edges — roughly 0.01 to 0.05 eV away, compared to silicon's full 1.12 eV band gap. It takes barely any thermal energy at all to ionize them.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Donor / Acceptor Levels, to Scale</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="150" y="20" width="400" height="35" fill="var(--dim)" opacity="0.12" stroke="var(--line)" stroke-width="1"/>
+      <text x="560" y="42" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">CONDUCTION BAND (Ec)</text>
+      <rect x="150" y="150" width="400" height="35" fill="var(--dim)" opacity="0.12" stroke="var(--line)" stroke-width="1"/>
+      <text x="560" y="172" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">VALENCE BAND (Ev)</text>
+      <line id="c5_levelLine" x1="150" y1="62" x2="550" y2="62" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text id="c5_levelLbl" x="350" y="80" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">DONOR LEVEL — ~0.045 eV below Ec</text>
+      <path id="c5_levelArrow" d="M300 62 V 55" stroke="var(--cyan)" stroke-width="2" fill="none" marker-end="url(#c5arrow)"/>
+      <defs><marker id="c5arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><polygon points="0 0, 6 3.5, 0 7" fill="var(--cyan)"/></marker></defs>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="c5_btnNtype">N-Type (Phosphorus donor)</button>
+      <button class="btn" id="c5_btnPtype">P-Type (Boron acceptor)</button>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Ionization energy</div><div class="rv" id="c5_ionOut">~0.045 eV</div></div>
+      <div class="readout r"><div class="rl">vs. full band gap</div><div class="rv" id="c5_ratioOut">~25× smaller</div></div>
+    </div>
+    <div class="callout" id="c5_dopeCallout">A donor electron only has to hop this tiny distance to join the conduction band — not the full 1.12 eV gap intrinsic carriers face. At almost any temperature worth mentioning, essentially <b>every</b> donor atom is already ionized.</div>
+  </div>
+  <div class="quiz" id="c5_quiz2">
+    <div class="quiz-q">A donor level sits only ~0.045 eV below the conduction band, versus silicon's full 1.12 eV gap. What does that imply about donor electrons at room temperature?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">They almost never ionize, just like intrinsic carriers</button>
+      <button class="quiz-opt" data-correct="true">They ionize almost completely — the tiny gap makes them thermally easy to free, essentially independent of the big intrinsic gap</button>
+      <button class="quiz-opt" data-correct="false">They only ionize if the material is also intrinsic</button>
+      <button class="quiz-opt" data-correct="false">Ionization energy has no relationship to temperature</button>
+    </div>
+    <div class="quiz-fb" id="c5_quiz2fb">This ~25× smaller ionization energy is the whole reason doped silicon behaves so differently from pure silicon — and it's the key fact the next section uses to answer the cold-weather question.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 5.3 WHY CHIPS WORK IN THE COLD ══════════════ -->
+<section class="section" id="c5_sec-cold">
+  <div class="sec-label">03 · The Cold-Weather Question</div>
+  <h2 class="sec-title">Pure silicon nearly stops conducting when cold. No real chip depends on that.</h2>
+  <p class="sec-body">
+    So here's the paradox, stated properly: <b>pure</b> silicon really is a near-perfect insulator at absolute zero, and only weakly conductive at room temperature — that part of the premise is completely correct. But no chip in a laptop, phone, or car actually relies on <b>pure</b> silicon conducting. Every transistor's silicon is deliberately doped, and doped silicon's carriers come almost entirely from ionizing those shallow donor/acceptor levels from Section 02 — not from rare thermal leaps across the full intrinsic gap.
+  </p>
+  <p class="sec-body">
+    Because that ionization energy is so small, doped silicon's carrier concentration is essentially <b>flat</b> — nearly independent of temperature — across an enormous range that comfortably covers every weather condition Earth produces. Drag the slider below across that whole range and watch the doped curve barely move, while the "pure silicon" curve stays pinned near zero until things get genuinely hot.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Carrier Concentration vs. Temperature (log scale)</div>
+    <svg viewBox="0 0 700 240" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="50" y1="200" x2="660" y2="200" stroke="var(--line)" stroke-width="1"/>
+      <line x1="50" y1="10" x2="50" y2="200" stroke="var(--line)" stroke-width="1"/>
+      <text x="10" y="16" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">carriers</text>
+      <text x="10" y="200" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">~0</text>
+      <g id="c5_refLines"></g>
+      <polyline id="c5_pureCurve" points="" fill="none" stroke="var(--dim)" stroke-width="2" stroke-dasharray="4 4"/>
+      <polyline id="c5_dopedCurve" points="" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
+      <line id="c5_marker" x1="0" y1="10" x2="0" y2="200" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="3 4"/>
+    </svg>
+    <div class="legend-row">
+      <div class="legend-item"><span class="legend-sq" style="background:var(--cyan);"></span> Doped silicon (real chips)</div>
+      <div class="legend-item"><span class="legend-sq" style="background:var(--dim);"></span> Pure / intrinsic silicon</div>
+    </div>
+    <div class="controls">
+      <div class="ctrl"><label>Temperature <span class="val" id="c5_wideTempVal">300 K (27°C)</span></label><input type="range" id="c5_wideTemp" min="20" max="450" step="1" value="300"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Doped carriers (relative)</div><div class="rv" id="c5_dopedOut">1.0×</div></div>
+      <div class="readout r"><div class="rl">Pure Si carriers (relative)</div><div class="rv" id="c5_pureOut">1.0×</div></div>
+    </div>
+    <div class="callout" id="c5_coldCallout">Room temperature — the doped curve is flat here, and the pure-silicon curve is negligible in comparison. This is the normal operating point for essentially every chip ever made.</div>
+  </div>
+  <div class="callout good"><b>The short answer:</b> a chip's silicon isn't waiting on rare thermal excitation across a 1.12 eV gap — it's running on dopant atoms with a ~0.045 eV ionization energy that stay almost completely ionized from deep cryogenic temperatures up to well past anything the weather can produce. A Siberian winter, even the coldest ones, is nowhere near cold enough to "freeze out" a properly doped semiconductor.</div>
+  <div class="callout info"><b>Bonus: cold can actually help.</b> Lower temperature means less thermal vibration in the crystal lattice (less "phonon scattering"), so electrons and holes can often move more freely — carrier <i>mobility</i> tends to improve in the cold, up to a point. This is part of why deliberately-cooled "cryo-CMOS" is an active research area for high-performance and quantum-adjacent computing, not despite the cold, but partly because of it.</div>
+  <p class="sec-body">
+    So what <i>does</i> go wrong with electronics in the cold? Almost never the silicon. It's usually: <b>lithium-ion batteries</b> (the chemistry itself slows dramatically, cutting available current and capacity), <b>LCD screens</b> (the liquid crystal fluid stiffens and responds sluggishly), <b>condensation</b> (bringing a cold device into a warm, humid room), and plain <b>mechanical stress</b> on solder joints and connectors from repeated thermal contraction and expansion.
+  </p>
+  <div class="quiz" id="c5_quiz3">
+    <div class="quiz-q">Why doesn't a laptop's silicon stop working in a brutal winter, given that pure silicon is nearly an insulator when cold?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Chips are kept artificially warm by their own heat internally, so ambient cold never really reaches the silicon</button>
+      <button class="quiz-opt" data-correct="true">Real chips use doped silicon, whose carriers come from a ~0.045 eV donor/acceptor ionization energy that stays almost fully "on" across any temperature the weather produces</button>
+      <button class="quiz-opt" data-correct="false">Silicon's band gap actually shrinks to zero in the cold</button>
+      <button class="quiz-opt" data-correct="false">Cold weather converts silicon into a metal temporarily</button>
+    </div>
+    <div class="quiz-fb" id="c5_quiz3fb">The intrinsic 1.12 eV gap is real and matters for pure silicon, but it's almost irrelevant to a working transistor, which runs on the deliberately engineered, far smaller ionization energy of its dopants instead.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 1.6 · END OF PART I</div>
+  <h2 class="outro-title">Six chapters, and the foundations are actually done.</h2>
+  <p>Charge, fields, circuits, magnetism, materials, induction, and now semiconductors — everything from here on is built out of these pieces. Next: <b>Part II — 2.1: DC vs AC</b>, the dedicated deep-dive on fixed vs. alternating polarity. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="05-induction.html">← Chapter 1.5</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 1.6 OF 34 · PART I: FOUNDATIONS</footer>
+
+<script>
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const k_eV = 8.617e-5; // Boltzmann constant, eV/K
+  const Eg = 1.12; // silicon band gap, eV
+
+  function nIntrinsic(T){
+    if(T <= 0) return 0;
+    return Math.pow(T,1.5) * Math.exp(-Eg/(2*k_eV*T));
+  }
+  const nRef300 = nIntrinsic(300);
+
+  // ══════ 5.1 BAND DIAGRAM vs TEMPERATURE ══════
+  const slotX = [200,255,310,365,420,475];
+  function buildBandElectrons(dotCount){
+    const g = document.getElementById('c5_bandElectrons');
+    g.innerHTML = '';
+    for(let i=0; i<6; i++){
+      const x = slotX[i];
+      if(i < dotCount){
+        const hole = document.createElementNS(svgNS,'circle');
+        hole.setAttribute('cx',x); hole.setAttribute('cy',162); hole.setAttribute('r',6);
+        hole.setAttribute('fill','none'); hole.setAttribute('stroke','var(--copper)'); hole.setAttribute('stroke-width','2');
+        g.appendChild(hole);
+        const el = document.createElementNS(svgNS,'circle');
+        el.setAttribute('cx',x); el.setAttribute('cy',42); el.setAttribute('r',6);
+        el.setAttribute('fill','var(--cyan)');
+        g.appendChild(el);
+      } else {
+        const el = document.createElementNS(svgNS,'circle');
+        el.setAttribute('cx',x); el.setAttribute('cy',162); el.setAttribute('r',6);
+        el.setAttribute('fill','var(--copper)');
+        g.appendChild(el);
+      }
+    }
+  }
+  function updateBands(){
+    const T = +document.getElementById('c5_temp').value;
+    const c = T - 273.15;
+    document.getElementById('c5_tempVal').textContent = T+' K ('+(c>=0?'≈':'')+c.toFixed(0)+'°C)';
+    const ratio = T <= 0 ? 0 : nIntrinsic(T)/nRef300;
+    let dotCount;
+    if(ratio <= 0){ dotCount = 0; }
+    else { dotCount = Math.max(0, Math.min(6, Math.round(3 + 1.1*Math.log10(ratio)))); }
+    buildBandElectrons(dotCount);
+    document.getElementById('c5_carrierOut').textContent = '×'+ratio.toFixed(ratio<0.01?4:2);
+    const stateEl = document.getElementById('c5_stateOut');
+    const cal = document.getElementById('c5_bandsCallout');
+    if(dotCount === 0){
+      stateEl.textContent = 'INSULATOR';
+      cal.innerHTML = "At this temperature there's essentially no thermal energy to spare — the valence band stays completely full and the conduction band completely empty. This is a real insulator, not a weak conductor.";
+    } else if(dotCount <= 2){
+      stateEl.textContent = 'BARELY CONDUCTS';
+      cal.innerHTML = "A few electrons now have enough thermal energy to leap the 1.12 eV gap, each leaving a hole behind. Still a very poor conductor.";
+    } else if(dotCount <= 4){
+      stateEl.textContent = 'WEAK CONDUCTOR';
+      cal.innerHTML = "Around room temperature, a small but nonzero fraction of electrons are thermally excited across the gap — this is pure silicon's famous weak, temperature-hungry conductivity.";
+    } else {
+      stateEl.textContent = 'STRONGER (BUT STILL WEAK)';
+      cal.innerHTML = "Hotter still, and more electrons make the jump — intrinsic conduction rises steeply with temperature, the opposite trend from a metal. Keep this exponential sensitivity in mind for Section 03.";
+    }
+  }
+  document.getElementById('c5_temp').oninput = updateBands;
+  updateBands();
+
+  // ══════ 5.2 DONOR / ACCEPTOR LEVELS ══════
+  function setLevel(isNType){
+    const line = document.getElementById('c5_levelLine');
+    const lbl = document.getElementById('c5_levelLbl');
+    const arrow = document.getElementById('c5_levelArrow');
+    if(isNType){
+      line.setAttribute('y1',62); line.setAttribute('y2',62);
+      line.setAttribute('stroke','var(--cyan)');
+      lbl.setAttribute('y',80); lbl.setAttribute('fill','var(--cyan)');
+      lbl.textContent = 'DONOR LEVEL — ~0.045 eV below Ec';
+      arrow.setAttribute('d','M300 62 V 55'); arrow.setAttribute('stroke','var(--cyan)');
+      document.getElementById('c5_dopeCallout').innerHTML = "A donor electron only has to hop this tiny distance to join the conduction band — not the full 1.12 eV gap intrinsic carriers face. At almost any temperature worth mentioning, essentially <b>every</b> donor atom is already ionized, dumping a free electron into the conduction band.";
+    } else {
+      line.setAttribute('y1',158); line.setAttribute('y2',158);
+      line.setAttribute('stroke','var(--copper)');
+      lbl.setAttribute('y',144); lbl.setAttribute('fill','var(--copper)');
+      lbl.textContent = 'ACCEPTOR LEVEL — ~0.045 eV above Ev';
+      arrow.setAttribute('d','M300 158 V 165'); arrow.setAttribute('stroke','var(--copper)');
+      document.getElementById('c5_dopeCallout').innerHTML = "A nearby valence electron only has to hop this tiny distance to fill the acceptor atom's missing bond — leaving a mobile hole behind in the valence band. Again, almost every acceptor atom is ionized at ordinary temperatures.";
+    }
+  }
+  document.getElementById('c5_btnNtype').onclick = function(){
+    this.classList.add('active'); document.getElementById('c5_btnPtype').classList.remove('active');
+    setLevel(true);
+  };
+  document.getElementById('c5_btnPtype').onclick = function(){
+    this.classList.add('active'); document.getElementById('c5_btnNtype').classList.remove('active');
+    setLevel(false);
+  };
+  setLevel(true);
+
+  // ══════ 5.3 WIDE-RANGE COLD-WEATHER GRAPH ══════
+  const Tmin = 20, Tmax = 450;
+  const freezeOutEdge = 100, freezeWidth = 10;
+  const DOPING_RATIO = 1e5;
+  function xForT(T){ return 50 + (T-Tmin)/(Tmax-Tmin)*610; }
+  function extrinsicPlateau(T){ return 1/(1+Math.exp(-(T-freezeOutEdge)/freezeWidth)); }
+  function dopedValue(T){ return DOPING_RATIO*extrinsicPlateau(T) + nIntrinsic(T)/nRef300; }
+  function pureValue(T){ return nIntrinsic(T)/nRef300; }
+  function yForVal(v){
+    const logv = Math.log10(Math.max(1e-12, v));
+    const clamped = Math.max(0, Math.min(6, logv));
+    return 200 - clamped*31.667;
+  }
+  function buildCurves(){
+    let dopedPts = [], purePts = [];
+    for(let T=Tmin; T<=Tmax; T+=3){
+      dopedPts.push(xForT(T)+','+yForVal(dopedValue(T)));
+      purePts.push(xForT(T)+','+yForVal(pureValue(T)));
+    }
+    document.getElementById('c5_dopedCurve').setAttribute('points', dopedPts.join(' '));
+    document.getElementById('c5_pureCurve').setAttribute('points', purePts.join(' '));
+  }
+  function buildRefLines(){
+    const refs = [
+      {T:77, label:'LN₂ (−196°C)'},
+      {T:213, label:'brutal winter (−60°C)'},
+      {T:293, label:'room temp (20°C)'},
+      {T:398, label:'mil-spec max (125°C)'}
+    ];
+    const g = document.getElementById('c5_refLines');
+    g.innerHTML = '';
+    refs.forEach(r=>{
+      const x = xForT(r.T);
+      const line = document.createElementNS(svgNS,'line');
+      line.setAttribute('x1',x); line.setAttribute('y1',10); line.setAttribute('x2',x); line.setAttribute('y2',200);
+      line.setAttribute('stroke','var(--line)'); line.setAttribute('stroke-width','1'); line.setAttribute('stroke-dasharray','2 5');
+      g.appendChild(line);
+      const t = document.createElementNS(svgNS,'text');
+      t.setAttribute('x',x); t.setAttribute('y',225); t.setAttribute('text-anchor','middle');
+      t.setAttribute('fill','var(--dim)'); t.setAttribute('font-family','JetBrains Mono'); t.setAttribute('font-size','8');
+      t.textContent = r.label;
+      g.appendChild(t);
+    });
+    [0,3,6].forEach(dec=>{
+      const y = 200 - dec*31.667;
+      const t = document.createElementNS(svgNS,'text');
+      t.setAttribute('x',44); t.setAttribute('y',y+3); t.setAttribute('text-anchor','end');
+      t.setAttribute('fill','var(--dim)'); t.setAttribute('font-family','JetBrains Mono'); t.setAttribute('font-size','8');
+      t.textContent = dec===0 ? '~1×' : '10'+(dec===3?'³':'⁶')+'×';
+      g.appendChild(t);
+    });
+  }
+  function fmtRel(v){
+    if(v < 0.01) return v.toExponential(2)+'×';
+    return v.toFixed(2)+'×';
+  }
+  function updateWide(){
+    const T = +document.getElementById('c5_wideTemp').value;
+    const c = T-273.15;
+    document.getElementById('c5_wideTempVal').textContent = T+' K ('+c.toFixed(0)+'°C)';
+    const dv = dopedValue(T), pv = pureValue(T);
+    document.getElementById('c5_dopedOut').textContent = fmtRel(dv);
+    document.getElementById('c5_pureOut').textContent = fmtRel(pv);
+    document.getElementById('c5_marker').setAttribute('x1', xForT(T));
+    document.getElementById('c5_marker').setAttribute('x2', xForT(T));
+    const cal = document.getElementById('c5_coldCallout');
+    if(T < 90){
+      cal.innerHTML = "<b>Deep cryogenic.</b> Even the shallow donor/acceptor levels are starting to freeze out here — carriers are dropping out of the conduction band and re-binding to their parent dopant atoms. This is real, but it takes temperatures far colder than any weather on Earth.";
+    } else if(T < 253){
+      cal.innerHTML = "Cold, but the doped curve is still near its plateau — the great majority of dopant atoms are still ionized and contributing a carrier. This comfortably covers the coldest natural temperatures ever recorded on Earth.";
+    } else if(T < 323){
+      cal.innerHTML = "Comfortable operating range — the doped carrier concentration barely moves at all across this entire span, roughly five orders of magnitude above pure silicon at the same temperature. This is exactly why a chip's electrical behavior doesn't swing wildly between a cold morning and a hot afternoon.";
+    } else if(T < 420){
+      cal.innerHTML = "Getting hot — still on the plateau, but intrinsic carrier generation (the dashed gray line) is now climbing fast. Real chips are typically rated only up to around 125–150°C junction temperature for exactly this reason.";
+    } else {
+      cal.innerHTML = "Hot enough that the dashed intrinsic line is climbing steeply. Given enough more heat, that curve would eventually catch up to and overwhelm the fixed doped-carrier plateau — which is exactly why real silicon devices carry a maximum rated junction temperature.";
+    }
+  }
+  document.getElementById('c5_wideTemp').oninput = updateWide;
+  buildRefLines(); buildCurves(); updateWide();
+
+  // ══════ QUIZZES ══════
+  ['c5_quiz1','c5_quiz2','c5_quiz3'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

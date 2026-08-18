@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>2.2 Every Component, AC vs DC — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:50vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,58px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  .section{padding:50px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:18px;}
+  .sec-body b{color:var(--white);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .xtab-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:22px; margin-bottom:0;}
+  .xtab{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--dim); padding:10px 16px;
+    border-radius:8px 8px 0 0; cursor:pointer; border-bottom:none; transition:all .15s;
+  }
+  .xtab.active{background:var(--paper2); color:var(--copper); border-color:var(--copper-dim);}
+  .xpanel{display:none; background:var(--paper2); border:1px solid var(--line); border-radius:0 8px 8px 8px; padding:24px;}
+  .xpanel.active{display:block;}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);} .readout.b .rv{color:var(--violet);} .readout.d .rv{color:var(--danger);}
+
+  .legend-row{display:flex; flex-wrap:wrap; gap:16px; margin-top:16px;}
+  .legend-item{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim);}
+  .legend-sq{width:10px; height:10px; flex-shrink:0;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .frac{
+    display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center;
+    margin:0 4px; line-height:1.15; font-family:'JetBrains Mono',monospace; font-size:0.95em; position:relative; top:0.15em;
+  }
+  .frac .num{padding:0 4px 2px; border-bottom:1.4px solid currentColor;}
+  .frac .den{padding:2px 4px 0;}
+  .eq{
+    font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.25); border:1px solid var(--line);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:15px; color:var(--white); text-align:center;
+    max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .eq .lbl{display:block; font-size:10px; letter-spacing:.1em; color:var(--dim); margin-top:8px; text-transform:uppercase;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; justify-content:center;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part II · AC/DC · Chapter 2.2 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 2.2 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Same component.<br/>Two completely different <span class="hl">jobs</span>.</h1>
+  <p class="hero-sub">A resistor genuinely doesn't care whether it's fed DC or AC — but almost nothing else in a circuit can say that. Capacitors, inductors, diodes, transistors, and op-amps all behave in fundamentally different ways depending on whether the signal sits still or wiggles.</p>
+  <div class="hero-chip"><span class="pulse"></span> IMPEDANCE · REACTANCE · PHASE · RECTIFICATION · BIASING · SLEW RATE</div>
+</section>
+
+<section class="section" id="c8_sec-elements">
+  <div class="sec-label">01 · Every Component, AC vs. DC</div>
+  <h2 class="sec-title">Resistance is one number. Impedance is a whole relationship.</h2>
+  <p class="sec-body">
+    Under steady DC, "resistance" is the whole story: V = IR, full stop. Under AC, current has to fight not just resistance but also <b>reactance</b> — an opposition that depends on frequency and shifts current out of phase with voltage. Together they form <b>impedance, Z</b>, the AC generalization of resistance.
+  </p>
+  <div class="eq">X_C = <span class="frac"><span class="num">1</span><span class="den">2πfC</span></span> &nbsp;&nbsp;&nbsp; X_L = 2πfL <span class="lbl">capacitive reactance falls with frequency · inductive reactance rises with frequency</span></div>
+  <p class="sec-body">Pick a component below and drag its slider — this is one of the single most useful mental models to walk away from this bible with.</p>
+
+  <div class="panel">
+    <div class="panel-tag">The Component Browser</div>
+    <div class="xtab-row">
+      <button class="xtab active" data-tab="r">Resistor</button>
+      <button class="xtab" data-tab="c">Capacitor</button>
+      <button class="xtab" data-tab="l">Inductor</button>
+      <button class="xtab" data-tab="d">Diode</button>
+      <button class="xtab" data-tab="t">Transistor</button>
+      <button class="xtab" data-tab="o">Op-Amp</button>
+    </div>
+
+    <!-- RESISTOR -->
+    <div class="xpanel active" id="c8_panel_r">
+      <p class="sec-body" style="margin-bottom:12px;">DC: V = IR, always. AC: <b>exactly the same</b> — no phase shift, no frequency dependence. A resistor is the one component that treats DC and AC identically.</p>
+      <svg viewBox="0 0 700 160" style="width:100%; height:auto;">
+        <line x1="50" y1="80" x2="650" y2="80" stroke="var(--line)" stroke-width="1"/>
+        <polyline id="c8r_vwave" points="" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+        <polyline id="c8r_iwave" points="" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 3"/>
+      </svg>
+      <div class="legend-row"><div class="legend-item"><span class="legend-sq" style="background:var(--cyan);"></span> Voltage</div><div class="legend-item"><span class="legend-sq" style="background:var(--amber);"></span> Current</div></div>
+      <div class="readout-row"><div class="readout r"><div class="rl">Phase shift</div><div class="rv">0°, any frequency</div></div></div>
+    </div>
+
+    <!-- CAPACITOR -->
+    <div class="xpanel" id="c8_panel_c">
+      <p class="sec-body" style="margin-bottom:12px;">DC (steady state): a fully charged capacitor blocks current completely — an open circuit (see 1.1). AC: it charges and discharges every cycle, so current <i>does</i> flow, more easily at higher frequency — and it <b>leads</b> voltage by 90°.</p>
+      <svg viewBox="0 0 700 160" style="width:100%; height:auto;">
+        <line x1="50" y1="80" x2="650" y2="80" stroke="var(--line)" stroke-width="1"/>
+        <polyline id="c8c_vwave" points="" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+        <polyline id="c8c_iwave" points="" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 3"/>
+      </svg>
+      <div class="legend-row"><div class="legend-item"><span class="legend-sq" style="background:var(--cyan);"></span> Voltage</div><div class="legend-item"><span class="legend-sq" style="background:var(--amber);"></span> Current (leads)</div></div>
+      <div class="controls">
+        <div class="ctrl"><label>Frequency (C = 1 µF) <span class="val" id="c8c_freqVal">1000 Hz</span></label><input type="range" id="c8c_freq" min="10" max="10000" step="10" value="1000"/></div>
+      </div>
+      <div class="readout-row">
+        <div class="readout b"><div class="rl">Reactance X_C</div><div class="rv" id="c8c_xOut">159.2 Ω</div></div>
+        <div class="readout r"><div class="rl">Phase shift</div><div class="rv">+90° (I leads V)</div></div>
+      </div>
+    </div>
+
+    <!-- INDUCTOR -->
+    <div class="xpanel" id="c8_panel_l">
+      <p class="sec-body" style="margin-bottom:12px;">DC (steady state): once current stabilizes, an inductor is just the resistance of its own wire — near a short circuit. AC: it resists any <i>change</i> in current, more strongly at higher frequency — and voltage <b>leads</b> current by 90° (current lags).</p>
+      <svg viewBox="0 0 700 160" style="width:100%; height:auto;">
+        <line x1="50" y1="80" x2="650" y2="80" stroke="var(--line)" stroke-width="1"/>
+        <polyline id="c8l_vwave" points="" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+        <polyline id="c8l_iwave" points="" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 3"/>
+      </svg>
+      <div class="legend-row"><div class="legend-item"><span class="legend-sq" style="background:var(--cyan);"></span> Voltage</div><div class="legend-item"><span class="legend-sq" style="background:var(--amber);"></span> Current (lags)</div></div>
+      <div class="controls">
+        <div class="ctrl"><label>Frequency (L = 10 mH) <span class="val" id="c8l_freqVal">1000 Hz</span></label><input type="range" id="c8l_freq" min="10" max="10000" step="10" value="1000"/></div>
+      </div>
+      <div class="readout-row">
+        <div class="readout b"><div class="rl">Reactance X_L</div><div class="rv" id="c8l_xOut">62.8 Ω</div></div>
+        <div class="readout r"><div class="rl">Phase shift</div><div class="rv">−90° (I lags V)</div></div>
+      </div>
+    </div>
+
+    <!-- DIODE -->
+    <div class="xpanel" id="c8_panel_d">
+      <p class="sec-body" style="margin-bottom:12px;">DC: a simple one-way gate — conducts above ~0.7V forward, blocks reverse. AC: used as a <b>rectifier</b>, chopping an alternating signal down to one polarity, minus a fixed voltage bite for the forward drop. (2.3 builds a full rectifier circuit from exactly this behavior.)</p>
+      <svg viewBox="0 0 700 160" style="width:100%; height:auto;">
+        <line x1="50" y1="80" x2="650" y2="80" stroke="var(--line)" stroke-width="1"/>
+        <polyline id="c8d_vwave" points="" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+        <polyline id="c8d_owave" points="" fill="none" stroke="var(--amber)" stroke-width="2.5"/>
+      </svg>
+      <div class="legend-row"><div class="legend-item"><span class="legend-sq" style="background:var(--cyan);"></span> AC Input</div><div class="legend-item"><span class="legend-sq" style="background:var(--amber);"></span> Rectified Output</div></div>
+      <div class="controls">
+        <div class="ctrl"><label>Input amplitude <span class="val" id="c8d_ampVal">3.0 V</span></label><input type="range" id="c8d_amp" min="0.3" max="5" step="0.1" value="3"/></div>
+      </div>
+      <div class="callout" id="c8d_diodeCallout">At 3V amplitude, the 0.7V forward drop is a small bite out of a big signal. Drag the amplitude down toward 0.7V and watch the "bite" become the whole story — small AC signals get badly distorted by simple diode rectification.</div>
+    </div>
+
+    <!-- TRANSISTOR -->
+    <div class="xpanel" id="c8_panel_t">
+      <p class="sec-body" style="margin-bottom:12px;">DC: sets the <b>bias point</b> — where on the device's transfer curve it's sitting at rest (cutoff, active/linear, or saturation). AC: a small signal riding on top of that bias point gets amplified according to the <i>local steepness</i> of the curve right there — which is exactly why bias point placement is most of the art of amplifier design.</p>
+      <svg viewBox="0 0 700 220" style="width:100%; height:auto;">
+        <line x1="60" y1="190" x2="620" y2="190" stroke="var(--line)" stroke-width="1"/>
+        <text x="625" y="194" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">Vin →</text>
+        <line x1="60" y1="20" x2="60" y2="190" stroke="var(--line)" stroke-width="1"/>
+        <text x="20" y="22" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">Iout</text>
+        <polyline id="c8t_curve" points="" fill="none" stroke="var(--violet)" stroke-width="2.5"/>
+        <rect id="c8t_inBand" x="0" y="185" width="0" height="8" fill="var(--cyan)" opacity="0.4"/>
+        <rect id="c8t_outBand" x="55" y="0" width="8" height="0" fill="var(--amber)" opacity="0.4"/>
+        <line id="c8t_projV" x1="0" y1="0" x2="0" y2="0" stroke="var(--dim)" stroke-width="1" stroke-dasharray="2 4"/>
+        <line id="c8t_projH" x1="0" y1="0" x2="0" y2="0" stroke="var(--dim)" stroke-width="1" stroke-dasharray="2 4"/>
+        <circle id="c8t_biasDot" cx="0" cy="0" r="5" fill="var(--white)"/>
+      </svg>
+      <div class="controls">
+        <div class="ctrl"><label>DC bias point <span class="val" id="c8t_biasVal">2.50 V</span></label><input type="range" id="c8t_bias" min="0.5" max="4.5" step="0.05" value="2.5"/></div>
+      </div>
+      <div class="callout" id="c8t_biasCallout">Bias sits mid-curve, where the slope is steepest — a small input wiggle here produces the biggest, cleanest output swing. This is a linear amplifier's sweet spot.</div>
+    </div>
+
+    <!-- OP-AMP -->
+    <div class="xpanel" id="c8_panel_o">
+      <p class="sec-body" style="margin-bottom:12px;">DC: a precision comparison/amplification tool — the main things that matter are offset voltage and bias currents. AC: gain rolls off past the gain-bandwidth product, and fast, large swings can outrun the op-amp's <b>slew rate</b> — the fastest it can physically change its output — turning a clean sine into a distorted, triangle-ish wave.</p>
+      <svg viewBox="0 0 700 160" style="width:100%; height:auto;">
+        <line x1="50" y1="80" x2="650" y2="80" stroke="var(--line)" stroke-width="1"/>
+        <polyline id="c8o_vwave" points="" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+        <polyline id="c8o_owave" points="" fill="none" stroke="var(--amber)" stroke-width="2.5"/>
+      </svg>
+      <div class="legend-row"><div class="legend-item"><span class="legend-sq" style="background:var(--cyan);"></span> Requested signal</div><div class="legend-item"><span class="legend-sq" style="background:var(--amber);"></span> Actual output</div></div>
+      <div class="controls">
+        <div class="ctrl"><label>Signal frequency <span class="val" id="c8o_freqVal">1.0×</span></label><input type="range" id="c8o_freq" min="0.5" max="5" step="0.1" value="0.5"/></div>
+      </div>
+      <div class="callout" id="c8o_slewCallout">At low frequency, the output tracks the request cleanly. Push the frequency up and the amplifier simply can't change its output fast enough — the sine collapses toward a triangle wave. This is slew-rate limiting, a real and common op-amp failure mode.</div>
+    </div>
+  </div>
+
+  <div class="quiz" id="c8_quiz1">
+    <div class="quiz-q">A capacitor is connected across a steady DC source and given plenty of time to settle. What impedance does it now present to further current flow?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Zero — it acts like a plain wire</button>
+      <button class="quiz-opt" data-correct="true">Essentially infinite — it behaves like an open circuit</button>
+      <button class="quiz-opt" data-correct="false">Exactly equal to its reactance at 60 Hz</button>
+      <button class="quiz-opt" data-correct="false">It depends on the color of the capacitor</button>
+    </div>
+    <div class="quiz-fb" id="c8_quiz1fb">This is 1.1's steady-state result restated in impedance language: X_C = 1/(2πfC) → as f → 0 (DC), X_C → ∞. A charged capacitor at DC is an open circuit.</div>
+  </div>
+  <div class="quiz" id="c8_quiz2">
+    <div class="quiz-q">Why does an op-amp's clean sine output degrade toward a triangle wave at high frequency and large amplitude?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">The gain becomes negative</button>
+      <button class="quiz-opt" data-correct="true">The required rate of change exceeds the op-amp's maximum slew rate, so the output can't keep up with the requested waveform</button>
+      <button class="quiz-opt" data-correct="false">Capacitors inside the op-amp fully discharge</button>
+      <button class="quiz-opt" data-correct="false">This never actually happens in real op-amps</button>
+    </div>
+    <div class="quiz-fb" id="c8_quiz2fb">A sine wave's steepest slope is proportional to amplitude × frequency. Push either high enough and you exceed the physical maximum dV/dt the output stage can produce — the classic signature is a triangle-shaped output instead of a smooth curve.</div>
+  </div>
+</section>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 2.2</div>
+  <h2 class="outro-title">Six components, one lens: does it care whether the signal is standing still?</h2>
+  <p>Next: <b>2.3 — Transformers, Rectifiers, Converters &amp; Inverters</b> — the machines built specifically to exploit these AC/DC differences, converting voltage levels and even converting between AC and DC entirely. Queued, not yet built.</p>
+  <div class="btn-row">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="07-dc-vs-ac.html">← Chapter 2.1</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 2.2 OF 34 · PART II: AC / DC</footer>
+
+<script>
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  // ══════ TAB SWITCHING ══════
+  document.querySelectorAll('#c8_sec-elements .xtab').forEach(tab=>{
+    tab.onclick = function(){
+      document.querySelectorAll('#c8_sec-elements .xtab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('#c8_sec-elements .xpanel').forEach(p=>p.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('c8_panel_'+this.dataset.tab).classList.add('active');
+    };
+  });
+
+  // ══════ SHARED WAVEFORM BUILDER (R / C / L) ══════
+  function buildWave(vId, iId, phaseRad, cycles){
+    let vPts = [], iPts = [];
+    const N = 150;
+    for(let i=0; i<=N; i++){
+      const x = 50 + i/N*600;
+      const t = i/N*cycles*2*Math.PI;
+      const vy = 80 - 50*Math.sin(t);
+      const iy = 80 - 50*Math.sin(t+phaseRad);
+      vPts.push(x+','+vy);
+      iPts.push(x+','+iy);
+    }
+    document.getElementById(vId).setAttribute('points', vPts.join(' '));
+    document.getElementById(iId).setAttribute('points', iPts.join(' '));
+  }
+
+  // RESISTOR (static)
+  buildWave('c8r_vwave','c8r_iwave', 0, 3);
+
+  // CAPACITOR
+  function updateCap(){
+    const f = +document.getElementById('c8c_freq').value;
+    document.getElementById('c8c_freqVal').textContent = f+' Hz';
+    const C = 1e-6;
+    const Xc = 1/(2*Math.PI*f*C);
+    document.getElementById('c8c_xOut').textContent = Xc < 1000 ? Xc.toFixed(1)+' Ω' : (Xc/1000).toFixed(2)+' kΩ';
+    const cycles = 2 + Math.min(4, f/2500);
+    buildWave('c8c_vwave','c8c_iwave', Math.PI/2, cycles);
+  }
+  document.getElementById('c8c_freq').oninput = updateCap;
+  updateCap();
+
+  // INDUCTOR
+  function updateInd(){
+    const f = +document.getElementById('c8l_freq').value;
+    document.getElementById('c8l_freqVal').textContent = f+' Hz';
+    const L = 10e-3;
+    const Xl = 2*Math.PI*f*L;
+    document.getElementById('c8l_xOut').textContent = Xl < 1000 ? Xl.toFixed(1)+' Ω' : (Xl/1000).toFixed(2)+' kΩ';
+    const cycles = 2 + Math.min(4, f/2500);
+    buildWave('c8l_vwave','c8l_iwave', -Math.PI/2, cycles);
+  }
+  document.getElementById('c8l_freq').oninput = updateInd;
+  updateInd();
+
+  // DIODE
+  function updateDiode(){
+    const amp = +document.getElementById('c8d_amp').value;
+    document.getElementById('c8d_ampVal').textContent = amp.toFixed(1)+' V';
+    const N = 150, Vf = 0.7;
+    let vPts = [], oPts = [];
+    for(let i=0; i<=N; i++){
+      const x = 50 + i/N*600;
+      const t = i/N*3*2*Math.PI;
+      const vin = amp*Math.sin(t);
+      vPts.push(x+','+(80-vin*15));
+      const vout = vin > Vf ? vin-Vf : 0;
+      oPts.push(x+','+(80-vout*15));
+    }
+    document.getElementById('c8d_vwave').setAttribute('points', vPts.join(' '));
+    document.getElementById('c8d_owave').setAttribute('points', oPts.join(' '));
+    const cal = document.getElementById('c8d_diodeCallout');
+    if(amp <= 0.7){
+      cal.innerHTML = `<b>Signal never turns on.</b> At ${amp.toFixed(1)}V amplitude, the peak never even reaches the 0.7V forward-drop threshold — the diode stays off for the entire cycle, and the output is flat zero.`;
+    } else {
+      const peak = (amp-Vf).toFixed(2);
+      const pct = Math.round((Vf/amp)*100);
+      cal.innerHTML = `At ${amp.toFixed(1)}V amplitude, the output peaks at ${peak}V — the 0.7V drop is eating about ${pct}% of the signal. ${pct>30 ? "That's a serious bite for a signal this small." : 'A fairly small bite for a signal this large.'}`;
+    }
+  }
+  document.getElementById('c8d_amp').oninput = updateDiode;
+  updateDiode();
+
+  // TRANSISTOR
+  function transferFn(v){ return 1/(1+Math.exp(-(v-2.5)*2.2)); }
+  function xForV(v){ return 60 + v/5*560; }
+  function yForI(i){ return 190 - i*170; }
+  function buildTransferCurve(){
+    let pts = [];
+    for(let v=0; v<=5; v+=0.05) pts.push(xForV(v)+','+yForI(transferFn(v)));
+    document.getElementById('c8t_curve').setAttribute('points', pts.join(' '));
+  }
+  buildTransferCurve();
+  function updateTransistor(){
+    const bias = +document.getElementById('c8t_bias').value;
+    document.getElementById('c8t_biasVal').textContent = bias.toFixed(2)+' V';
+    const swing = 0.4;
+    const vLow = Math.max(0,bias-swing), vHigh = Math.min(5,bias+swing);
+    const iLow = transferFn(vLow), iHigh = transferFn(vHigh), iBias = transferFn(bias);
+    const xLow = xForV(vLow), xHigh = xForV(vHigh);
+    document.getElementById('c8t_inBand').setAttribute('x', xLow);
+    document.getElementById('c8t_inBand').setAttribute('width', xHigh-xLow);
+    const yTop = yForI(iHigh), yBot = yForI(iLow);
+    document.getElementById('c8t_outBand').setAttribute('y', yTop);
+    document.getElementById('c8t_outBand').setAttribute('height', Math.max(1,yBot-yTop));
+    const bx = xForV(bias), by = yForI(iBias);
+    document.getElementById('c8t_biasDot').setAttribute('cx', bx);
+    document.getElementById('c8t_biasDot').setAttribute('cy', by);
+    document.getElementById('c8t_projV').setAttribute('x1', bx); document.getElementById('c8t_projV').setAttribute('y1', 190);
+    document.getElementById('c8t_projV').setAttribute('x2', bx); document.getElementById('c8t_projV').setAttribute('y2', by);
+    document.getElementById('c8t_projH').setAttribute('x1', 60); document.getElementById('c8t_projH').setAttribute('y1', by);
+    document.getElementById('c8t_projH').setAttribute('x2', bx); document.getElementById('c8t_projH').setAttribute('y2', by);
+    const cal = document.getElementById('c8t_biasCallout');
+    if(bias > 1.6 && bias < 3.4){
+      cal.innerHTML = "Bias sits mid-curve, where the slope is steepest — a small input wiggle here produces the biggest, cleanest output swing. This is a linear amplifier's sweet spot.";
+    } else if(bias <= 1.6){
+      cal.innerHTML = "Bias is pushed down near cutoff — the curve has flattened out near zero, so the same input wiggle now produces a squashed, clipped output. The bottom half of the signal is getting cut off.";
+    } else {
+      cal.innerHTML = "Bias is pushed up near saturation — the curve has flattened out near its maximum, so the output clips again, this time from the top. Either extreme wastes headroom and distorts the signal.";
+    }
+  }
+  document.getElementById('c8t_bias').oninput = updateTransistor;
+  updateTransistor();
+
+  // OP-AMP
+  function updateOpamp(){
+    const freqMult = +document.getElementById('c8o_freq').value;
+    document.getElementById('c8o_freqVal').textContent = freqMult.toFixed(1)+'×';
+    const N = 200, slewLimitPerStep = 0.15, amp = 1;
+    let vPts = [], oPts = [], prevOut = 0;
+    for(let i=0; i<=N; i++){
+      const x = 50 + i/N*600;
+      const t = i/N*4*Math.PI;
+      const desired = amp*Math.sin(t*freqMult);
+      let out = desired;
+      if(out-prevOut > slewLimitPerStep) out = prevOut+slewLimitPerStep;
+      else if(out-prevOut < -slewLimitPerStep) out = prevOut-slewLimitPerStep;
+      prevOut = out;
+      vPts.push(x+','+(80-desired*60));
+      oPts.push(x+','+(80-out*60));
+    }
+    document.getElementById('c8o_vwave').setAttribute('points', vPts.join(' '));
+    document.getElementById('c8o_owave').setAttribute('points', oPts.join(' '));
+    const cal = document.getElementById('c8o_slewCallout');
+    if(freqMult < 1.5){
+      cal.innerHTML = "At this frequency, the output tracks the requested sine cleanly — well within the slew rate's ability to keep up.";
+    } else if(freqMult < 3){
+      cal.innerHTML = "Getting faster — the output is starting to round off at the peaks, an early sign of slew-rate limiting.";
+    } else {
+      cal.innerHTML = "<b>Slew-rate limited.</b> The requested signal now changes faster than the output can physically follow — the sine has collapsed into a triangle wave. This is a hard physical ceiling, not something more gain can fix.";
+    }
+  }
+  document.getElementById('c8o_freq').oninput = updateOpamp;
+  updateOpamp();
+
+  // ══════ QUIZZES ══════
+  ['c8_quiz1','c8_quiz2'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

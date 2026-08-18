@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>3.3 Op-Amps & Analog Building Blocks — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,56px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--green);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+
+  .flow-dash{stroke-dasharray:2 10; animation:flowmove 1s linear infinite;}
+  @keyframes flowmove{to{stroke-dashoffset:-24;}}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media(max-width:820px){.two-col{grid-template-columns:1fr;}}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .frac{
+    display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center;
+    margin:0 4px; line-height:1.15; font-family:'JetBrains Mono',monospace; font-size:0.95em; position:relative; top:0.15em;
+  }
+  .frac .num{padding:0 4px 2px; border-bottom:1.4px solid currentColor;}
+  .frac .den{padding:2px 4px 0;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part III · Components & Devices · Chapter 3.3 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 3.3 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">The chip that's <span class="hl">obsessed</span><br/>with two wires being equal.</h1>
+  <p class="hero-sub">The op-amp is arguably the single most useful chip ever made — and its entire personality boils down to one obsession: <b>make both inputs match, at any cost.</b></p>
+  <div class="hero-chip"><span class="pulse"></span> OPEN LOOP → CLOSED LOOP → REAL CIRCUITS</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c3_sec-openloop">Open Loop</a>
+    <a class="btn chip" href="#c3_sec-feedback">Negative Feedback</a>
+    <a class="btn chip" href="#c3_sec-buffer">Buffer</a>
+    <a class="btn chip" href="#c3_sec-summing">Summing Amp</a>
+    <a class="btn chip" href="#c3_sec-realworld">Real-World Uses</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ OPEN LOOP ══════════════ -->
+<section class="section" id="c3_sec-openloop">
+  <div class="sec-label">01 · Open-Loop Behavior</div>
+  <h2 class="sec-title">A referee with a hair-trigger.</h2>
+  <p class="sec-body">
+    An op-amp has two inputs — <b>V+</b> and <b>V−</b> — and one output. Left to its own devices (called <span class="analogy">open loop</span>),
+    it does something almost violent: it compares the two inputs and, even for a difference of <i>microvolts</i>, slams the output
+    all the way to one power rail or the other. It behaves less like an amplifier here and more like a <b>judge</b> that only ever says
+    "V+ wins" or "V− wins" — nothing in between.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Open-Loop Comparator</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <polygon points="260,50 260,170 420,110" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <text x="270" y="80" fill="var(--cyan)" font-family="JetBrains Mono" font-size="13">+</text>
+      <text x="270" y="150" fill="var(--violet)" font-family="JetBrains Mono" font-size="13">−</text>
+      <line x1="80" y1="70" x2="260" y2="70" stroke="var(--cyan)" stroke-width="2"/>
+      <text x="90" y="55" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">V+</text>
+      <line x1="80" y1="150" x2="260" y2="150" stroke="var(--violet)" stroke-width="2"/>
+      <text x="90" y="175" fill="var(--violet)" font-family="JetBrains Mono" font-size="11">V−</text>
+      <line x1="420" y1="110" x2="600" y2="110" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c3_outFlow" d="M420 110 H 600" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <circle id="c3_outLamp" cx="630" cy="110" r="26" fill="var(--danger)" opacity="0.2" stroke="var(--amber)" stroke-width="2"/>
+      <text x="630" y="160" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">OUTPUT</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>V+ (non-inverting input) <span class="val" id="c3_vpval">2.50 V</span></label><input type="range" id="c3_vp" min="0" max="5" step="0.01" value="2.5"/></div>
+      <div class="ctrl"><label>V− (inverting input) <span class="val" id="c3_vmval">2.50 V</span></label><input type="range" id="c3_vm" min="0" max="5" step="0.01" value="2.5"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout v"><div class="rl">V+ − V−</div><div class="rv" id="c3_oro-diff">0.00 V</div></div>
+      <div class="readout p"><div class="rl">Output</div><div class="rv" id="c3_oro-out">MID</div></div>
+    </div>
+    <div class="callout" id="c3_olCallout"><b>They're equal right now.</b> Nudge either slider even 0.01V and watch the output slam to a rail — this "all or nothing" behavior is exactly how op-amps are used as comparators (e.g. night-light circuits that snap ON at a light threshold).</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ NEGATIVE FEEDBACK ══════════════ -->
+<section class="section" id="c3_sec-feedback">
+  <div class="sec-label">02 · Negative Feedback</div>
+  <h2 class="sec-title">Tame the beast by feeding its own output back in.</h2>
+  <p class="sec-body">
+    A hair-trigger judge is useless for amplifying an audio signal smoothly. The trick that makes op-amps actually useful is
+    <b>negative feedback</b>: wire a resistor from the output back to the V− input. Now the op-amp isn't just comparing —
+    it's constantly adjusting its output to keep V− chasing V+, like a <span class="analogy">thermostat</span> that keeps nudging the heater
+    to hold room temperature exactly at the target, never overshooting into all-or-nothing territory. The resistor ratio sets a precise, controllable gain.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Inverting Amplifier</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="60" y1="150" x2="200" y2="150" stroke="var(--cyan)" stroke-width="2"/>
+      <text x="65" y="135" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">Vin</text>
+      <rect x="200" y="140" width="50" height="20" fill="none" stroke="var(--dim)" stroke-width="2"/>
+      <text x="225" y="132" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">Rin</text>
+      <polygon points="330,90 330,170 440,130" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <text x="340" y="120" fill="var(--cyan)" font-family="JetBrains Mono" font-size="12">+</text>
+      <text x="340" y="160" fill="var(--violet)" font-family="JetBrains Mono" font-size="12">−</text>
+      <line x1="250" y1="150" x2="330" y2="150" stroke="var(--violet)" stroke-width="2"/>
+      <line x1="330" y1="90" x2="300" y2="90" stroke="var(--cyan)" stroke-width="2"/>
+      <line x1="300" y1="90" x2="300" y2="180" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="3 3"/>
+      <text x="270" y="200" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">(grounded)</text>
+      <path d="M300 60 H 400" stroke="var(--amber)" stroke-width="2" fill="none"/>
+      <rect x="300" y="50" width="50" height="20" fill="none" stroke="var(--amber)" stroke-width="2"/>
+      <text x="325" y="45" text-anchor="middle" fill="var(--amber)" font-family="JetBrains Mono" font-size="10">Rf</text>
+      <path d="M290 150 V 60 H 300" stroke="var(--amber)" stroke-width="2" fill="none" stroke-dasharray="2 2"/>
+      <path d="M400 60 V 130 H 440" stroke="var(--amber)" stroke-width="2" fill="none"/>
+      <line x1="440" y1="130" x2="600" y2="130" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c3_ampFlow" d="M440 130 H 600" class="flow-dash" stroke="var(--green)" stroke-width="3"/>
+      <text x="620" y="135" fill="var(--green)" font-family="JetBrains Mono" font-size="11">Vout</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Input signal (Vin) <span class="val" id="c3_ampinval">0.5 V</span></label><input type="range" id="c3_ampin" min="-2" max="2" step="0.1" value="0.5"/></div>
+      <div class="ctrl"><label>Gain set by <span class="frac"><span class="num">Rf</span><span class="den">Rin</span></span> <span class="val" id="c3_gainval">−4×</span></label><input type="range" id="c3_gainsel" min="1" max="10" step="1" value="4"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout v"><div class="rl">Vin</div><div class="rv" id="c3_aro-in">0.5 V</div></div>
+      <div class="readout r"><div class="rl">Gain</div><div class="rv" id="c3_aro-gain">−4×</div></div>
+      <div class="readout p"><div class="rl">Vout</div><div class="rv" id="c3_aro-out">−2.0 V</div></div>
+    </div>
+    <div class="callout" id="c3_fbCallout"><b>Notice the output is inverted and scaled</b> — this is a precise, predictable amplifier now, not a hair-trigger comparator, purely because of that one feedback resistor.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ VOLTAGE FOLLOWER ══════════════ -->
+<section class="section" id="c3_sec-buffer">
+  <div class="sec-label">03 · The Voltage Follower</div>
+  <h2 class="sec-title">Same voltage out — but now with muscle.</h2>
+  <p class="sec-body">
+    Wire the output straight back into V− with <b>zero resistors</b> at all (gain = 1), and the op-amp just copies V+ to the output
+    exactly. Pointless? Not quite — a weak signal source (like a sensor) often can't supply real current without its own voltage
+    sagging, the way a garden hose trickle collapses the moment you try to fill a bucket fast. The follower acts like a
+    <span class="analogy">bodyguard</span>: it repeats the signal faithfully but supplies all the current itself, so the fragile source is never actually loaded down.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Loaded Source: With vs Without a Buffer</div>
+    <svg viewBox="0 0 700 160" style="width:100%; height:auto; margin-top:20px;">
+      <text x="60" y="30" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">WEAK SOURCE</text>
+      <circle cx="70" cy="70" r="26" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+      <text id="c3_sourceLbl" x="70" y="75" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">3.0V</text>
+      <line x1="96" y1="70" x2="260" y2="70" stroke="var(--dim)" stroke-width="2"/>
+      <path id="c3_bufFlow" d="M96 70 H 260" class="flow-dash" stroke="var(--amber)" stroke-width="2"/>
+      <rect x="260" y="45" width="80" height="50" rx="6" fill="none" stroke="var(--copper)" stroke-width="2" id="c3_bufBox"/>
+      <text x="300" y="75" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="10" id="c3_bufBoxLbl">BUFFER</text>
+      <line x1="340" y1="70" x2="500" y2="70" stroke="var(--dim)" stroke-width="2"/>
+      <path id="c3_bufFlow2" d="M340 70 H 500" class="flow-dash" stroke="var(--green)" stroke-width="2"/>
+      <text x="560" y="30" fill="var(--dim)" font-family="JetBrains Mono" font-size="11">HEAVY LOAD</text>
+      <circle cx="560" cy="70" r="26" fill="var(--green)" opacity="0.5" stroke="var(--green)" stroke-width="2" id="c3_loadBulb"/>
+      <text id="c3_loadLbl" x="560" y="75" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="11">3.0V</text>
+    </svg>
+    <div class="btn-row">
+      <button class="btn" id="c3_btnNoBuf">🔌 Remove Buffer</button>
+      <button class="btn active" id="c3_btnWithBuf">✅ With Buffer</button>
+    </div>
+    <div class="callout" id="c3_bufCallout"><b>With the buffer:</b> the op-amp supplies the load's current itself, so the source's 3.0V reaches the load untouched. The source barely feels the load is even there.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ SUMMING AMPLIFIER ══════════════ -->
+<section class="section" id="c3_sec-summing">
+  <div class="sec-label">04 · The Summing Amplifier</div>
+  <h2 class="sec-title">An audio mixer's real circuit, one op-amp deep.</h2>
+  <p class="sec-body">
+    Feed several input signals into V− through their own resistors, keep one feedback resistor, and the op-amp's obsession with
+    keeping V− at zero forces it to output the <b>sum</b> of all those inputs (inverted). This is the literal circuit inside a mixing
+    console channel strip — three microphones in, one combined signal out, and each input's resistor can even set its own volume level.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">3-Channel Mixer</div>
+    <svg viewBox="0 0 700 160" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="40" y1="40" x2="260" y2="60" stroke="var(--cyan)" stroke-width="2"/>
+      <line x1="40" y1="80" x2="260" y2="75" stroke="var(--amber)" stroke-width="2"/>
+      <line x1="40" y1="120" x2="260" y2="90" stroke="var(--violet)" stroke-width="2"/>
+      <text x="10" y="35" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">CH1</text>
+      <text x="10" y="85" fill="var(--amber)" font-family="JetBrains Mono" font-size="10">CH2</text>
+      <text x="10" y="125" fill="var(--violet)" font-family="JetBrains Mono" font-size="10">CH3</text>
+      <polygon points="260,45 260,110 360,77" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <line x1="360" y1="77" x2="500" y2="77" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c3_sumFlow" d="M360 77 H 500" class="flow-dash" stroke="var(--green)" stroke-width="3"/>
+      <text x="560" y="82" fill="var(--green)" font-family="JetBrains Mono" font-size="11">MIXED OUT</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Channel 1 <span class="val" id="c3_ch1val">1.0 V</span></label><input type="range" id="c3_ch1" min="-2" max="2" step="0.1" value="1"/></div>
+      <div class="ctrl"><label>Channel 2 <span class="val" id="c3_ch2val">0.5 V</span></label><input type="range" id="c3_ch2" min="-2" max="2" step="0.1" value="0.5"/></div>
+      <div class="ctrl"><label>Channel 3 <span class="val" id="c3_ch3val">-0.3 V</span></label><input type="range" id="c3_ch3" min="-2" max="2" step="0.1" value="-0.3"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout p"><div class="rl">Summed output (inverted)</div><div class="rv" id="c3_sumOut">−1.2 V</div></div>
+    </div>
+    <div class="callout"><b>Move any single slider</b> and watch the output track the sum of all three, inverted — this is literally "mixing" in the electrical sense.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ REAL-WORLD USES ══════════════ -->
+<section class="section" id="c3_sec-realworld">
+  <div class="sec-label">05 · Where You'll Actually Meet This Chip</div>
+  <h2 class="sec-title">Three jobs, one part number.</h2>
+  <p class="sec-body">The same op-amp, wired three different ways, quietly runs a huge chunk of the analog world:</p>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-tag">Comparator Mode</div>
+      <p class="sec-body" style="margin-bottom:0; font-size:14px; margin-top:20px;">Open-loop, no feedback. A <b>night-light</b> circuit compares an LDR's voltage against a fixed reference — the instant it dips below the threshold at dusk, the output slams high and switches on an LED.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-tag">Buffer Mode</div>
+      <p class="sec-body" style="margin-bottom:0; font-size:14px; margin-top:20px;">Gain of 1, full feedback. A <b>pH probe</b> or piezo sensor produces a signal too weak to drive anything — a buffer stage protects the reading before it reaches an ADC.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-tag">Amplifier Mode</div>
+      <p class="sec-body" style="margin-bottom:0; font-size:14px; margin-top:20px;">Set gain with <span class="frac"><span class="num">Rf</span><span class="den">Rin</span></span>. A <b>microphone preamp</b> takes a few millivolts from a mic capsule and boosts it to line level before it hits a speaker or recorder.</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">Quick Check</div>
+    <div class="quiz">
+      <div class="quiz-q">What actually changes an op-amp from a "slam to the rails" comparator into a smooth, controlled amplifier?</div>
+      <div class="quiz-opts" id="c3_quiz1">
+        <button class="quiz-opt" data-correct="false">Using a bigger power supply</button>
+        <button class="quiz-opt" data-correct="true">Adding a negative feedback resistor from output to V−</button>
+        <button class="quiz-opt" data-correct="false">Swapping V+ and V−</button>
+      </div>
+      <div class="quiz-fb" id="c3_quiz1fb">Exactly — feedback is what turns the op-amp's raw, huge open-loop gain into a tame, resistor-controlled gain you can actually design with.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 3.3</div>
+  <h2 class="outro-title">Now you get why op-amps are in almost everything with an analog signal.</h2>
+  <p>Next: <b>3.4 — The Supporting Cast</b> — the parts that show up in nearly every real project: relay, quartz crystal, potentiometer, LDR, thermistor, optocoupler, and the humble voltage regulator. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="11-diodes-transistors.html">← Chapter 3.2</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 3.3 OF 34 · PART III: COMPONENTS & DEVICES</footer>
+
+<script>
+(function(){
+
+  // ── OPEN LOOP ──
+  const vp = document.getElementById('c3_vp'), vm = document.getElementById('c3_vm');
+  function updateOpenLoop(){
+    const Vp = +vp.value, Vm = +vm.value;
+    const diff = Vp - Vm;
+    document.getElementById('c3_vpval').textContent = Vp.toFixed(2)+' V';
+    document.getElementById('c3_vmval').textContent = Vm.toFixed(2)+' V';
+    document.getElementById('c3_oro-diff').textContent = diff.toFixed(2)+' V';
+    const lamp = document.getElementById('c3_outLamp');
+    const outLbl = document.getElementById('c3_oro-out');
+    const cal = document.getElementById('c3_olCallout');
+    if(Math.abs(diff) < 0.005){
+      lamp.setAttribute('fill', 'var(--dim)');
+      lamp.setAttribute('opacity', 0.3);
+      outLbl.textContent = 'MID (unstable)';
+      outLbl.style.color = 'var(--dim)';
+      cal.innerHTML = "<b>They're equal right now.</b> Nudge either slider even 0.01V and watch the output slam to a rail — this all-or-nothing behavior is exactly how op-amps are used as comparators (e.g. night-light circuits that snap ON at a light threshold).";
+    } else if(diff > 0){
+      lamp.setAttribute('fill', 'var(--green)');
+      lamp.setAttribute('opacity', 0.9);
+      outLbl.textContent = '+RAIL (HIGH)';
+      outLbl.style.color = 'var(--green)';
+      cal.innerHTML = "<b>V+ is winning.</b> Even a whisper of a lead is enough — open-loop gain is often 100,000× or more, so any positive difference gets blown up instantly to the maximum the chip can output.";
+    } else {
+      lamp.setAttribute('fill', 'var(--danger)');
+      lamp.setAttribute('opacity', 0.9);
+      outLbl.textContent = '−RAIL (LOW)';
+      outLbl.style.color = 'var(--danger)';
+      cal.innerHTML = "<b>V− is winning.</b> Same story in reverse — the tiniest edge for V− drives the output all the way down to the negative rail.";
+    }
+  }
+  vp.oninput = updateOpenLoop; vm.oninput = updateOpenLoop; updateOpenLoop();
+
+  // ── FEEDBACK AMP ──
+  const ampin = document.getElementById('c3_ampin'), gainsel = document.getElementById('c3_gainsel');
+  function updateFeedback(){
+    const Vin = +ampin.value, G = +gainsel.value;
+    const Vout = -Vin*G;
+    document.getElementById('c3_ampinval').textContent = Vin.toFixed(1)+' V';
+    document.getElementById('c3_gainval').textContent = '−'+G+'×';
+    document.getElementById('c3_aro-in').textContent = Vin.toFixed(1)+' V';
+    document.getElementById('c3_aro-gain').textContent = '−'+G+'×';
+    document.getElementById('c3_aro-out').textContent = Vout.toFixed(1)+' V';
+    const speed = Math.max(0.1, 2/(Math.abs(Vout)||0.1));
+    const flow = document.getElementById('c3_ampFlow');
+    flow.style.animation = `flowmove ${speed}s linear infinite`;
+    flow.setAttribute('stroke', Vout>=0 ? 'var(--green)' : 'var(--danger)');
+    document.getElementById('c3_fbCallout').innerHTML = `<b>Vout = −<span class="frac"><span class="num">Rf</span><span class="den">Rin</span></span> × Vin = −${G} × ${Vin.toFixed(1)} = ${Vout.toFixed(1)}V.</b> Change the gain resistor ratio and the amplification changes exactly and predictably — no more slamming to the rails.`;
+  }
+  ampin.oninput = updateFeedback; gainsel.oninput = updateFeedback; updateFeedback();
+
+  // ── BUFFER ──
+  let bufActive = true;
+  function updateBuffer(){
+    const loadLbl = document.getElementById('c3_loadLbl');
+    const loadBulb = document.getElementById('c3_loadBulb');
+    const cal = document.getElementById('c3_bufCallout');
+    const box = document.getElementById('c3_bufBoxLbl');
+    if(bufActive){
+      loadLbl.textContent = '3.0V';
+      loadBulb.setAttribute('opacity', 0.5);
+      box.textContent = 'BUFFER';
+      cal.innerHTML = "<b>With the buffer:</b> the op-amp supplies the load's current itself, so the source's 3.0V reaches the load untouched. The source barely feels the load is even there.";
+    } else {
+      loadLbl.textContent = '1.1V';
+      loadBulb.setAttribute('opacity', 0.15);
+      box.textContent = 'WIRE';
+      cal.innerHTML = "<b>Without the buffer:</b> the weak source directly drives the heavy load and its own voltage sags to 1.1V under the load — the load starves the source dry. This is why buffers matter.";
+    }
+  }
+  document.getElementById('c3_btnWithBuf').onclick = function(){ bufActive=true; this.classList.add('active'); document.getElementById('c3_btnNoBuf').classList.remove('active'); updateBuffer(); };
+  document.getElementById('c3_btnNoBuf').onclick = function(){ bufActive=false; this.classList.add('active'); document.getElementById('c3_btnWithBuf').classList.remove('active'); updateBuffer(); };
+  updateBuffer();
+
+  // ── SUMMING AMPLIFIER ──
+  const ch1 = document.getElementById('c3_ch1'), ch2 = document.getElementById('c3_ch2'), ch3 = document.getElementById('c3_ch3');
+  function updateSumming(){
+    const v1 = +ch1.value, v2 = +ch2.value, v3 = +ch3.value;
+    document.getElementById('c3_ch1val').textContent = v1.toFixed(1)+' V';
+    document.getElementById('c3_ch2val').textContent = v2.toFixed(1)+' V';
+    document.getElementById('c3_ch3val').textContent = v3.toFixed(1)+' V';
+    const sum = -(v1+v2+v3);
+    document.getElementById('c3_sumOut').textContent = sum.toFixed(1)+' V';
+    const speed = Math.max(0.1, 1.5/(Math.abs(sum)||0.1));
+    document.getElementById('c3_sumFlow').style.animation = `flowmove ${speed}s linear infinite`;
+  }
+  [ch1,ch2,ch3].forEach(el=> el.oninput = updateSumming);
+  updateSumming();
+
+  // ── QUIZ ──
+  document.querySelectorAll('#c3_quiz1 .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c3_quiz1 .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c3_quiz1fb').style.display='block';
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

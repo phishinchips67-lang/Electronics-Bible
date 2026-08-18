@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>1.2 What Is Charge, Really? — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,60px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:620px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+  .sec-body + .sec-body{margin-top:-16px;}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);} .readout.b .rv{color:var(--violet);} .readout.d .rv{color:var(--danger);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.warn{border-left-color:var(--danger);} .callout.warn b{color:var(--danger);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+
+  .flow-dash{stroke-dasharray:2 10; animation:flowmove 1s linear infinite;}
+  @keyframes flowmove{to{stroke-dashoffset:-24;}}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr;}}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .frac{
+    display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center;
+    margin:0 4px; line-height:1.15; font-family:'JetBrains Mono',monospace; font-size:0.95em; position:relative; top:0.15em;
+  }
+  .frac .num{padding:0 4px 2px; border-bottom:1.4px solid currentColor;}
+  .frac .den{padding:2px 4px 0;}
+  .eq{
+    font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.25); border:1px solid var(--line);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:15px; color:var(--white); text-align:center;
+    max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .eq .lbl{display:block; font-size:10px; letter-spacing:.1em; color:var(--dim); margin-top:8px; text-transform:uppercase;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  .chapter-seam{
+    max-width:940px; margin:10px auto 0; padding:0 24px 50px; display:flex; align-items:center; gap:16px;
+    color:var(--copper-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.15em;
+    text-transform:uppercase; text-align:center;
+  }
+  .chapter-seam::before, .chapter-seam::after{content:''; flex:1; height:1px; background:var(--copper-dim);}
+  .chapter-seam span{flex-shrink:0; max-width:70%;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part I · Foundations · Chapter 1.2 of 34</span>
+</div>
+
+<section class="hero" id="chapter-1">
+  <div class="hero-eyebrow">CHAPTER 1.2 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Not orbits.<br/>Just <span class="hl">charge</span>.</h1>
+  <p class="hero-sub">Every circuit you'll ever build traces back to one unexplained fact: some particles push, some pull, and it has <b>nothing to do with them spinning around anything</b>. This is the physics underneath the water analogy — what voltage, "ground," and "ampere" actually are.</p>
+  <div class="hero-chip"><span class="pulse"></span> CHARGE · FIELD · POTENTIAL · GAUSS'S LAW · GROUND</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c1_sec-charge">What Is Charge?</a>
+    <a class="btn chip" href="#c1_sec-coulomb">Coulomb's Law</a>
+    <a class="btn chip" href="#c2_sec-field">Electric Field</a>
+    <a class="btn chip" href="#c2_sec-potential">Potential</a>
+    <a class="btn chip" href="#c2_sec-gauss">Gauss's Law</a>
+    <a class="btn chip" href="#c3_sec-reference">Ground</a>
+    <a class="btn chip" href="#c3_sec-safety">Fault Safety</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 1.1 WHAT IS CHARGE ══════════════ -->
+<section class="section" id="c1_sec-charge">
+  <div class="sec-label">01 · What Is Charge, Really?</div>
+  <h2 class="sec-title">It was never the orbiting. The charge was always there.</h2>
+  <p class="sec-body">
+    Here's the misconception worth killing first: charge is <b>not</b> something an electron generates by circling a proton, the way spinning a bicycle wheel generates momentum. That mental picture comes from the old Bohr "solar system" atom — a useful cartoon, but wrong in exactly this way. An electron sitting <b>perfectly still</b>, with no proton anywhere nearby, still has exactly the same charge it always had. Motion has nothing to do with it.
+  </p>
+  <p class="sec-body">
+    So what is charge, then? It's best treated as an <b>intrinsic property</b> of certain particles — as fundamental and un-derived as mass. An electron doesn't "have" mass because it's doing something; it just has mass, permanently, as part of what makes it an electron and not some other particle. Charge works the same way. Every electron in the universe carries exactly <span class="analogy">−1.602 × 10⁻¹⁹ coulombs</span>, every proton carries exactly <span class="analogy">+1.602 × 10⁻¹⁹ coulombs</span>, full stop — not because of what they're doing, but because of what they <i>are</i>.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Orbiting vs. Frozen Still</div>
+    <svg viewBox="0 0 400 220" style="width:100%; height:auto; margin-top:20px; max-width:460px; display:block; margin-left:auto; margin-right:auto;">
+      <circle cx="140" cy="110" r="16" fill="var(--danger)" opacity="0.85"/>
+      <text x="140" y="115" text-anchor="middle" fill="#0c1a2e" font-family="JetBrains Mono" font-weight="700" font-size="13">+</text>
+      <text x="140" y="150" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">PROTON</text>
+      <circle cx="140" cy="110" r="70" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 5"/>
+      <g id="c1_orbitGroup">
+        <circle id="c1_electron" cx="210" cy="110" r="22" fill="var(--cyan)" opacity="0.15" stroke="var(--cyan)" stroke-width="1.5"/>
+        <circle cx="210" cy="110" r="7" fill="var(--cyan)"/>
+      </g>
+      <text x="245" y="60" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">ELECTRON</text>
+      <text x="200" y="200" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">the halo (its field) never changes size, orbiting or not</text>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="c1_btnSpin">▶ Let it orbit</button>
+      <button class="btn" id="c1_btnFreeze">⏸ Freeze it in place</button>
+    </div>
+    <div class="callout" id="c1_chargeCallout"><b>Watch the cyan halo, not the motion.</b> That halo represents the electron's field — the region of space it pushes and pulls on. Freeze the orbit completely and the halo doesn't shrink, flicker, or change in any way. Charge is a property the electron carries with it at all times, moving or still.</div>
+  </div>
+
+  <p class="sec-body" style="margin-top:32px;">
+    The other load-bearing fact about charge is that it's <b>quantized</b> — it doesn't come in a smooth, infinitely divisible continuum like pouring water. It comes in fixed-size steps, all whole-number multiples of one elementary unit, <span class="analogy">e ≈ 1.602 × 10⁻¹⁹ C</span>. You can have a charge of −2e or +5e, but never 1.5e. (Quarks, bound permanently inside protons and neutrons, carry fractional charges of e — +⅔e or −⅓e — but the strong force never lets you isolate one to measure alone; every particle you can actually pick up and hold has a whole-number charge.)
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Charge Is Counted, Not Poured</div>
+    <svg viewBox="0 0 400 210" style="width:100%; height:auto; margin-top:16px; max-width:420px; display:block; margin-left:auto; margin-right:auto;">
+      <line x1="180" y1="18" x2="180" y2="192" stroke="var(--line)" stroke-width="2"/>
+      <g id="c1_ladderTicks"></g>
+      <line id="c1_snapLine" x1="180" y1="105" x2="180" y2="105" stroke="var(--dim)" stroke-width="1" stroke-dasharray="2 4"/>
+      <circle id="c1_rawMarker" cx="180" cy="105" r="6" fill="none" stroke="var(--dim)" stroke-width="2"/>
+      <circle id="c1_snapMarker" cx="180" cy="105" r="8" fill="var(--amber)"/>
+    </svg>
+    <div class="controls">
+      <div class="ctrl">
+        <label>Try to set a charge <span class="val" id="c1_chargeVal">1.35 e</span></label>
+        <input type="range" id="c1_chargeSlider" min="-3" max="3" step="0.01" value="1.35"/>
+      </div>
+    </div>
+    <div class="readout-row">
+      <div class="readout"><div class="rl">You tried for</div><div class="rv" id="c1_triedOut">1.35 e</div></div>
+      <div class="readout p"><div class="rl">Nature allows</div><div class="rv" id="c1_allowOut">+1 e</div></div>
+    </div>
+    <div class="callout" id="c1_quantCallout">Drag the slider anywhere you like — the amber dot only ever lands on a whole-number rung. There's no such thing as a particle with 1.35 elementary charges. This snapping isn't a limitation of measurement; it's how charge actually works.</div>
+  </div>
+
+  <div class="quiz" id="c1_quiz1">
+    <div class="quiz-q">Quick check: an electron is brought to a complete standstill, with no motion at all. What happens to its charge?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It disappears — no motion means no charge</button>
+      <button class="quiz-opt" data-correct="true">Nothing — it stays exactly −1.602×10⁻¹⁹ C, same as always</button>
+      <button class="quiz-opt" data-correct="false">It gradually leaks away over time</button>
+      <button class="quiz-opt" data-correct="false">It converts entirely into magnetic field</button>
+    </div>
+    <div class="quiz-fb" id="c1_quiz1fb">Charge is intrinsic — it doesn't require motion to exist, and it can't be created or destroyed, only moved around or (in pair-production/annihilation) converted between particles while the total stays conserved.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 1.2 COULOMB'S LAW ══════════════ -->
+<section class="section" id="c1_sec-coulomb">
+  <div class="sec-label">02 · Coulomb's Law</div>
+  <h2 class="sec-title">Same shape as gravity. Almost incomprehensibly stronger.</h2>
+  <p class="sec-body">
+    Charles-Augustin de Coulomb measured it directly in 1785: the force between two charges is proportional to each charge's size, and falls off with the <b>square</b> of the distance between them.
+  </p>
+  <div class="eq">
+    F = k · <span class="frac"><span class="num">|q₁ q₂|</span><span class="den">r²</span></span>
+    <span class="lbl">k = 1 / (4πε₀) ≈ 8.99 × 10⁹ N·m²/C²  —  ε₀ = permittivity of free space</span>
+  </div>
+  <p class="sec-body">
+    Same charges (+/+ or −/−) push apart; opposite charges (+/−) pull together. Notice the exponent: double the distance and the force doesn't halve — it drops to a <b>quarter</b>. Triple it, and the force falls to a <b>ninth</b>. This inverse-square shape is exactly the same one gravity uses, which isn't a coincidence — both describe an influence spreading out over the surface of an ever-expanding sphere.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Two Charges, One Line</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="60" y1="100" x2="640" y2="100" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 6"/>
+      <path id="c1_forceArrow1" d="M0 0" stroke="var(--amber)" stroke-width="3" fill="none" marker-end="url(#c1arrow)"/>
+      <path id="c1_forceArrow2" d="M0 0" stroke="var(--amber)" stroke-width="3" fill="none" marker-end="url(#c1arrow)"/>
+      <defs><marker id="c1arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0 0, 7 4, 0 8" fill="var(--amber)"/></marker></defs>
+      <circle id="c1_q1dot" cx="140" cy="100" r="22" fill="var(--danger)" opacity="0.85"/>
+      <text id="c1_q1lbl" x="140" y="105" text-anchor="middle" fill="#0c1a2e" font-family="JetBrains Mono" font-weight="700" font-size="13">+2</text>
+      <circle id="c1_q2dot" cx="420" cy="100" r="22" fill="var(--danger)" opacity="0.85"/>
+      <text id="c1_q2lbl" x="420" y="105" text-anchor="middle" fill="#0c1a2e" font-family="JetBrains Mono" font-weight="700" font-size="13">+2</text>
+      <text id="c1_rlbl" x="280" y="160" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="11">r = 20 cm</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Charge q₁ <span class="val" id="c1_q1val">+2.0 µC</span></label><input type="range" id="c1_q1" min="-5" max="5" step="0.1" value="2"/></div>
+      <div class="ctrl"><label>Charge q₂ <span class="val" id="c1_q2val">+2.0 µC</span></label><input type="range" id="c1_q2" min="-5" max="5" step="0.1" value="2"/></div>
+      <div class="ctrl"><label>Distance r <span class="val" id="c1_rval">20 cm</span></label><input type="range" id="c1_r" min="8" max="45" step="1" value="20"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout i"><div class="rl">Force magnitude</div><div class="rv" id="c1_fOut">2.25 N</div></div>
+      <div class="readout d"><div class="rl">Relationship</div><div class="rv" id="c1_relOut" style="font-size:16px;">REPULSIVE</div></div>
+    </div>
+    <div class="callout" id="c1_coulombCallout"><b>Both positive → they push apart.</b> Flip either slider negative and watch the arrows reverse to point inward — opposite charges always attract. Notice this is a mutual force too: by Newton's third law, q₁ pushes q₂ exactly as hard as q₂ pushes q₁, just in opposite directions.</div>
+  </div>
+  <div class="callout info">
+    <b>A sense of scale:</b> the reason gravity feels like the dominant force in daily life — even though it's astronomically weaker per particle — is that ordinary matter is almost perfectly electrically neutral, with equal positive and negative charge cancelling out at short range. Strip that cancellation away, even slightly, and electric forces overwhelm gravity instantly. A single bolt of lightning is charge imbalance winning.
+  </div>
+
+  <div class="quiz" id="c1_quiz2">
+    <div class="quiz-q">You slide q₂ so the distance r doubles, changing nothing else. What happens to the force?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It stays the same</button>
+      <button class="quiz-opt" data-correct="false">It drops to one-half</button>
+      <button class="quiz-opt" data-correct="true">It drops to one-quarter</button>
+      <button class="quiz-opt" data-correct="false">It doubles</button>
+    </div>
+    <div class="quiz-fb" id="c1_quiz2fb">F ∝ 1/r² — an inverse-square law. Doubling r means dividing the force by 2² = 4, regardless of how big or small the charges are.</div>
+  </div>
+</section>
+
+<div class="chapter-seam"><span>a charge doesn't wait for company to push — fields &amp; potential</span></div>
+
+<!-- ══════════════ 2.1 ELECTRIC FIELD ══════════════ -->
+<section class="section" id="c2_sec-field" style="padding-top:0;">
+  <div class="sec-label">03 · The Electric Field</div>
+  <h2 class="sec-title">Force, pre-divided down to a property of empty space.</h2>
+  <p class="sec-body">
+    Instead of asking "what force does charge A put on charge B," it's more powerful to split the question in two. First: <b>what does charge A do to the space around it</b>, regardless of who or what ever shows up? That's the electric field, <b>E</b>. Second, whenever some other charge <i>q</i> happens to sit at a point in that space, the force on it is simply <b>F = qE</b> at that location.
+  </p>
+  <div class="eq">E = F / q<span class="lbl">field = force per unit of (positive) test charge, measured in N/C — identical to V/m</span></div>
+  <p class="sec-body">
+    That division by <i>q</i> is the whole trick. Bring a huge test charge into the field and it feels a huge force; bring a tiny one and it feels a tiny force — but divide either force by its own charge, and you get back the <b>exact same number</b> both times. That number belongs to the source charge and the location, not to whatever you used to probe it. It's the same logic as asking "how steep is this hill" instead of "how hard did that specific rock roll" — steepness is a property of the hill; rolling force depends on the rock too.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Source Charge and a Roaming Test Charge</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <defs><marker id="c2arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0 0, 7 4, 0 8" fill="var(--cyan)"/></marker>
+      <marker id="c2arrowF" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto"><polygon points="0 0, 8 4.5, 0 9" fill="var(--amber)"/></marker></defs>
+      <g id="c2_fieldRing"></g>
+      <circle id="c2_sourceDot" cx="350" cy="110" r="20" fill="var(--danger)"/>
+      <text id="c2_sourceLbl" x="350" y="115" text-anchor="middle" fill="#0c1a2e" font-family="JetBrains Mono" font-weight="700" font-size="12">Q</text>
+      <line x1="350" y1="110" x2="490" y2="110" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 5"/>
+      <circle id="c2_testDot" cx="490" cy="110" r="12" fill="var(--amber)"/>
+      <text x="490" y="90" text-anchor="middle" fill="var(--amber)" font-family="JetBrains Mono" font-size="10">TEST CHARGE q</text>
+      <path id="c2_forceArrow" d="M0 0" stroke="var(--amber)" stroke-width="3" fill="none" marker-end="url(#c2arrowF)"/>
+      <text x="420" y="135" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">fixed at 20 cm from source</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Source charge Q <span class="val" id="c2_QVal">+3.0 µC</span></label><input type="range" id="c2_Q" min="-5" max="5" step="0.1" value="3"/></div>
+      <div class="ctrl"><label>Test charge q (always positive, by convention) <span class="val" id="c2_qVal">1.0 µC</span></label><input type="range" id="c2_qtest" min="0.2" max="5" step="0.1" value="1"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Field E at marker</div><div class="rv" id="c2_EOut">674.3 kV/m</div></div>
+      <div class="readout i"><div class="rl">Force F on test charge</div><div class="rv" id="c2_FOut">0.674 N</div></div>
+    </div>
+    <div class="callout" id="c2_fieldCallout">Drag the <b>test charge</b> slider back and forth — the force changes, but the field readout doesn't move at all. Only the <b>source charge</b> slider changes E. That's the entire point of dividing by q.</div>
+  </div>
+  <div class="quiz" id="c2_quiz1">
+    <div class="quiz-q">Why define the field as E = F/q instead of just talking about the force directly?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Dividing makes the numbers smaller and tidier</button>
+      <button class="quiz-opt" data-correct="true">Dividing cancels out the test charge's own contribution, leaving a number that describes only the source and the location</button>
+      <button class="quiz-opt" data-correct="false">Coulomb's Law is mathematically undefined without the division</button>
+      <button class="quiz-opt" data-correct="false">It's just a historical labeling convention with no physical meaning</button>
+    </div>
+    <div class="quiz-fb" id="c2_quiz1fb">Force always depends on two charges. Dividing by the test charge's own size leaves behind a quantity that depends only on the source charge and where you're standing — reusable for any test charge you might bring in next.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 2.2 ELECTRIC POTENTIAL ══════════════ -->
+<section class="section" id="c2_sec-potential">
+  <div class="sec-label">04 · Electric Potential</div>
+  <h2 class="sec-title">Height, but for charge instead of gravity.</h2>
+  <p class="sec-body">
+    If the field E is like the <i>steepness</i> of a hill at each point, the electric potential <b>V</b> is the <i>height</i> itself. It's defined as potential energy per unit charge, <b>V = U/q</b>, and for a point charge it works out to <b>V = kQ/r</b> — highest right next to a positive charge, falling off as you move away. Drop a positive test charge anywhere near a positive source and, exactly like a ball on a real hill, it naturally accelerates <b>away</b>, toward lower potential — because that's the direction that releases stored energy.
+  </p>
+  <div class="eq">V = k · <span class="frac"><span class="num">Q</span><span class="den">r</span></span> &nbsp;&nbsp;&nbsp; U = qV <span class="lbl">V in volts (joules per coulomb) — a scalar, no direction, unlike E</span></div>
+  <div class="panel">
+    <div class="panel-tag">Potential "Hill" Around a Point Charge</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="50" y1="200" x2="650" y2="200" stroke="var(--line)" stroke-width="1"/>
+      <text x="655" y="204" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">r →</text>
+      <line x1="50" y1="20" x2="50" y2="200" stroke="var(--line)" stroke-width="1"/>
+      <text x="20" y="30" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">V</text>
+      <line x1="50" y1="140" x2="650" y2="140" stroke="var(--copper-dim)" stroke-width="1" stroke-dasharray="3 5"/>
+      <text x="655" y="144" fill="var(--copper)" font-family="JetBrains Mono" font-size="9">V=0</text>
+      <polyline id="c2_vCurve" points="" fill="none" stroke="var(--violet)" stroke-width="2.5"/>
+      <circle id="c2_ballDot" cx="150" cy="60" r="9" fill="var(--amber)" stroke="#0c1a2e" stroke-width="1.5"/>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="c2_btnPos">⊕ Positive source</button>
+      <button class="btn" id="c2_btnNeg">⊖ Negative source</button>
+    </div>
+    <div class="controls">
+      <div class="ctrl"><label>Test charge position, r <span class="val" id="c2_rposVal">15 cm</span></label><input type="range" id="c2_rpos" min="4" max="45" step="1" value="15"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Potential V here</div><div class="rv" id="c2_VOut">449.5 kV</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c2_btnRelease">⚡ Release the ball</button>
+      <button class="btn" id="c2_btnResetBall">↺ Reset</button>
+    </div>
+    <div class="callout" id="c2_potCallout">This curve <i>is</i> literally V(r) plotted as a height. Slide the test charge along it, then hit release — it always rolls toward <b>lower</b> potential, exactly the direction a real ball would fall. Positive source → a hill it rolls away from (repulsion). Negative source → a pit it falls into (attraction).</div>
+    <div class="callout info">If "always move toward lower V" sounds like gradient descent from optimization — it's the exact same math. E = −dV/dr is nothing more than "which way is downhill, and how steep."</div>
+  </div>
+  <div class="quiz" id="c2_quiz2">
+    <div class="quiz-q">A positive test charge is released near a <i>negative</i> source charge. Which way does it move, and why?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Away from the source — potential increases outward for negative charges too</button>
+      <button class="quiz-opt" data-correct="true">Toward the source — V(r) is negative and rises toward zero as r increases, so moving inward is "downhill"</button>
+      <button class="quiz-opt" data-correct="false">It doesn't move — negative charges don't create a potential</button>
+      <button class="quiz-opt" data-correct="false">It moves in a circle around the source</button>
+    </div>
+    <div class="quiz-fb" id="c2_quiz2fb">Near a negative charge, V is deeply negative and climbs toward zero as you move away — so the "downhill" direction (toward lower V) is actually inward, toward the source. That's the potential-energy picture of attraction.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 2.3 GAUSS'S LAW ══════════════ -->
+<section class="section" id="c2_sec-gauss">
+  <div class="sec-label">05 · Gauss's Law</div>
+  <h2 class="sec-title">Count what's inside. Ignore everything about the shape.</h2>
+  <p class="sec-body">
+    Gauss's Law says the total electric flux — loosely, "how much field pokes through" — leaving any closed surface depends <b>only</b> on the net charge sealed up inside it. Not the surface's shape, not its size, not anything about charges sitting outside. Picture a running tap sealed inside a balloon: however you deform that balloon — sphere, potato, star-shaped — the total flow rate measured leaving its surface is identical, because it's all coming from one place: the tap.
+  </p>
+  <div class="eq">∮ E · dA = <span class="frac"><span class="num">Q<sub>enc</sub></span><span class="den">ε₀</span></span><span class="lbl">total flux through any closed surface = enclosed charge ÷ permittivity of free space</span></div>
+  <p class="sec-body">
+    The payoff: for a highly symmetric charge distribution — a sphere, an infinite line, an infinite sheet — you can choose a Gaussian surface that matches the symmetry, and E pops out algebraically in one line, with zero calculus. It's the reason you can quote the field of a charged sphere or a charged plate from memory instead of re-deriving it from Coulomb's Law every time.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Shrink the Surface, Watch the Flux</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <g id="c2_fluxLines"></g>
+      <circle id="c2_gaussCircle" cx="350" cy="110" r="70" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <circle id="c2_gaussCharge" cx="350" cy="110" r="14" fill="var(--danger)"/>
+      <text x="350" y="200" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10" id="c2_gaussStateLbl">GAUSSIAN SURFACE — CHARGE INSIDE</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Gaussian surface radius <span class="val" id="c2_gRVal">70 px</span></label><input type="range" id="c2_gR" min="40" max="140" step="1" value="70"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn active" id="c2_btnInside">Charge Inside</button>
+      <button class="btn" id="c2_btnOutside">Charge Outside</button>
+    </div>
+    <div class="readout-row">
+      <div class="readout r"><div class="rl">Charge enclosed</div><div class="rv" id="c2_QencOut">+3.0 µC</div></div>
+      <div class="readout b"><div class="rl">E at the surface</div><div class="rv" id="c2_gEOut">—</div></div>
+      <div class="readout p"><div class="rl">Total flux Φ</div><div class="rv" id="c2_fluxOut">—</div></div>
+    </div>
+    <div class="callout" id="c2_gaussCallout">Drag the radius slider — <b>E at the surface changes</b> (the field weakens further out), but the <b>total flux stays exactly constant</b>. The shrinking field strength and the growing surface area cancel perfectly. That cancellation isn't a coincidence — it's the entire content of Gauss's Law for a point charge.</div>
+  </div>
+  <div class="quiz" id="c2_quiz3">
+    <div class="quiz-q">A charge sits well outside a closed Gaussian surface. What's the net electric flux through that surface, caused by that outside charge?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">A large positive value</button>
+      <button class="quiz-opt" data-correct="false">A large negative value</button>
+      <button class="quiz-opt" data-correct="true">Exactly zero — every field line that enters the surface also exits it</button>
+      <button class="quiz-opt" data-correct="false">It depends on the surface's exact shape</button>
+    </div>
+    <div class="quiz-fb" id="c2_quiz3fb">Field lines from an external charge that dip into a closed surface always come back out somewhere else — entering flux and exiting flux cancel exactly, leaving zero net contribution. Only enclosed charge ever shows up in the total.</div>
+  </div>
+</section>
+
+<div class="chapter-seam"><span>zero volts is a place you choose — ground</span></div>
+
+<!-- ══════════════ 3.1 GROUND AS REFERENCE ══════════════ -->
+<section class="section" id="c3_sec-reference" style="padding-top:0;">
+  <div class="sec-label">06 · Electrical Ground</div>
+  <h2 class="sec-title">There's no such thing as an absolute voltage — only a difference.</h2>
+  <p class="sec-body">
+    You can't measure "the voltage" at a single point any more than you can measure "the altitude" of a single point without agreeing on sea level first. Every voltmeter reading is secretly a comparison between two probes. <b>Ground</b> is simply the node a circuit's designer picks to call 0V — after that, every other point can be labeled with one number instead of always saying "12V above the other one."
+  </p>
+  <p class="sec-body">
+    Crucially, that reference node does <b>not</b> need to be connected to the physical planet to deserve the name. A 9V battery circuit sitting in your hand, completely isolated from any wire touching the dirt outside, still has a perfectly good "ground" — it's just the battery's negative terminal. This is called a <span class="analogy">floating ground</span>, and it's just as legitimate internally as one wired to an actual earth rod. "Earth ground" is a separate, more specific idea covered next.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Click Any Node to Make It "Ground"</div>
+    <svg viewBox="0 0 700 240" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="150" y1="40" x2="150" y2="200" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="150" y1="40" x2="550" y2="40" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="550" y1="40" x2="550" y2="200" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="150" y1="200" x2="550" y2="200" stroke="var(--dim)" stroke-width="2"/>
+      <rect x="180" y="30" width="60" height="20" fill="var(--paper)" stroke="var(--copper)" stroke-width="2"/>
+      <text x="210" y="24" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="10">R1</text>
+      <rect x="460" y="30" width="60" height="20" fill="var(--paper)" stroke="var(--copper)" stroke-width="2"/>
+      <text x="490" y="24" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="10">R2</text>
+      <line x1="140" y1="110" x2="160" y2="110" stroke="var(--white)" stroke-width="4"/>
+      <line x1="143" y1="125" x2="157" y2="125" stroke="var(--white)" stroke-width="2"/>
+      <text x="115" y="118" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">9V</text>
+      <g id="c3_nodeA" class="c3-node" style="cursor:pointer;">
+        <circle cx="150" cy="40" r="13" fill="var(--paper2)" stroke="var(--amber)" stroke-width="2"/>
+        <text x="150" y="14" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="11">A</text>
+        <text class="c3-vlabel" x="150" y="45" text-anchor="middle" fill="var(--amber)" font-family="JetBrains Mono" font-size="11" font-weight="700">+9.0V</text>
+      </g>
+      <g id="c3_nodeB" class="c3-node" style="cursor:pointer;">
+        <circle cx="550" cy="40" r="13" fill="var(--paper2)" stroke="var(--amber)" stroke-width="2"/>
+        <text x="550" y="14" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="11">B</text>
+        <text class="c3-vlabel" x="550" y="45" text-anchor="middle" fill="var(--amber)" font-family="JetBrains Mono" font-size="11" font-weight="700">+4.5V</text>
+      </g>
+      <g id="c3_nodeC" class="c3-node" style="cursor:pointer;">
+        <circle cx="550" cy="200" r="13" fill="var(--paper2)" stroke="var(--amber)" stroke-width="2"/>
+        <text x="550" y="228" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="11">C</text>
+        <text class="c3-vlabel" x="583" y="205" text-anchor="start" fill="var(--amber)" font-family="JetBrains Mono" font-size="11" font-weight="700">0.0V</text>
+      </g>
+      <g id="c3_groundIcon" transform="translate(150,200)">
+        <line x1="0" y1="0" x2="0" y2="10" stroke="var(--green)" stroke-width="2"/>
+        <line x1="-14" y1="10" x2="14" y2="10" stroke="var(--green)" stroke-width="2.5"/>
+        <line x1="-9" y1="16" x2="9" y2="16" stroke="var(--green)" stroke-width="2"/>
+        <line x1="-4" y1="22" x2="4" y2="22" stroke="var(--green)" stroke-width="1.5"/>
+      </g>
+    </svg>
+    <div class="callout" id="c3_refCallout"><b>Node C is currently "ground" (0V).</b> Click node A or B instead, and watch every label in the circuit recompute relative to your new choice. Same physical circuit, same physical currents — only the numbers written next to each wire change. That's how arbitrary the choice of "ground" really is.</div>
+  </div>
+  <div class="quiz" id="c3_quiz1">
+    <div class="quiz-q">True or false: a circuit's "ground" must always be physically wired to the actual planet Earth.</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">True — otherwise the voltages have nowhere to go</button>
+      <button class="quiz-opt" data-correct="true">False — "ground" just means whichever node you've chosen as your 0V reference; it can be completely isolated ("floating")</button>
+    </div>
+    <div class="quiz-fb" id="c3_quiz1fb">A battery-powered, fully isolated circuit (think: a phone, a drone, a car's 12V system) has a perfectly good internal ground with zero physical connection to soil. "Earth ground" — an actual rod in the dirt — is a specific extra feature added for safety, not a requirement for the concept of ground itself.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ 3.2 GROUND AS SAFETY PATH ══════════════ -->
+<section class="section" id="c3_sec-safety">
+  <div class="sec-label">07 · Earth Ground &amp; Fault Protection</div>
+  <h2 class="sec-title">The planet as an emergency exit for stray current.</h2>
+  <p class="sec-body">
+    Physical earth ground earns its special status from one fact: the Earth is such a colossally large conductor that dumping charge into it, or pulling charge out, barely nudges its potential at all. That makes it an extremely stable, universally available 0V — which is why building codes bond the metal chassis of appliances to an actual earth rod through the third prong of a plug.
+  </p>
+  <p class="sec-body">
+    The real payoff shows up during a <b>fault</b> — say, a frayed hot wire inside a metal-cased appliance brushing against the chassis. Without a ground wire, the chassis itself becomes live at full mains voltage, waiting silently for someone to touch it and become the path to earth themselves. With a ground wire in place, the fault current has an easy, low-resistance route to earth instead — a route so much easier than through a person that it draws a massive current spike, which trips the breaker or blows the fuse in well under a second, cutting power before anyone is ever at risk.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Fault Simulator</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <rect id="c3_chassisRect" x="260" y="60" width="180" height="110" rx="6" fill="var(--paper)" stroke="var(--line)" stroke-width="2"/>
+      <text x="350" y="45" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">APPLIANCE CHASSIS (METAL CASE)</text>
+      <line x1="60" y1="90" x2="260" y2="90" stroke="var(--dim)" stroke-width="2"/>
+      <path d="M60 90 H 260" class="flow-dash" stroke="var(--amber)" stroke-width="2"/>
+      <text x="30" y="94" fill="var(--amber)" font-family="JetBrains Mono" font-size="10">HOT</text>
+      <circle id="c3_faultSpark" cx="300" cy="100" r="8" fill="var(--danger)" opacity="0"/>
+      <text id="c3_faultLbl" x="300" y="130" text-anchor="middle" fill="var(--danger)" font-family="JetBrains Mono" font-size="10" opacity="0">FAULT: WIRE TOUCHES CASE</text>
+      <g id="c3_groundWireGroup">
+        <line x1="350" y1="170" x2="350" y2="200" stroke="var(--green)" stroke-width="2"/>
+        <path id="c3_groundFlow" d="M350 170 V 200" class="flow-dash" stroke="var(--green)" stroke-width="2" opacity="0"/>
+        <line x1="330" y1="200" x2="370" y2="200" stroke="var(--green)" stroke-width="2.5"/>
+        <line x1="336" y1="206" x2="364" y2="206" stroke="var(--green)" stroke-width="2"/>
+        <line x1="342" y1="212" x2="358" y2="212" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="350" y="230" text-anchor="middle" fill="var(--green)" font-family="JetBrains Mono" font-size="10">EARTH GROUND</text>
+      </g>
+      <g id="c3_breaker" transform="translate(150,150)">
+        <rect x="-22" y="-14" width="44" height="28" rx="4" fill="var(--paper2)" stroke="var(--line)" stroke-width="1.5"/>
+        <text id="c3_breakerLbl" x="0" y="5" text-anchor="middle" fill="var(--green)" font-family="JetBrains Mono" font-size="10" font-weight="700">ON</text>
+      </g>
+      <text x="150" y="185" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">BREAKER</text>
+      <circle id="c3_person" cx="600" cy="115" r="16" fill="none" stroke="var(--dim)" stroke-width="2"/>
+      <text x="600" y="145" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">A PERSON NEARBY</text>
+      <line id="c3_shockPath" x1="430" y1="115" x2="584" y2="115" stroke="var(--danger)" stroke-width="2" stroke-dasharray="2 5" opacity="0"/>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="c3_btnGrounded">✅ Properly Grounded</button>
+      <button class="btn" id="c3_btnUngrounded">🚫 No Ground Wire</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c3_btnFault">⚡ Trigger a Fault</button>
+      <button class="btn" id="c3_btnReset">↺ Reset</button>
+    </div>
+    <div class="callout" id="c3_safetyCallout">This appliance is grounded, and nothing has gone wrong yet. Hit "Trigger a Fault" to simulate the hot wire brushing the case, then compare what happens grounded vs. not.</div>
+  </div>
+  <div class="callout info">
+    <b>Ground loops, briefly:</b> if two pieces of equipment are grounded at two physically different points, tiny currents already flowing through the earth or building wiring can create a small voltage difference between those two "zeros" — injecting hum or noise into sensitive signal lines. The usual fix is <i>single-point grounding</i>: tying every ground reference back to one common point instead of many scattered ones.
+  </div>
+  <div class="quiz" id="c3_quiz2">
+    <div class="quiz-q">Why does a properly grounded chassis protect a nearby person during a fault, even though they never touch the ground wire themselves?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">The ground wire absorbs and destroys the stray electricity</button>
+      <button class="quiz-opt" data-correct="true">The fault current finds a much easier, low-resistance path through the ground wire instead of through a person — and that surge trips the breaker almost instantly</button>
+      <button class="quiz-opt" data-correct="false">Grounding lowers the mains voltage automatically</button>
+      <button class="quiz-opt" data-correct="false">It doesn't help unless the person is also touching the ground wire</button>
+    </div>
+    <div class="quiz-fb" id="c3_quiz2fb">Current takes the path of least resistance, in proportion — most of it flows through whichever route is easiest. A dedicated ground wire is a far easier route than a human body, and the resulting current spike is exactly what trips the breaker before real danger can develop.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 1.2</div>
+  <h2 class="outro-title">Charge, field, potential, ground. Four ideas, one thread.</h2>
+  <p>Next: <b>1.3 — Magnetism &amp; the Lorentz Force</b> — what a magnetic field actually is, and the one equation (F = qv×B) behind every motor, speaker and CRT ever built. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="01-electricity-intuitively.html">← Chapter 1.1</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 1.2 OF 34 · PART I: FOUNDATIONS</footer>
+
+<script>
+// ───── Charge & Coulomb's Law ─────
+(function(){
+
+  // ══════ ORBIT vs FROZEN ══════
+  let spinning = true, angle = 0, lastT = null;
+  const orbitGroup = document.getElementById('c1_orbitGroup');
+  function orbitFrame(now){
+    if(spinning){
+      if(lastT!==null){ angle += (now-lastT)/1000 * 130; }
+      orbitGroup.setAttribute('transform', `rotate(${angle} 140 110)`);
+    }
+    lastT = now;
+    requestAnimationFrame(orbitFrame);
+  }
+  requestAnimationFrame(orbitFrame);
+  document.getElementById('c1_btnSpin').onclick = function(){
+    spinning = true; lastT = null;
+    this.classList.add('active'); document.getElementById('c1_btnFreeze').classList.remove('active');
+    document.getElementById('c1_chargeCallout').innerHTML = "<b>Watch the cyan halo, not the motion.</b> That halo represents the electron's field — the region of space it pushes and pulls on. Freeze the orbit completely and the halo doesn't shrink, flicker, or change in any way. Charge is a property the electron carries with it at all times, moving or still.";
+  };
+  document.getElementById('c1_btnFreeze').onclick = function(){
+    spinning = false;
+    this.classList.add('active'); document.getElementById('c1_btnSpin').classList.remove('active');
+    document.getElementById('c1_chargeCallout').innerHTML = "<b>Frozen — now look at the halo again.</b> Identical size, identical shape, completely unchanged. If charge were somehow generated by the orbiting, freezing the motion should have made the halo shrink or vanish. It didn't, because charge was never coming from the motion in the first place — it's just a property the electron carries, full stop.";
+  };
+
+  // ══════ QUANTIZATION LADDER ══════
+  const ladderTicks = document.getElementById('c1_ladderTicks');
+  function yForN(n){ return 192 - ((n+3)/6)*174; }
+  for(let n=-3;n<=3;n++){
+    const y = yForN(n);
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',180); c.setAttribute('cy',y); c.setAttribute('r',3); c.setAttribute('fill','var(--line)');
+    ladderTicks.appendChild(c);
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',196); t.setAttribute('y',y+4); t.setAttribute('fill','var(--dim)');
+    t.setAttribute('font-family','JetBrains Mono'); t.setAttribute('font-size','10');
+    t.textContent = (n===0? '0' : (n>0?'+':'')+n+'e');
+    ladderTicks.appendChild(t);
+  }
+  const chargeSlider = document.getElementById('c1_chargeSlider');
+  function updateQuant(){
+    const val = +chargeSlider.value;
+    const snapped = Math.max(-3, Math.min(3, Math.round(val)));
+    const yRaw = yForN(val), ySnap = yForN(snapped);
+    document.getElementById('c1_rawMarker').setAttribute('cy', yRaw);
+    document.getElementById('c1_snapMarker').setAttribute('cy', ySnap);
+    const snapLine = document.getElementById('c1_snapLine');
+    snapLine.setAttribute('y1', yRaw); snapLine.setAttribute('y2', ySnap);
+    document.getElementById('c1_chargeVal').textContent = val.toFixed(2)+' e';
+    document.getElementById('c1_triedOut').textContent = val.toFixed(2)+' e';
+    document.getElementById('c1_allowOut').textContent = (snapped>0?'+':'')+snapped+' e';
+    const cal = document.getElementById('c1_quantCallout');
+    if(Math.abs(val-snapped) < 0.03){
+      cal.innerHTML = `<b>Right on an allowed rung (${(snapped>0?'+':'')+snapped}e).</b> Every charged particle ever measured sits exactly on one of these lines — never between them.`;
+    } else {
+      cal.innerHTML = `Drag anywhere you like — the amber dot only ever lands on a whole-number rung, snapping to <b>${(snapped>0?'+':'')+snapped}e</b>. There's no such thing as a particle carrying 1.35 elementary charges. This snapping isn't a limit of our instruments; it's how charge actually works — counted in whole units of e ≈ 1.602 × 10⁻¹⁹ C, not poured like a continuous fluid.`;
+    }
+  }
+  chargeSlider.oninput = updateQuant;
+  updateQuant();
+
+  // ══════ COULOMB'S LAW SIMULATOR ══════
+  const q1S = document.getElementById('c1_q1'), q2S = document.getElementById('c1_q2'), rS = document.getElementById('c1_r');
+  function fmtCharge(v){ return (v>=0?'+':'−') + Math.abs(v).toFixed(1); }
+  function formatForce(F){
+    if(F < 1e-3) return (F*1e6).toFixed(1)+' µN';
+    if(F < 1) return (F*1000).toFixed(1)+' mN';
+    if(F < 10) return F.toFixed(3)+' N';
+    return F.toFixed(2)+' N';
+  }
+  function updateCoulomb(){
+    const q1 = +q1S.value, q2 = +q2S.value, r = +rS.value;
+    document.getElementById('c1_q1val').textContent = fmtCharge(q1)+' µC';
+    document.getElementById('c1_q2val').textContent = fmtCharge(q2)+' µC';
+    document.getElementById('c1_rval').textContent = r+' cm';
+
+    const k = 8.99e9;
+    const q1c = q1*1e-6, q2c = q2*1e-6, rm = r/100;
+    const F = k*Math.abs(q1c*q2c)/(rm*rm);
+    document.getElementById('c1_fOut').textContent = formatForce(F);
+
+    const scalePx = 8;
+    const x1 = 140, x2 = 140 + r*scalePx;
+    document.getElementById('c1_q1dot').setAttribute('cx',x1);
+    document.getElementById('c1_q1lbl').setAttribute('x',x1);
+    document.getElementById('c1_q2dot').setAttribute('cx',x2);
+    document.getElementById('c1_q2lbl').setAttribute('x',x2);
+    document.getElementById('c1_q1dot').setAttribute('fill', q1>=0 ? 'var(--danger)' : 'var(--cyan)');
+    document.getElementById('c1_q2dot').setAttribute('fill', q2>=0 ? 'var(--danger)' : 'var(--cyan)');
+    document.getElementById('c1_q1lbl').textContent = fmtCharge(q1);
+    document.getElementById('c1_q2lbl').textContent = fmtCharge(q2);
+    document.getElementById('c1_rlbl').setAttribute('x', (x1+x2)/2);
+    document.getElementById('c1_rlbl').textContent = 'r = '+r+' cm';
+
+    const sign = Math.sign(q1)*Math.sign(q2);
+    const relOut = document.getElementById('c1_relOut');
+    const arrow1 = document.getElementById('c1_forceArrow1');
+    const arrow2 = document.getElementById('c1_forceArrow2');
+    const cal = document.getElementById('c1_coulombCallout');
+    const y = 100;
+
+    if(Math.abs(q1) < 0.05 || Math.abs(q2) < 0.05){
+      relOut.textContent = 'NO FORCE'; relOut.style.color = 'var(--dim)';
+      arrow1.setAttribute('d','M0 0'); arrow2.setAttribute('d','M0 0');
+      cal.innerHTML = "<b>One charge is essentially zero — nothing to push or pull.</b> Coulomb's Law needs two charges to interact; with only one present, F drops to zero no matter how close or far apart they are.";
+    } else {
+      const lenPx = Math.max(14, Math.min(90, 14 + (Math.log10(Math.max(F,1e-6)) + 4) / 5.6 * 76));
+      if(sign > 0){
+        relOut.textContent = 'REPULSIVE'; relOut.style.color = 'var(--danger)';
+        arrow1.setAttribute('d', `M${x1-26} ${y} L${x1-26-lenPx} ${y}`);
+        arrow2.setAttribute('d', `M${x2+26} ${y} L${x2+26+lenPx} ${y}`);
+        cal.innerHTML = `<b>Same sign → they push apart.</b> Force = ${formatForce(F)}. Flip either slider negative and watch both arrows snap to point inward instead — opposite charges always attract. This is also mutual: by Newton's third law, q₁ pushes q₂ exactly as hard as q₂ pushes q₁, just in opposite directions.`;
+      } else {
+        relOut.textContent = 'ATTRACTIVE'; relOut.style.color = 'var(--green)';
+        arrow1.setAttribute('d', `M${x1+26} ${y} L${x1+26+lenPx*0.6} ${y}`);
+        arrow2.setAttribute('d', `M${x2-26} ${y} L${x2-26-lenPx*0.6} ${y}`);
+        cal.innerHTML = `<b>Opposite signs → they pull together.</b> Force = ${formatForce(F)}. Doubling r from here would always cut this force to exactly one-quarter — the inverse-square relationship holds no matter how strong the charges are.`;
+      }
+    }
+  }
+  [q1S,q2S,rS].forEach(el => el.oninput = updateCoulomb);
+  updateCoulomb();
+
+  // ══════ QUIZZES ══════
+  document.querySelectorAll('#c1_quiz1 .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c1_quiz1 .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c1_quiz1fb').style.display='block';
+    });
+  });
+  document.querySelectorAll('#c1_quiz2 .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c1_quiz2 .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c1_quiz2fb').style.display='block';
+    });
+  });
+
+})();
+
+// ───── Fields & Potential ─────
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  function formatField(V){
+    const sign = V < 0 ? '−' : '';
+    const abs = Math.abs(V);
+    if(abs < 1000) return sign+abs.toFixed(0)+' V/m';
+    if(abs < 1e6) return sign+(abs/1000).toFixed(1)+' kV/m';
+    return sign+(abs/1e6).toFixed(2)+' MV/m';
+  }
+  function formatForce(F){
+    const abs = Math.abs(F);
+    if(abs < 1e-3) return (abs*1e6).toFixed(1)+' µN';
+    if(abs < 1) return (abs*1000).toFixed(1)+' mN';
+    if(abs < 10) return abs.toFixed(3)+' N';
+    return abs.toFixed(2)+' N';
+  }
+  function formatV(V){
+    const sign = V < 0 ? '−' : '';
+    const abs = Math.abs(V);
+    if(abs < 1000) return sign+abs.toFixed(0)+' V';
+    if(abs < 1e6) return sign+(abs/1000).toFixed(1)+' kV';
+    return sign+(abs/1e6).toFixed(2)+' MV';
+  }
+  function toSuperscript(n){
+    const map = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+    return String(n).split('').map(c=>map[c]||c).join('');
+  }
+  function formatFlux(phi){
+    if(Math.abs(phi) < 1e-9) return '0';
+    const exp = Math.floor(Math.log10(Math.abs(phi)));
+    const mant = phi/Math.pow(10,exp);
+    return mant.toFixed(2)+' × 10'+toSuperscript(exp)+' N·m²/C';
+  }
+
+  // ══════ 2.1 ELECTRIC FIELD ══════
+  function buildFieldRing(Q){
+    const g = document.getElementById('c2_fieldRing');
+    g.innerHTML = '';
+    if(Math.abs(Q) < 0.1) return;
+    const cx=350, cy=110, radius=68;
+    const mag = Math.max(0, Math.min(1, Math.abs(Q)/5));
+    const L = 14 + mag*36;
+    const sign = Q >= 0 ? 1 : -1;
+    for(let a=0; a<360; a+=45){
+      const rad = a*Math.PI/180;
+      const dx = Math.cos(rad), dy = Math.sin(rad);
+      const x1 = cx+dx*radius, y1 = cy+dy*radius;
+      const x2 = cx+dx*(radius+L*sign), y2 = cy+dy*(radius+L*sign);
+      const line = document.createElementNS(svgNS,'line');
+      line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+      line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+      line.setAttribute('stroke','var(--cyan)'); line.setAttribute('stroke-width','2');
+      line.setAttribute('marker-end','url(#c2arrow)');
+      g.appendChild(line);
+    }
+  }
+  const c2Q = document.getElementById('c2_Q'), c2qtest = document.getElementById('c2_qtest');
+  function updateField(){
+    const Q = +c2Q.value, qtest = +c2qtest.value;
+    document.getElementById('c2_QVal').textContent = (Q>=0?'+':'−')+Math.abs(Q).toFixed(1)+' µC';
+    document.getElementById('c2_qVal').textContent = qtest.toFixed(1)+' µC';
+    document.getElementById('c2_sourceDot').setAttribute('fill', Q>=0 ? 'var(--danger)' : 'var(--cyan)');
+    buildFieldRing(Q);
+
+    const k = 8.99e9, d = 0.20;
+    const E = Math.abs(Q) < 0.1 ? 0 : k*(Q*1e-6)/(d*d);
+    const F = Math.abs(Q) < 0.1 ? 0 : qtest*1e-6*E;
+    document.getElementById('c2_EOut').textContent = Math.abs(Q)<0.1 ? '0 V/m' : formatField(E);
+    document.getElementById('c2_FOut').textContent = Math.abs(Q)<0.1 ? '0 N' : formatForce(F);
+
+    const arrow = document.getElementById('c2_forceArrow');
+    const cal = document.getElementById('c2_fieldCallout');
+    if(Math.abs(Q) < 0.1){
+      arrow.setAttribute('d','M0 0');
+      cal.innerHTML = "<b>Source charge is essentially zero</b> — no field, and therefore no force on the test charge no matter how large you make it.";
+    } else {
+      const lenPx = Math.max(14, Math.min(80, 14 + (Math.log10(Math.max(Math.abs(F),1e-6)) + 4) / 5.6 * 66));
+      if(E >= 0){
+        arrow.setAttribute('d', `M${490+14} 110 L${490+14+lenPx} 110`);
+      } else {
+        arrow.setAttribute('d', `M${490-14} 110 L${490-14-lenPx} 110`);
+      }
+      cal.innerHTML = `Drag the <b>test charge</b> slider — force changes, but E doesn't move at all. Check it: ${formatForce(F)} ÷ ${qtest.toFixed(1)} µC = ${formatField(E)}, matching the field reading exactly, whatever q you pick.`;
+    }
+  }
+  c2Q.oninput = updateField; c2qtest.oninput = updateField;
+  updateField();
+
+  // ══════ 2.2 ELECTRIC POTENTIAL ══════
+  const VNORM = (8.99e9*5e-6)/(0.04);
+  function Vat(r_cm, sign){
+    const k = 8.99e9, Q = 5*sign;
+    return k*(Q*1e-6)/(r_cm/100);
+  }
+  function xForR(r){ return 50 + ((r-4)/(45-4))*600; }
+  function yForV(V){ return Math.max(20, Math.min(200, 140 - (V/VNORM)*95)); }
+  function buildCurve(sign){
+    let pts = [];
+    for(let r=4; r<=45; r+=1){
+      const V = Vat(r,sign);
+      pts.push(xForR(r)+','+yForV(V));
+    }
+    document.getElementById('c2_vCurve').setAttribute('points', pts.join(' '));
+  }
+  let sourceSign = 1;
+  let ballR = +document.getElementById('c2_rpos').value;
+  let rollAnim = null;
+  function updateBallPosition(r, sign){
+    const V = Vat(r, sign);
+    document.getElementById('c2_ballDot').setAttribute('cx', xForR(r));
+    document.getElementById('c2_ballDot').setAttribute('cy', yForV(V));
+    document.getElementById('c2_rposVal').textContent = r.toFixed(1)+' cm';
+    document.getElementById('c2_VOut').textContent = formatV(V);
+  }
+  buildCurve(sourceSign);
+  updateBallPosition(ballR, sourceSign);
+
+  document.getElementById('c2_rpos').oninput = function(){
+    if(rollAnim) cancelAnimationFrame(rollAnim);
+    ballR = +this.value;
+    updateBallPosition(ballR, sourceSign);
+  };
+  document.getElementById('c2_btnPos').onclick = function(){
+    sourceSign = 1;
+    this.classList.add('active'); document.getElementById('c2_btnNeg').classList.remove('active');
+    if(rollAnim) cancelAnimationFrame(rollAnim);
+    buildCurve(sourceSign); updateBallPosition(ballR, sourceSign);
+    document.getElementById('c2_potCallout').innerHTML = "Positive source charge: this is a <b>hill</b>. V is highest right at the source and falls off with distance — a positive test charge released anywhere on it rolls away, downhill, which is exactly repulsion.";
+  };
+  document.getElementById('c2_btnNeg').onclick = function(){
+    sourceSign = -1;
+    this.classList.add('active'); document.getElementById('c2_btnPos').classList.remove('active');
+    if(rollAnim) cancelAnimationFrame(rollAnim);
+    buildCurve(sourceSign); updateBallPosition(ballR, sourceSign);
+    document.getElementById('c2_potCallout').innerHTML = "Negative source charge: this is a <b>pit</b>. V is deeply negative right at the source and rises toward zero with distance — a positive test charge released anywhere on it rolls inward, downhill, which is exactly attraction.";
+  };
+  document.getElementById('c2_btnRelease').onclick = function(){
+    if(rollAnim) cancelAnimationFrame(rollAnim);
+    let frames = 0, dir = 0;
+    function step(){
+      frames++;
+      const dr = 0.2;
+      const V0 = Vat(ballR, sourceSign), V1 = Vat(Math.min(45, ballR+dr), sourceSign);
+      dir = V1 < V0 ? 1 : -1;
+      ballR = Math.max(4.2, Math.min(45, ballR + dir*dr*2.5));
+      updateBallPosition(ballR, sourceSign);
+      if(frames < 400 && ballR > 4.3 && ballR < 44.8){
+        rollAnim = requestAnimationFrame(step);
+      } else {
+        const cal = document.getElementById('c2_potCallout');
+        if(dir > 0){
+          cal.innerHTML = "<b>Rolled all the way out.</b> A positive test charge near a positive source keeps accelerating away — potential energy qV keeps converting to kinetic energy the whole way, exactly like a ball rolling down a real hill that just keeps getting flatter and flatter.";
+        } else {
+          cal.innerHTML = "<b>Fell in toward the source.</b> Near a negative charge, V keeps dropping the closer you get — a positive test charge released nearby accelerates inward the whole way. (In a real atom, quantum mechanics — not this classical picture — is what stops an electron from actually collapsing into the nucleus.)";
+        }
+      }
+    }
+    rollAnim = requestAnimationFrame(step);
+  };
+  document.getElementById('c2_btnResetBall').onclick = function(){
+    if(rollAnim) cancelAnimationFrame(rollAnim);
+    ballR = +document.getElementById('c2_rpos').value;
+    updateBallPosition(ballR, sourceSign);
+    document.getElementById('c2_potCallout').innerHTML = "This curve <i>is</i> literally V(r) plotted as a height. Slide the test charge along it, then hit release — it always rolls toward <b>lower</b> potential, exactly the direction a real ball would fall. Positive source → a hill it rolls away from (repulsion). Negative source → a pit it falls into (attraction).";
+  };
+
+  // ══════ 2.3 GAUSS'S LAW ══════
+  let chargeInside = true;
+  function buildFlux(){
+    const g = document.getElementById('c2_fluxLines');
+    g.innerHTML = '';
+    const cx = chargeInside ? 350 : 600, cy = chargeInside ? 110 : 60;
+    for(let a=0; a<360; a+=30){
+      const rad = a*Math.PI/180;
+      const x2 = cx+Math.cos(rad)*170, y2 = cy+Math.sin(rad)*170;
+      const line = document.createElementNS(svgNS,'line');
+      line.setAttribute('x1',cx); line.setAttribute('y1',cy);
+      line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+      line.setAttribute('stroke','var(--violet)'); line.setAttribute('stroke-width','1'); line.setAttribute('opacity','0.35');
+      g.appendChild(line);
+    }
+    document.getElementById('c2_gaussCharge').setAttribute('cx', cx);
+    document.getElementById('c2_gaussCharge').setAttribute('cy', cy);
+  }
+  function updateGauss(){
+    const radius = +document.getElementById('c2_gR').value;
+    document.getElementById('c2_gaussCircle').setAttribute('r', radius);
+    document.getElementById('c2_gRVal').textContent = radius+' px';
+    const Q = 3, k = 8.99e9, eps0 = 8.854e-12;
+    const cal = document.getElementById('c2_gaussCallout');
+    if(chargeInside){
+      document.getElementById('c2_QencOut').textContent = '+'+Q.toFixed(1)+' µC';
+      const rm = (radius/7)/100;
+      const E = k*(Q*1e-6)/(rm*rm);
+      const flux = (Q*1e-6)/eps0;
+      document.getElementById('c2_gEOut').textContent = formatField(E);
+      document.getElementById('c2_fluxOut').textContent = formatFlux(flux);
+      document.getElementById('c2_gaussStateLbl').textContent = 'GAUSSIAN SURFACE — CHARGE INSIDE';
+      cal.innerHTML = `Drag the radius slider — <b>E at the surface changes</b> (weaker further out) but the <b>total flux stays locked at ${formatFlux(flux)}</b>. The shrinking field and the growing surface area cancel exactly — that cancellation is the entire content of Gauss's Law for a point charge.`;
+    } else {
+      document.getElementById('c2_QencOut').textContent = '0 µC';
+      document.getElementById('c2_gEOut').textContent = 'n/a — not symmetric';
+      document.getElementById('c2_fluxOut').textContent = '0';
+      document.getElementById('c2_gaussStateLbl').textContent = 'GAUSSIAN SURFACE — CHARGE OUTSIDE';
+      cal.innerHTML = `<b>Charge is now outside</b> the surface. Its field still reaches everywhere (see the violet lines) — but every field line that dips into the dashed circle on one side exits it on the other, so the <b>net</b> flux through the closed surface is exactly zero. Gauss's Law still holds; it's just no longer useful for solving for E, because the enclosed-charge symmetry is gone.`;
+    }
+  }
+  document.getElementById('c2_gR').oninput = updateGauss;
+  document.getElementById('c2_btnInside').onclick = function(){
+    chargeInside = true;
+    this.classList.add('active'); document.getElementById('c2_btnOutside').classList.remove('active');
+    buildFlux(); updateGauss();
+  };
+  document.getElementById('c2_btnOutside').onclick = function(){
+    chargeInside = false;
+    this.classList.add('active'); document.getElementById('c2_btnInside').classList.remove('active');
+    buildFlux(); updateGauss();
+  };
+  buildFlux(); updateGauss();
+
+  // ══════ QUIZZES ══════
+  ['c2_quiz1','c2_quiz2','c2_quiz3'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+
+})();
+
+// ───── Electrical Ground ─────
+(function(){
+
+  // ══════ 3.1 GROUND AS REFERENCE — CLICKABLE NODES ══════
+  const baseVoltages = {A:9, B:4.5, C:0};
+  const nodePos = {A:[150,40], B:[550,40], C:[550,200]};
+  let currentRef = 'C';
+  function updateNodes(){
+    ['A','B','C'].forEach(n=>{
+      const val = baseVoltages[n] - baseVoltages[currentRef];
+      const label = document.querySelector('#c3_node'+n+' .c3-vlabel');
+      label.textContent = (val>=0?'+':'−')+Math.abs(val).toFixed(1)+'V';
+    });
+    const [gx,gy] = nodePos[currentRef];
+    document.getElementById('c3_groundIcon').setAttribute('transform', `translate(${gx},${gy})`);
+    document.getElementById('c3_refCallout').innerHTML = `<b>Node ${currentRef} is currently "ground" (0V).</b> Click a different node, and watch every label in the circuit recompute relative to your new choice. Same physical circuit, same physical currents — only the numbers written next to each wire change. That's how arbitrary the choice of "ground" really is.`;
+  }
+  document.getElementById('c3_nodeA').onclick = ()=>{ currentRef='A'; updateNodes(); };
+  document.getElementById('c3_nodeB').onclick = ()=>{ currentRef='B'; updateNodes(); };
+  document.getElementById('c3_nodeC').onclick = ()=>{ currentRef='C'; updateNodes(); };
+  updateNodes();
+
+  // ══════ 3.2 FAULT SIMULATOR ══════
+  let grounded = true, faulted = false;
+  function render(){
+    document.getElementById('c3_groundWireGroup').style.opacity = grounded ? '1' : '0.15';
+    document.getElementById('c3_faultSpark').setAttribute('opacity', faulted ? '1' : '0');
+    document.getElementById('c3_faultLbl').setAttribute('opacity', faulted ? '1' : '0');
+    const chassis = document.getElementById('c3_chassisRect');
+    const groundFlow = document.getElementById('c3_groundFlow');
+    const breakerLbl = document.getElementById('c3_breakerLbl');
+    const shockPath = document.getElementById('c3_shockPath');
+    const cal = document.getElementById('c3_safetyCallout');
+
+    if(!faulted){
+      chassis.setAttribute('stroke','var(--line)');
+      groundFlow.setAttribute('opacity','0');
+      breakerLbl.textContent = 'ON'; breakerLbl.setAttribute('fill','var(--green)');
+      shockPath.setAttribute('opacity','0');
+      cal.innerHTML = `This appliance is ${grounded ? 'grounded' : '<b>not</b> grounded'}, and nothing has gone wrong yet. Hit "Trigger a Fault" to simulate the hot wire brushing the case, then compare what happens grounded vs. not.`;
+    } else if(grounded){
+      chassis.setAttribute('stroke','var(--green)');
+      groundFlow.setAttribute('opacity','1');
+      breakerLbl.textContent = 'TRIPPED'; breakerLbl.setAttribute('fill','var(--danger)');
+      shockPath.setAttribute('opacity','0');
+      cal.innerHTML = `<b>Fault happened — and almost nothing happened to anyone.</b> The case briefly became live, but the ground wire offered a far easier path than a human body ever could. A huge current surge rushed to earth instead, tripping the breaker in milliseconds and cutting power before the chassis stayed dangerous for any meaningful length of time.`;
+    } else {
+      chassis.setAttribute('stroke','var(--danger)');
+      groundFlow.setAttribute('opacity','0');
+      breakerLbl.textContent = 'ON'; breakerLbl.setAttribute('fill','var(--green)');
+      shockPath.setAttribute('opacity','1');
+      cal.innerHTML = `<b>Dangerous.</b> With no ground wire, the fault current has nowhere easy to go — the chassis itself sits live at close to full mains voltage, silently, with nothing unusual to trip the breaker. If a grounded person then touches the case — standing on a damp floor, touching a sink — <b>they</b> become the path to earth. This exact scenario is what the third prong exists to prevent.`;
+    }
+  }
+  document.getElementById('c3_btnGrounded').onclick = function(){
+    grounded = true; this.classList.add('active'); document.getElementById('c3_btnUngrounded').classList.remove('active');
+    render();
+  };
+  document.getElementById('c3_btnUngrounded').onclick = function(){
+    grounded = false; this.classList.add('active'); document.getElementById('c3_btnGrounded').classList.remove('active');
+    render();
+  };
+  document.getElementById('c3_btnFault').onclick = function(){ faulted = true; render(); };
+  document.getElementById('c3_btnReset').onclick = function(){ faulted = false; render(); };
+  render();
+
+  // ══════ QUIZZES ══════
+  ['c3_quiz1','c3_quiz2'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>4.7 UART, SPI, I2C & Modbus — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,54px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.p .rv{color:var(--green);}
+  .readout.am .rv{color:var(--amber);} .readout.vi .rv{color:var(--violet);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+
+  .bit{
+    width:34px; height:34px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; border:1px solid var(--line);
+    background:var(--paper); color:var(--dim); flex-shrink:0; transition:all .2s;
+  }
+  .bit.hi{background:rgba(107,224,138,0.15); border-color:var(--green); color:var(--green);}
+  .bit.lo{background:rgba(255,107,107,0.1); border-color:var(--danger); color:var(--danger);}
+  .bit.active{transform:scale(1.15); box-shadow:0 0 12px currentColor;}
+  .bitrow{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
+
+  .compare-table{width:100%; border-collapse:collapse; margin-top:20px; font-size:13.5px; max-width:940px; margin-left:auto; margin-right:auto;}
+  .compare-table th, .compare-table td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); }
+  .compare-table th{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.06em; color:var(--dim); text-transform:uppercase;}
+  .compare-table td.spi{color:var(--cyan);} .compare-table td.i2c{color:var(--amber);} .compare-table td.modbus{color:var(--violet);}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part IV · Digital & Microcontrollers · Chapter 4.7 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 4.7 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">How two chips agree<br/>to <span class="hl">even start</span> talking.</h1>
+  <p class="hero-sub">Four protocols, four completely different philosophies for the same basic problem: getting bits from one chip to another reliably, with as few wires as the job allows.</p>
+  <div class="hero-chip"><span class="pulse"></span> SERIAL vs PARALLEL · UART · SPI · I2C · MODBUS</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c5_sec-serpar">Serial vs Parallel</a>
+    <a class="btn chip" href="#c5_sec-uart">UART</a>
+    <a class="btn chip" href="#sec-spi">SPI</a>
+    <a class="btn chip" href="#sec-i2c">I2C</a>
+    <a class="btn chip" href="#c8_sec-comms">Wiring Cost</a>
+    <a class="btn chip" href="#c5_sec-protocols">Modbus</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ SERIAL VS PARALLEL ══════════════ -->
+<section class="section" id="c5_sec-serpar">
+  <div class="sec-label">01 · Serial vs Parallel</div>
+  <h2 class="sec-title">One lane, taking turns — vs many lanes, all at once.</h2>
+  <p class="sec-body">
+    <b>Parallel</b> sends every bit of a byte at the same instant, one wire per bit — an 8-lane highway where 8 cars arrive
+    together. <b>Serial</b> sends bits one after another on a single wire — one car at a time on one lane. Parallel looks faster
+    on paper, but wires drift out of sync over distance and cost multiplies with every added line — which is exactly why USB,
+    SATA, and PCIe all quietly switched from parallel to blazing-fast serial as speeds increased.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Send the Byte 10110010</div>
+    <div class="btn-row">
+      <button class="btn active" id="c5_btnParallel">🛣 Parallel (8 wires)</button>
+      <button class="btn" id="c5_btnSerial">➡ Serial (1 wire)</button>
+    </div>
+    <div id="c5_parallelView" class="bitrow"></div>
+    <div id="c5_serialView" class="bitrow" style="display:none;"></div>
+    <div class="readout-row">
+      <div class="readout p"><div class="rl">Wires needed</div><div class="rv" id="c5_wireCount">8</div></div>
+      <div class="readout v"><div class="rl">Time to send (relative)</div><div class="rv" id="c5_timeCount">1 tick</div></div>
+    </div>
+    <div class="callout" id="c5_serparCallout"><b>Parallel:</b> all 8 bits land simultaneously in one clock tick — fast, but needs 8 perfectly matched wires that must all arrive at exactly the same moment.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ UART ══════════════ -->
+<section class="section" id="c5_sec-uart">
+  <div class="sec-label">02 · UART (Serial, No Shared Clock)</div>
+  <h2 class="sec-title">Two chips agreeing on a rhythm ahead of time.</h2>
+  <p class="sec-body">
+    UART is the simplest serial protocol: just two wires (TX and RX), <b>no shared clock line at all</b>. Instead, both sides
+    agree in advance on a speed (the <span class="analogy">baud rate</span>) — two people agreeing to speak at exactly
+    one word per second before a call with a bad connection. Each byte is wrapped in a start bit (line drops low) and a stop
+    bit (line returns high) so the receiver knows exactly when a byte begins and ends.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Byte Framing</div>
+    <div class="controls">
+      <div class="ctrl"><label>Byte to send <span class="val" id="c5_uartByteVal">178</span></label><input type="range" id="c5_uartByte" min="0" max="255" step="1" value="178"/></div>
+    </div>
+    <div id="c5_uartFrame" class="bitrow"></div>
+    <div class="btn-row"><button class="btn" id="c5_btnUartSend">📡 Transmit Frame</button></div>
+    <div class="callout"><b>START (always 0) → 8 data bits → STOP (always 1).</b> No clock wire needed — as long as both chips agreed on the same baud rate beforehand, timing alone carries the message.</div>
+  </div>
+  <div class="quiz" id="quizBaud">
+    <div class="quiz-q">Two UART devices are wired correctly, but one is configured for 9600 baud and the other for 115200 baud. What happens?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">They automatically negotiate a shared rate, like a modem</button>
+      <button class="quiz-opt" data-correct="true">Communication fails — the receiver samples bits at the wrong moments and reads garbage, since there's no clock wire to correct for the mismatch</button>
+      <button class="quiz-opt" data-correct="false">The faster device automatically slows down to match</button>
+      <button class="quiz-opt" data-correct="false">Nothing — baud rate only affects speed, not correctness</button>
+    </div>
+    <div class="quiz-fb" id="quizBaudFb">This is the direct cost of UART's simplicity — with no shared clock, both ends are trusting their own independent timing entirely. A baud mismatch is one of the most common real-world "why is my serial monitor showing gibberish" bugs.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ SPI ══════════════ -->
+<section class="section" id="sec-spi">
+  <div class="sec-label">03 · SPI</div>
+  <h2 class="sec-title">A shared clock buys speed, at the cost of a wire per device.</h2>
+  <p class="sec-body">
+    SPI (Serial Peripheral Interface) adds a dedicated <b>clock line (SCLK)</b> that the master drives — no baud-rate-guessing needed, every bit is sampled exactly on a clock edge. Data flows on two more wires: <b>MOSI</b> (Master Out, Slave In) and <b>MISO</b> (Master In, Slave Out) — both directions <i>at once</i>, every single clock pulse, making SPI genuinely full-duplex. A separate <b>CS (Chip Select)</b> wire per device says who's currently being talked to; pull a device's CS low, and only it listens.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">One Byte, Full Duplex</div>
+    <svg viewBox="0 0 700 210" style="width:100%; height:auto; margin-top:20px;">
+      <text x="20" y="25" fill="var(--violet)" font-family="JetBrains Mono" font-size="10">CS</text>
+      <polyline id="spi_cs" points="" fill="none" stroke="var(--violet)" stroke-width="2"/>
+      <text x="20" y="65" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">SCLK</text>
+      <polyline id="spi_sclk" points="" fill="none" stroke="var(--dim)" stroke-width="2"/>
+      <text x="20" y="105" fill="var(--amber)" font-family="JetBrains Mono" font-size="10">MOSI</text>
+      <polyline id="spi_mosi" points="" fill="none" stroke="var(--amber)" stroke-width="2"/>
+      <text x="20" y="145" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">MISO</text>
+      <polyline id="spi_miso" points="" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+      <text x="350" y="185" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">MSB first, sampled on each clock edge</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Master → Slave (MOSI) <span class="val" id="spi_mosiVal">178</span></label><input type="range" id="spi_mosiByte" min="0" max="255" step="1" value="178"/></div>
+      <div class="ctrl"><label>Slave → Master (MISO) <span class="val" id="spi_misoVal">77</span></label><input type="range" id="spi_misoByte" min="0" max="255" step="1" value="77"/></div>
+    </div>
+    <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); margin-top:16px;">SHIFT REGISTER — WHAT THE MASTER HAS RECEIVED SO FAR</div>
+    <div class="bitrow" id="spi_shiftReg" style="justify-content:center;"></div>
+    <div class="btn-row" style="justify-content:center;"><button class="btn" id="spi_btnClock">⏱ Clock Out the Byte</button></div>
+    <div class="callout" id="spi_callout">Both bytes travel simultaneously, on the same 8 clock pulses — that's the "full duplex" part. Hit the button to watch the master's shift register fill in with the MISO byte, bit by bit.</div>
+  </div>
+  <div class="quiz" id="quizSpi">
+    <div class="quiz-q">On SPI, if the master wants to talk to a third device while two others are also on the same clock/MOSI/MISO bus, what does it do?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Sends the third device's address over MOSI first</button>
+      <button class="quiz-opt" data-correct="true">Pulls that specific device's dedicated Chip-Select wire low; the other devices' CS lines stay high and they ignore the bus entirely</button>
+      <button class="quiz-opt" data-correct="false">Increases the clock speed until only that device responds</button>
+      <button class="quiz-opt" data-correct="false">SPI can only ever support one device per bus</button>
+    </div>
+    <div class="quiz-fb" id="quizSpiFb">SPI has no addressing scheme built into the data itself — a device's own dedicated CS wire is entirely how it's selected, which is exactly why SPI needs one extra wire per device (see the wiring-cost demo below).</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ I2C ══════════════ -->
+<section class="section" id="sec-i2c">
+  <div class="sec-label">04 · I2C</div>
+  <h2 class="sec-title">Every device shares two wires — and answers only to its own name.</h2>
+  <p class="sec-body">
+    I2C squeezes everything onto just two wires — <b>SDA</b> (data) and <b>SCL</b> (clock) — shared by every device on the bus, using the open-drain wiring from 4.4 so nobody ever electrically fights. A transaction starts with a <b>START condition</b> (SDA drops while SCL stays high — a deliberate rule-break that can't occur mid-byte, so it's unmistakable), followed by a 7-bit <b>address</b> plus a read/write bit, then an <b>ACK</b> bit — only the device whose address matches pulls SDA low to acknowledge; everyone else stays silent.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Address, Then Only One Device Answers</div>
+    <svg viewBox="0 0 700 190" style="width:100%; height:auto; margin-top:20px;">
+      <text x="20" y="35" fill="var(--amber)" font-family="JetBrains Mono" font-size="10">SDA</text>
+      <polyline id="i2c_sda" points="" fill="none" stroke="var(--amber)" stroke-width="2"/>
+      <text x="20" y="75" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">SCL</text>
+      <polyline id="i2c_scl" points="" fill="none" stroke="var(--dim)" stroke-width="2"/>
+      <g id="i2c_devices"></g>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Target address <span class="val" id="i2c_addrVal">0x21</span></label><input type="range" id="i2c_addr" min="0" max="3" step="1" value="1"/></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="i2c_btnSend">📡 Start Transaction</button></div>
+    <div class="callout" id="i2c_callout">Pick a target address and hit Start — watch the START condition, then the address bits, then only the matching device pull SDA low for ACK. The rest of the bus stays passive, exactly as open-drain wiring (4.4) allows.</div>
+  </div>
+  <div class="quiz" id="quizI2c">
+    <div class="quiz-q">Why can I2C's START condition (SDA dropping while SCL is held high) never be confused with an ordinary data bit?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It's sent at a different voltage than normal data</button>
+      <button class="quiz-opt" data-correct="true">Every ordinary data bit only changes SDA while SCL is LOW — SDA changing while SCL is HIGH is a reserved signal that can't occur during normal byte transmission</button>
+      <button class="quiz-opt" data-correct="false">It's sent on a third, dedicated wire</button>
+      <button class="quiz-opt" data-correct="false">It isn't actually unique — devices simply guess based on timing</button>
+    </div>
+    <div class="quiz-fb" id="quizI2cFb">This is a clever, deliberate rule violation used as a signal — since it can never legitimately happen mid-byte, every device on the bus instantly and unambiguously recognizes "a new transaction is starting" the moment they see it.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ WIRING COST ══════════════ -->
+<section class="section" id="c8_sec-comms">
+  <div class="sec-label">05 · The Real Trade-Off: Wiring Cost</div>
+  <h2 class="sec-title">Three protocols, three different bills as devices pile up.</h2>
+  <table class="compare-table">
+    <tr><th>Protocol</th><th>Wires</th><th>Speed</th><th>Devices per bus</th><th>Typical use</th></tr>
+    <tr><td class="spi">UART</td><td>2 (TX, RX)</td><td>Moderate</td><td>2 (point-to-point only)</td><td>GPS modules, debug consoles, Bluetooth</td></tr>
+    <tr><td class="i2c">SPI</td><td>4+ (shared bus + 1 CS per device)</td><td>Very fast</td><td>Many (one CS line each)</td><td>Displays, SD cards, high-speed sensors</td></tr>
+    <tr><td class="modbus">I2C</td><td>2 (SDA, SCL — shared by all)</td><td>Slower</td><td>Many (each has an address)</td><td>Lots of low-speed sensors on limited pins</td></tr>
+  </table>
+  <div class="panel">
+    <div class="panel-tag">Wiring Cost: SPI vs. I2C</div>
+    <div class="controls">
+      <div class="ctrl"><label>Number of sensor devices <span class="val" id="c8c_countVal">3</span></label><input type="range" id="c8c_count" min="1" max="6" step="1" value="3"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout am"><div class="rl">SPI wires needed</div><div class="rv" id="c8c_spiOut">6</div></div>
+      <div class="readout vi"><div class="rl">I2C wires needed</div><div class="rv" id="c8c_i2cOut">2</div></div>
+    </div>
+    <div class="callout" id="c8c_wireCallout">This gap only widens as you add devices — exactly why I2C dominates for wiring up a handful of cheap sensors on a pin-limited chip, even though it's electrically slower than SPI.</div>
+  </div>
+  <div class="quiz" id="c8_quiz2">
+    <div class="quiz-q">Why does I2C need only 2 wires no matter how many devices are on the bus, while SPI needs one extra wire per device?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">I2C devices don't need to be individually identified</button>
+      <button class="quiz-opt" data-correct="true">I2C devices each have their own address and share one bus; SPI instead identifies devices with a dedicated physical Chip-Select line each</button>
+      <button class="quiz-opt" data-correct="false">SPI is simply an older, less efficient standard with no design reason</button>
+      <button class="quiz-opt" data-correct="false">I2C can only support exactly 2 devices total</button>
+    </div>
+    <div class="quiz-fb" id="c8_quiz2fb">SPI trades pins for speed and simplicity — the CS line itself says who's being talked to, no addressing logic needed. I2C trades a bit of speed for pin efficiency by giving every device its own address instead.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ MODBUS ══════════════ -->
+<section class="section" id="c5_sec-protocols">
+  <div class="sec-label">06 · Modbus</div>
+  <h2 class="sec-title">I2C's addressing idea, scaled up to a whole factory floor.</h2>
+  <p class="sec-body">
+    <b>Modbus</b> — the protocol you've likely seen in industrial automation — works on the same core idea as I2C's addressing, but over longer distances: RS-485 (two wires, differential signaling for serious noise immunity) or plain Ethernet. A single <b>master</b> polls each device by address, one at a time, in strict turn; every device hears every request, but only the addressed one responds.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Modbus Poll Simulator</div>
+    <svg viewBox="0 0 700 150" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="30" y="55" width="90" height="40" rx="6" fill="none" stroke="var(--violet)" stroke-width="2"/>
+      <text x="75" y="80" text-anchor="middle" fill="var(--violet)" font-family="JetBrains Mono" font-size="11">MASTER</text>
+      <line x1="120" y1="30" x2="640" y2="30" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="120" y1="120" x2="640" y2="120" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="75" y1="55" x2="75" y2="30" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="75" y1="95" x2="75" y2="120" stroke="var(--dim)" stroke-width="2"/>
+      <g id="c5_slaves"></g>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Poll which slave address? <span class="val" id="c5_slaveAddrVal">2</span></label><input type="range" id="c5_slaveAddr" min="1" max="4" step="1" value="2"/></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="c5_btnPoll">📨 Master Sends Poll</button></div>
+    <div class="callout" id="c5_modbusCallout"><b>Only the addressed slave responds.</b> Every device on the line hears the request, but ignores it unless the address matches — exactly why you never assign two field devices the same Modbus ID.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 4.7 · END OF PART IV</div>
+  <h2 class="outro-title">Four philosophies, one job: get bits from one chip to another, reliably.</h2>
+  <p>Next: <b>Part V — 5.1: Control Systems &amp; Feedback</b> — graduate-level ground, starting with the mathematics of "how does a system respond when you nudge it." Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="19-real-silicon.html">← Chapter 4.6</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 4.7 OF 34 · PART IV: DIGITAL & MICROCONTROLLERS</footer>
+
+<script>
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  // ══════ SERIAL VS PARALLEL ══════
+  const byteBits = '10110010'.split('');
+  function buildParallelView(){
+    document.getElementById('c5_parallelView').innerHTML = byteBits.map(b=>`<div class="bit ${b==='1'?'hi':'lo'}">${b}</div>`).join('');
+  }
+  function buildSerialView(){
+    document.getElementById('c5_serialView').innerHTML = byteBits.map(b=>`<div class="bit ${b==='1'?'hi':'lo'}" style="opacity:0.25;">${b}</div>`).join('');
+  }
+  buildParallelView(); buildSerialView();
+  document.getElementById('c5_btnParallel').onclick = function(){
+    this.classList.add('active'); document.getElementById('c5_btnSerial').classList.remove('active');
+    document.getElementById('c5_parallelView').style.display='flex';
+    document.getElementById('c5_serialView').style.display='none';
+    document.getElementById('c5_wireCount').textContent = '8';
+    document.getElementById('c5_timeCount').textContent = '1 tick';
+    document.getElementById('c5_serparCallout').innerHTML = "<b>Parallel:</b> all 8 bits land simultaneously in one clock tick — fast, but needs 8 perfectly matched wires that must all arrive at exactly the same moment.";
+  };
+  document.getElementById('c5_btnSerial').onclick = function(){
+    this.classList.add('active'); document.getElementById('c5_btnParallel').classList.remove('active');
+    document.getElementById('c5_parallelView').style.display='none';
+    document.getElementById('c5_serialView').style.display='flex';
+    document.getElementById('c5_wireCount').textContent = '1';
+    document.getElementById('c5_timeCount').textContent = '8 ticks';
+    document.getElementById('c5_serparCallout').innerHTML = "<b>Serial:</b> the same byte, one bit per tick, on a single wire. Slower per byte in theory, but that single wire can be driven at enormously higher clock speeds — which is exactly why serial won in the end.";
+    const bits = document.querySelectorAll('#c5_serialView .bit');
+    bits.forEach((b,i)=> setTimeout(()=> b.style.opacity=1, i*250));
+  };
+  document.querySelectorAll('#quizBaud .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#quizBaud .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('quizBaudFb').style.display='block';
+    });
+  });
+
+  // ══════ UART ══════
+  const uartByte = document.getElementById('c5_uartByte');
+  function buildUartFrame(){
+    const val = +uartByte.value;
+    document.getElementById('c5_uartByteVal').textContent = val;
+    const bits = val.toString(2).padStart(8,'0').split('').reverse();
+    let html = `<div class="bit lo">ST</div>`;
+    bits.forEach(b=> html += `<div class="bit ${b==='1'?'hi':'lo'}">${b}</div>`);
+    html += `<div class="bit hi">SP</div>`;
+    document.getElementById('c5_uartFrame').innerHTML = html;
+  }
+  uartByte.oninput = buildUartFrame; buildUartFrame();
+  document.getElementById('c5_btnUartSend').onclick = ()=>{
+    const bits = document.querySelectorAll('#c5_uartFrame .bit');
+    bits.forEach(b=>b.classList.remove('active'));
+    bits.forEach((b,i)=> setTimeout(()=> b.classList.add('active'), i*180));
+  };
+
+  // ══════ SPI ══════
+  function toBitsMSB(n){ let b=[]; for(let i=7;i>=0;i--) b.push((n>>i)&1); return b; }
+  function stepTrace(bits, y, lowY, highY, xStart, periodW){
+    let pts = [];
+    bits.forEach((b,i)=>{
+      const x0 = xStart+i*periodW, x1 = x0+periodW;
+      const yy = b ? highY : lowY;
+      pts.push(x0+','+yy); pts.push(x1+','+yy);
+    });
+    return pts.join(' ');
+  }
+  function clockTrace(n, y, lowY, highY, xStart, periodW){
+    let pts = [];
+    for(let i=0;i<n;i++){
+      const x0=xStart+i*periodW, xm=x0+periodW*0.5, x1=x0+periodW;
+      pts.push(x0+','+lowY); pts.push(x0+','+highY); pts.push(xm+','+highY); pts.push(xm+','+lowY); pts.push(x1+','+lowY);
+    }
+    return pts.join(' ');
+  }
+  function updateSpiDiagram(){
+    const mosiByte = +document.getElementById('spi_mosiByte').value;
+    const misoByte = +document.getElementById('spi_misoByte').value;
+    document.getElementById('spi_mosiVal').textContent = mosiByte;
+    document.getElementById('spi_misoVal').textContent = misoByte;
+    const xStart=110, periodW=68;
+    document.getElementById('spi_cs').setAttribute('points', `60,15 ${xStart},15 ${xStart},25 ${xStart+8*periodW},25 ${xStart+8*periodW},15 660,15`);
+    document.getElementById('spi_sclk').setAttribute('points', clockTrace(8,0,58,42,xStart,periodW));
+    document.getElementById('spi_mosi').setAttribute('points', stepTrace(toBitsMSB(mosiByte),0,98,82,xStart,periodW));
+    document.getElementById('spi_miso').setAttribute('points', stepTrace(toBitsMSB(misoByte),0,138,122,xStart,periodW));
+    buildShiftReg(0);
+  }
+  function buildShiftReg(filledCount){
+    const misoByte = +document.getElementById('spi_misoByte').value;
+    const bits = toBitsMSB(misoByte);
+    const g = document.getElementById('spi_shiftReg');
+    g.innerHTML = bits.map((b,i)=>{
+      const filled = i < filledCount;
+      return `<div class="bit ${filled ? (b? 'hi':'lo') : ''}">${filled ? b : '·'}</div>`;
+    }).join('');
+  }
+  document.getElementById('spi_mosiByte').oninput = updateSpiDiagram;
+  document.getElementById('spi_misoByte').oninput = updateSpiDiagram;
+  document.getElementById('spi_btnClock').onclick = function(){
+    for(let i=0;i<=8;i++){
+      setTimeout(()=> buildShiftReg(i), i*180);
+    }
+    document.getElementById('spi_callout').innerHTML = `Watch the shift register — one bit lands per clock pulse, MSB first, until all 8 have arrived. Meanwhile, on the very same 8 pulses, the slave was simultaneously receiving the ${document.getElementById('spi_mosiVal').textContent} byte over MOSI. That's full duplex.`;
+  };
+  updateSpiDiagram();
+  document.querySelectorAll('#quizSpi .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#quizSpi .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('quizSpiFb').style.display='block';
+    });
+  });
+
+  // ══════ I2C ══════
+  const i2cDeviceAddrs = ['0x1A','0x21','0x33','0x4C'];
+  function buildI2cDevices(){
+    const g = document.getElementById('i2c_devices');
+    g.innerHTML = '';
+    i2cDeviceAddrs.forEach((addr,i)=>{
+      const x = 160+i*120;
+      g.innerHTML += `
+        <rect id="i2c_dev${i}" x="${x}" y="105" width="90" height="45" rx="6" fill="none" stroke="var(--line)" stroke-width="2"/>
+        <text id="i2c_devtxt${i}" x="${x+45}" y="132" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">${addr}</text>
+        <line x1="${x+45}" y1="75" x2="${x+45}" y2="105" stroke="var(--dim)" stroke-width="1" stroke-dasharray="2 4"/>
+      `;
+    });
+  }
+  buildI2cDevices();
+  function resetI2cWave(){
+    document.getElementById('i2c_sda').setAttribute('points','20,15 680,15');
+    document.getElementById('i2c_scl').setAttribute('points','20,55 680,55');
+  }
+  resetI2cWave();
+  document.getElementById('i2c_addr').oninput = function(){
+    document.getElementById('i2c_addrVal').textContent = i2cDeviceAddrs[+this.value];
+  };
+  document.getElementById('i2c_addrVal').textContent = i2cDeviceAddrs[1];
+  document.getElementById('i2c_btnSend').onclick = function(){
+    const targetIdx = +document.getElementById('i2c_addr').value;
+    const cal = document.getElementById('i2c_callout');
+    // Build full SDA/SCL waveform: START, 8 addr+rw bits, ACK
+    const addrBits = toBitsMSB(targetIdx+1).slice(0,7).concat([0]); // dummy 7-bit + R/W=0(write)
+    let sdaPts = ['20,15','60,15','60,55']; // idle high, then start drops SDA while SCL still high momentarily
+    let sclPts = ['20,55','80,55'];
+    let x = 100;
+    const periodW = 55;
+    addrBits.forEach(b=>{
+      const y = b ? 15 : 55;
+      sdaPts.push(x+','+y); sdaPts.push((x+periodW)+','+y);
+      x += periodW;
+    });
+    document.getElementById('i2c_sda').setAttribute('points', sdaPts.join(' '));
+    document.getElementById('i2c_scl').setAttribute('points', clockTrace(8, 0, 55, 35, 100, periodW));
+    buildI2cDevices();
+    setTimeout(()=>{
+      i2cDeviceAddrs.forEach((addr,i)=>{
+        const rect = document.getElementById('i2c_dev'+i);
+        const txt = document.getElementById('i2c_devtxt'+i);
+        if(i === targetIdx){
+          rect.setAttribute('stroke','var(--green)');
+          txt.setAttribute('fill','var(--green)');
+          txt.textContent = addr+' ✓ ACK';
+        } else {
+          rect.setAttribute('stroke','var(--line)');
+          txt.setAttribute('fill','var(--dim)');
+          txt.textContent = addr+' (silent)';
+        }
+      });
+      cal.innerHTML = `<b>Only ${i2cDeviceAddrs[targetIdx]} pulled SDA low to ACK.</b> Every device on the bus saw the same START condition and address bits — but comparing against their own hardwired address, only one matched and responded. The rest simply let the open-drain line float, per 4.4.`;
+    }, 8*periodW/1000*1000*0.7);
+  };
+  document.querySelectorAll('#quizI2c .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#quizI2c .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('quizI2cFb').style.display='block';
+    });
+  });
+
+  // ══════ WIRING COST ══════
+  function updateWireCount(){
+    const n = +document.getElementById('c8c_count').value;
+    document.getElementById('c8c_countVal').textContent = n;
+    const spiWires = 3+n;
+    document.getElementById('c8c_spiOut').textContent = spiWires;
+    document.getElementById('c8c_i2cOut').textContent = 2;
+    document.getElementById('c8c_wireCallout').innerHTML = `With ${n} device${n>1?'s':''}: SPI needs <b>${spiWires}</b> total connections (3 shared + ${n} chip-select), while I2C still needs just <b>2</b>, regardless of how many devices join the bus.`;
+  }
+  document.getElementById('c8c_count').oninput = updateWireCount;
+  updateWireCount();
+  document.querySelectorAll('#c8_quiz2 .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c8_quiz2 .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c8_quiz2fb').style.display='block';
+    });
+  });
+
+  // ══════ MODBUS ══════
+  function buildSlaves(){
+    const slaves = document.getElementById('c5_slaves');
+    slaves.innerHTML='';
+    for(let i=1;i<=4;i++){
+      const x = 160 + (i-1)*130;
+      slaves.innerHTML += `
+        <rect x="${x}" y="55" width="80" height="40" rx="6" fill="none" stroke="var(--line)" stroke-width="2" id="c5_slave${i}box"/>
+        <text x="${x+40}" y="80" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="11" id="c5_slave${i}txt">ID ${i}</text>
+        <line x1="${x+40}" y1="30" x2="${x+40}" y2="55" stroke="var(--dim)" stroke-width="1"/>
+        <line x1="${x+40}" y1="95" x2="${x+40}" y2="120" stroke="var(--dim)" stroke-width="1"/>
+      `;
+    }
+  }
+  buildSlaves();
+  const slaveAddr = document.getElementById('c5_slaveAddr');
+  slaveAddr.oninput = ()=> document.getElementById('c5_slaveAddrVal').textContent = slaveAddr.value;
+  document.getElementById('c5_btnPoll').onclick = ()=>{
+    const addr = +slaveAddr.value;
+    for(let i=1;i<=4;i++){
+      const box = document.getElementById('c5_slave'+i+'box');
+      const txt = document.getElementById('c5_slave'+i+'txt');
+      if(i===addr){
+        box.setAttribute('stroke','var(--green)');
+        txt.setAttribute('fill','var(--green)');
+        txt.textContent = 'ID '+i+' ✓ RESPONDS';
+      } else {
+        box.setAttribute('stroke','var(--line)');
+        txt.setAttribute('fill','var(--dim)');
+        txt.textContent = 'ID '+i+' (ignores)';
+      }
+    }
+    document.getElementById('c5_modbusCallout').innerHTML = `<b>Master polled address ${addr}.</b> Every device on the RS-485 line saw the request, but only Slave ${addr} answers — the rest silently ignore a frame not addressed to them.`;
+  };
+
+})();
+</script>
+
+</body>
+</html>

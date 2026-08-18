@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>5.2 Control System Design — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:52vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,54px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--violet);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media(max-width:780px){.two-col{grid-template-columns:1fr;}}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.warn{border-left-color:var(--danger);} .callout.warn b{color:var(--danger);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+
+  .eq{
+    font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.25); border:1px solid var(--line);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:14px; color:var(--white); text-align:center;
+    max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .eq .lbl{display:block; font-size:10px; letter-spacing:.1em; color:var(--dim); margin-top:8px; text-transform:uppercase;}
+
+  .card-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media(max-width:720px){.card-grid{grid-template-columns:1fr;}}
+  .toolkit-card{background:var(--paper2); border:1px solid var(--line); border-radius:10px; padding:18px;}
+  .toolkit-card .tc-name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:var(--copper); margin-bottom:6px;}
+  .toolkit-card .tc-body{font-size:13px; color:var(--dim); line-height:1.6;}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part V · Advanced Theory · Chapter 5.2 of 35</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 5.2 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Stop hoping Kp lands<br/>somewhere <span class="hl">safe</span>.</h1>
+  <p class="hero-sub">5.1 let a single gain, Kp, pick your poles for you — and hope they land somewhere reasonable. This module hands you the poles directly: choose exactly how a system is allowed to misbehave, place them there deliberately, and prove — mathematically, not just by simulating — that the design actually holds.</p>
+  <div class="hero-chip"><span class="pulse"></span> POLE PLACEMENT · LYAPUNOV STABILITY · THE EXAM TOOLKIT</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn" href="#c2_sec-pp">Pole Placement</a>
+    <a class="btn" href="#c2_sec-lyap">Lyapunov Stability</a>
+    <a class="btn" href="#c2_sec-toolkit">The Exam Toolkit</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ POLE PLACEMENT ══════════════ -->
+<section class="section" id="c2_sec-pp">
+  <div class="sec-label">01 · Pole Placement</div>
+  <h2 class="sec-title">Decide exactly where the poles go — then compute the gain that puts them there.</h2>
+  <p class="sec-body">
+    Instead of picking a gain and seeing where the poles land, <b>pole placement</b> works backwards: choose a desired pair of
+    closed-loop poles, σ ± jω, directly — they set exactly how fast the response decays (σ) and how much it rings on the way there (ω) —
+    then solve for the state-feedback gain vector that puts them exactly there (Ackermann's formula, if the system is controllable).
+    This only works if the system is <b>controllable</b> in the first place — checked via the rank of the controllability matrix,
+    [B AB A²B ... ].
+  </p>
+  <div class="eq">σ ± jω → characteristic polynomial s² − 2σs + (σ² + ω²)<span class="lbl">desired pole location, expressed as the polynomial pole placement solves for</span></div>
+  <div class="panel">
+    <div class="panel-tag">Place the Poles Yourself</div>
+    <div class="two-col">
+      <svg viewBox="0 0 320 240" style="width:100%; height:auto;">
+        <line x1="10" y1="120" x2="310" y2="120" stroke="var(--line)" stroke-width="1"/>
+        <line x1="160" y1="10" x2="160" y2="230" stroke="var(--danger)" stroke-width="1" stroke-dasharray="3 4"/>
+        <text x="165" y="20" fill="var(--danger)" font-family="JetBrains Mono" font-size="9">jω axis</text>
+        <rect x="160" y="10" width="150" height="220" fill="var(--danger)" opacity="0.04"/>
+        <text x="270" y="225" fill="var(--danger)" font-family="JetBrains Mono" font-size="8">unstable region</text>
+        <circle id="c2_pole1" cx="90" cy="90" r="6" fill="var(--cyan)"/>
+        <circle id="c2_pole2" cx="90" cy="150" r="6" fill="var(--cyan)"/>
+        <text x="10" y="20" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">σ, ω plane</text>
+      </svg>
+      <svg viewBox="0 0 300 240" style="width:100%; height:auto;">
+        <line x1="20" y1="120" x2="300" y2="120" stroke="var(--line)" stroke-width="1"/>
+        <line x1="20" y1="10" x2="20" y2="230" stroke="var(--line)" stroke-width="1"/>
+        <text x="10" y="20" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">θ</text>
+        <text x="270" y="235" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">t →</text>
+        <polyline id="c2_curve" points="" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="controls">
+      <div class="ctrl"><label>σ (real part — decay rate) <span class="val" id="c2_sval">-2.0</span></label><input type="range" id="c2_sigma" min="-6" max="3" step="0.1" value="-2"/></div>
+      <div class="ctrl"><label>ω (imaginary part — ringing) <span class="val" id="c2_wval">3.0</span></label><input type="range" id="c2_omega" min="0" max="8" step="0.1" value="3"/></div>
+    </div>
+    <div class="readout-row" style="display:flex; gap:14px; margin-top:22px;">
+      <div style="flex:1; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;">Characteristic polynomial</div>
+        <div id="c2_poly" style="font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; margin-top:4px; color:var(--copper);">s²+4.0s+13</div>
+      </div>
+      <div style="flex:1; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;">Status</div>
+        <div id="c2_stab" style="font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px; color:var(--green);">STABLE</div>
+      </div>
+    </div>
+    <div class="callout good" id="c2_callout"><b>Stable.</b> Both poles sit left of the imaginary axis, so the response decays as t→∞. The further left, the faster it dies out; the closer to the real axis, the less it oscillates on the way there.</div>
+  </div>
+  <div class="quiz" id="c2_quiz1">
+    <div class="quiz-q">Before attempting pole placement on a real system, what must be checked first?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">That the system already has a proportional controller in place</button>
+      <button class="quiz-opt" data-correct="true">That the system is controllable — checked via the rank of the controllability matrix [B AB A²B ...]</button>
+      <button class="quiz-opt" data-correct="false">That the desired poles are both real, never complex</button>
+      <button class="quiz-opt" data-correct="false">Nothing — Ackermann's formula works on every system unconditionally</button>
+    </div>
+    <div class="quiz-fb" id="c2_quiz1fb">If the controllability matrix doesn't have full rank, there is genuinely no gain vector — no matter how cleverly chosen — that can move the poles wherever you like. Controllability is the precondition, not a formality.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ LYAPUNOV STABILITY ══════════════ -->
+<section class="section" id="c2_sec-lyap">
+  <div class="sec-label">02 · Lyapunov Stability</div>
+  <h2 class="sec-title">Prove stability without ever solving the equations of motion.</h2>
+  <p class="sec-body">
+    Sometimes a system is too nonlinear to get a clean pole-location answer at all. <b>Lyapunov's method</b> sidesteps solving the
+    dynamics entirely: find a scalar "energy-like" function V(x) that's positive everywhere except zero at the equilibrium, and
+    show that its rate of change <b>V̇(x)</b> is always negative along the system's trajectories. If both hold, the system is
+    provably stable — full stop — without ever writing down what x(t) actually equals. It's the mathematical version of proving
+    a ball must eventually stop rolling by showing its height keeps decreasing, without tracking its exact path down the hill.
+  </p>
+  <div class="eq">V(x) &gt; 0, V(0) = 0 &nbsp;&nbsp;and&nbsp;&nbsp; V̇(x) &lt; 0 → asymptotically stable<span class="lbl">the two conditions a valid Lyapunov function must satisfy</span></div>
+  <div class="callout"><b>Why this matters beyond the exam:</b> Lyapunov's method is one of very few tools that works on genuinely nonlinear systems where linearization (and therefore pole placement) breaks down or only applies locally near one operating point.</div>
+  <div class="quiz" id="c2_quiz2">
+    <div class="quiz-q">What is the core advantage of Lyapunov's method over pole-placement-style analysis?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It's always faster to compute by hand</button>
+      <button class="quiz-opt" data-correct="true">It can prove stability for genuinely nonlinear systems without ever solving the system's equations of motion explicitly</button>
+      <button class="quiz-opt" data-correct="false">It only works on already-linear systems</button>
+      <button class="quiz-opt" data-correct="false">It replaces the need for a controller entirely</button>
+    </div>
+    <div class="quiz-fb" id="c2_quiz2fb">Pole placement fundamentally relies on linear (or linearized) system models. Lyapunov's method makes no such assumption — which is exactly why it remains a core nonlinear-control tool.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ EXAM TOOLKIT ══════════════ -->
+<section class="section" id="c2_sec-toolkit">
+  <div class="sec-label">03 · The Exam Toolkit</div>
+  <h2 class="sec-title">The formulas worth having cold.</h2>
+  <div class="card-grid">
+    <div class="toolkit-card"><div class="tc-name">Ackermann's Formula</div><div class="tc-body">Computes the state-feedback gain K that places closed-loop poles exactly at a chosen set of locations, given a controllable (A,B) pair.</div></div>
+    <div class="toolkit-card"><div class="tc-name">Controllability Matrix</div><div class="tc-body">[B AB A²B ... Aⁿ⁻¹B] — full rank means every state can be driven anywhere via the input; pole placement is only valid if this holds.</div></div>
+    <div class="toolkit-card"><div class="tc-name">Observability Matrix</div><div class="tc-body">The dual concept: full rank means the internal states can be reconstructed purely from the output — required before you can even build a state estimator.</div></div>
+    <div class="toolkit-card"><div class="tc-name">Describing Functions</div><div class="tc-body">An approximate frequency-domain technique for predicting limit cycles in systems with genuine nonlinearities like saturation or backlash.</div></div>
+    <div class="toolkit-card"><div class="tc-name">Lead-Lag Compensation</div><div class="tc-body">A lead network adds phase (speeds response, improves stability margin); a lag network trades speed for improved steady-state accuracy.</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 5.2</div>
+  <h2 class="outro-title">From "hope the gain is safe" to "prove the design holds."</h2>
+  <p>Next: <b>5.3 — Digital Control Systems</b> — what happens once that continuous controller has to run on a chip sampling at a fixed rate. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="21-applied-control-systems.html">← Chapter 5.1</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 5.2 OF 35 · PART V: ADVANCED THEORY</footer>
+
+<script>
+(function(){
+  const sigEl = document.getElementById('c2_sigma'), omEl = document.getElementById('c2_omega');
+  function render(){
+    const sigma = +sigEl.value, omega = +omEl.value;
+    document.getElementById('c2_sval').textContent = sigma.toFixed(1);
+    document.getElementById('c2_wval').textContent = omega.toFixed(1);
+
+    const x = 10 + ((sigma+6)/9)*290;
+    const yOff = (omega/8)*100;
+    document.getElementById('c2_pole1').setAttribute('cx', x);
+    document.getElementById('c2_pole1').setAttribute('cy', 120-yOff);
+    document.getElementById('c2_pole2').setAttribute('cx', x);
+    document.getElementById('c2_pole2').setAttribute('cy', 120+yOff);
+
+    const b1 = (-2*sigma).toFixed(2), b0 = (sigma*sigma+omega*omega).toFixed(2);
+    document.getElementById('c2_poly').textContent = `s²+${b1}s+${b0}`;
+
+    const stab = document.getElementById('c2_stab');
+    const callout = document.getElementById('c2_callout');
+    if(sigma < 0){
+      stab.textContent = 'STABLE'; stab.style.color = 'var(--green)';
+      callout.className = 'callout good';
+      callout.innerHTML = `<b>Stable.</b> Both poles sit left of the imaginary axis, so the response decays as t→∞. The further left, the faster it dies out; the closer to the real axis, the less it oscillates on the way there.`;
+    } else if (sigma === 0) {
+      stab.textContent = 'MARGINAL'; stab.style.color = 'var(--amber)';
+      callout.className = 'callout';
+      callout.innerHTML = `<b>Marginally stable.</b> σ = 0 sits exactly on the imaginary axis — the response neither decays nor grows, oscillating forever at constant amplitude. Any real-world disturbance tips this either way.`;
+    } else {
+      stab.textContent = 'UNSTABLE'; stab.style.color = 'var(--danger)';
+      callout.className = 'callout warn';
+      callout.innerHTML = `<b>Right half-plane.</b> σ = ${sigma.toFixed(1)} > 0 means the response grows without bound — no matter how nicely it oscillates, it never settles. This is a design you'd never accept, and the rank test exists precisely so you find out you can't do this before you try.`;
+    }
+
+    const dt=0.02, N=280, wn2 = sigma*sigma+omega*omega;
+    let theta=0, thetaDot=0, pts=[];
+    for(let i=0;i<N;i++){
+      const alpha = wn2*(1-theta) + 2*sigma*thetaDot;
+      thetaDot += alpha*dt;
+      theta += thetaDot*dt;
+      theta = Math.max(-4, Math.min(6, theta));
+      pts.push(theta);
+    }
+    const svgPts = pts.map((y,i)=>{
+      const px = 20 + (i/(N-1))*280;
+      const py = 110 - y*70;
+      return px+','+Math.max(5,Math.min(230,py));
+    }).join(' ');
+    document.getElementById('c2_curve').setAttribute('points', svgPts);
+  }
+  [sigEl, omEl].forEach(el=> el.addEventListener('input', render));
+  render();
+
+  ['c2_quiz1','c2_quiz2'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

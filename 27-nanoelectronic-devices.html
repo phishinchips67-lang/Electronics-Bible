@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>5.7 Nanoelectronic Devices — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:46vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 20px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,54px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-meta{margin-top:18px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim);}
+  .hero-meta span{border:1px solid var(--line); border-radius:14px; padding:5px 12px;}
+
+  .wrap-narrow{max-width:940px; margin:0 auto; padding:0 24px 20px;}
+  .callout{
+    margin-top:16px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+  .callout.warn{border-left-color:var(--danger);} .callout.warn b{color:var(--danger);}
+
+  .section{padding:50px 24px 50px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,36px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:26px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+  .chapter-seam{
+    max-width:940px; margin:0 auto; padding:24px 24px; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.15em; color:var(--copper-dim);
+  }
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:24px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:20px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:20px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:700; margin-top:4px;}
+  .readout.r .rv{color:var(--cyan);} .readout.p .rv{color:var(--green);}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media(max-width:780px){.two-col{grid-template-columns:1fr;}}
+
+  .compare-table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px;}
+  .compare-table th, .compare-table td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  .compare-table th{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; color:var(--dim); text-transform:uppercase;}
+  .compare-table td.cy{color:var(--cyan);} .compare-table td.am{color:var(--amber);} .compare-table td.vi{color:var(--violet);} .compare-table td.gr{color:var(--green);}
+
+  .codeblock{background:#081422; border:1px solid var(--line); border-radius:8px; padding:16px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:var(--white); white-space:pre;}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; justify-content:center;}
+
+  .outro{padding:80px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:600px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:11px; font-family:'JetBrains Mono',monospace; letter-spacing:.05em;}
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part V · Advanced Theory · Chapter 5.7 of 35</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 5.7 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Zoom all the way in.<br/>It's always a <span class="hl">MOSFET</span>.</h1>
+  <p class="hero-sub">Every "1" and "0" everywhere else in this bible is, physically, a switch built from exactly this: a MOSFET deciding whether current flows based on how much voltage is stacked on its gate.</p>
+  <div class="hero-meta"><span>7.5 ECTS</span><span>Device physics · TCAD labs</span><span>Stands alone</span></div>
+</section>
+<div class="wrap-narrow">
+  <div class="callout info"><b>How this is graded:</b> the undergraduate-shared sibling module runs 30% SILVACO TCAD simulation coursework + 70% written exam (2 hours) — expect the MSc split to be similarly exam-heavy. The TCAD labs (finite-element modelling of MOSFET scaling) are where the qualitative scaling story below — high-k dielectrics, FinFETs, variability — actually gets quantitative, so treat them as exam revision, not a side task.</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════ MOSFET AS A VALVE ══════════════ -->
+<section class="section" id="c7_mosfet">
+  <div class="sec-label">01 · The MOSFET as a Valve</div>
+  <h2 class="sec-title">Gate voltage opens the tap. Drain voltage decides how fast it flows.</h2>
+  <p class="sec-body">Below threshold, <span class="analogy">the tap is shut</span> — negligible current (cutoff). Above threshold, current rises with drain voltage until the channel "pinches off," after which more drain voltage barely matters — the tap is fully open and current plateaus (saturation). In between is triode: a nearly linear resistor you control with the gate.</p>
+
+  <div class="panel">
+    <div class="panel-tag">I_D–V_DS characteristics (V_th = 1.0V)</div>
+    <svg viewBox="0 0 640 240" style="width:100%; margin-top:10px;">
+      <line x1="50" y1="20" x2="50" y2="220" stroke="var(--line)" stroke-width="1"/>
+      <line x1="50" y1="220" x2="600" y2="220" stroke="var(--line)" stroke-width="1"/>
+      <text x="580" y="238" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">V_DS</text>
+      <text x="8" y="24" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">I_D</text>
+      <polyline id="c7_ref1" points="" fill="none" stroke="var(--line)" stroke-width="1.3"/>
+      <polyline id="c7_ref2" points="" fill="none" stroke="var(--line)" stroke-width="1.3"/>
+      <polyline id="c7_ref3" points="" fill="none" stroke="var(--line)" stroke-width="1.3"/>
+      <polyline id="c7_active" points="" fill="none" stroke="var(--cyan)" stroke-width="2.4"/>
+      <circle id="c7_marker" cx="50" cy="220" r="5" fill="var(--amber)"/>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Gate voltage V_GS <span class="val" id="c7_vgsval">2.0 V</span></label>
+        <input type="range" id="c7_vgs" min="5" max="35" step="1" value="20"/></div>
+      <div class="ctrl"><label>Drain voltage V_DS <span class="val" id="c7_vdsval">2.0 V</span></label>
+        <input type="range" id="c7_vds" min="0" max="50" step="1" value="20"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout r"><div class="rl">Region</div><div class="rv" id="c7_region">SATURATION</div></div>
+      <div class="readout p"><div class="rl">Drain current I_D</div><div class="rv" id="c7_id">0.50</div></div>
+    </div>
+    <div class="callout" id="c7_callout"><b>Try this:</b> set V_GS below 1.0V — the device is in cutoff no matter what V_DS does. That's threshold voltage: the gate hasn't inverted the channel yet, so there's simply no conducting path.</div>
+  </div>
+
+  <div class="callout info"><b>Why this module exists beyond one equation:</b> as transistors shrink, this clean square-law model starts lying — threshold voltage drops unpredictably (short-channel effects), leakage current in "off" state stops being negligible, and gate oxide gets so thin that high-k dielectrics and FinFET 3D gates become necessary just to keep the switch behaving like a switch. That's the scaling story this module's TCAD labs are built around.</div>
+
+  <div class="quiz" id="c7_quiz">
+    <div class="quiz-q">At fixed V_GS = 2.0V, why does I_D stop rising once V_DS passes (V_GS − V_th)?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">The gate stops supplying charge at that point</button>
+      <button class="quiz-opt" data-correct="true">The channel pinches off at the drain end — beyond that point, extra V_DS drops across the depleted pinch-off region rather than driving more current</button>
+      <button class="quiz-opt" data-correct="false">V_DS becomes larger than the supply voltage</button>
+    </div>
+    <div class="quiz-fb" id="c7_quizfb">Correct — pinch-off caps the current the channel can deliver at that gate overdrive. Past it you're in saturation: I_D depends on V_GS, but is only weakly sensitive to further increases in V_DS (real devices show a slight slope from channel-length modulation, which TCAD lets you see directly).</div>
+  </div>
+</section>
+
+<div class="chapter-seam">◆ THEORY DEEP-DIVE — ~70% OF YOUR MARK IS THIS</div>
+
+<!-- ══════════════ EXAM TOOLKIT ══════════════ -->
+<section class="section" id="c7_toolkit">
+  <div class="sec-label">02 · The Exam Toolkit</div>
+  <h2 class="sec-title">The simulator shows the behaviour. The exam wants the equations behind it.</h2>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-tag">1 · Threshold voltage — what it's built from</div>
+      <div class="codeblock" style="font-size:11px;">V_th = V_FB + 2φ_F + √(2·ε_si·q·N_A·2φ_F) / C_ox</div>
+      <table class="compare-table" style="margin-top:12px;">
+        <tr><th>Term</th><th>Meaning</th></tr>
+        <tr><td class="cy">V_FB</td><td>Flat-band voltage — gate/body work-function difference</td></tr>
+        <tr><td class="am">2φ_F</td><td>Surface potential needed for strong inversion</td></tr>
+        <tr><td class="vi">N_A</td><td>Body doping concentration</td></tr>
+        <tr><td class="gr">C_ox</td><td>Oxide capacitance per area — thinner oxide, higher C_ox</td></tr>
+      </table>
+      <p class="sec-body" style="margin-top:10px; margin-bottom:0; font-size:13.5px;">Exam pattern: give you N_A, oxide thickness, and work functions, ask you to compute V_th numerically. Practice this arithmetic — it's mechanical once you know which term is which.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-tag">2 · Subthreshold slope</div>
+      <div class="codeblock" style="font-size:11px;">S = (kT/q)·ln(10)·(1 + C_dm/C_ox)   [mV/decade]</div>
+      <p class="sec-body" style="margin-top:12px; margin-bottom:10px; font-size:14px;">The physical floor at room temperature (300K), with C_dm/C_ox → 0, is:</p>
+      <div class="codeblock" style="font-size:12px;">S_ideal ≈ 60 mV/decade</div>
+      <p class="sec-body" style="margin-top:12px; margin-bottom:0; font-size:13.5px;">No MOSFET beats this without new physics (tunnel-FETs, negative capacitance) — a real device is always somewhat worse than 60mV/decade because C_dm/C_ox &gt; 0. One of the most quoted facts in the whole module — know it cold.</p>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:20px;">
+    <div class="panel-tag">3 · Constant-field (Dennard) scaling — the table examiners love</div>
+    <p class="sec-body" style="margin-top:14px; margin-bottom:10px; font-size:14px;">Shrink every dimension by a factor <b>1/κ</b> (κ &gt; 1) and scale voltage the same way, and see what happens to everything else:</p>
+    <table class="compare-table" style="margin-top:8px;">
+      <tr><th>Quantity</th><th>Scaling</th></tr>
+      <tr><td class="cy">Dimensions (L, W, t_ox)</td><td>1/κ</td></tr>
+      <tr><td class="am">Voltage V</td><td>1/κ</td></tr>
+      <tr><td class="vi">Doping concentration</td><td>κ</td></tr>
+      <tr><td class="gr">Current I</td><td>1/κ</td></tr>
+      <tr><td class="cy">Capacitance C</td><td>1/κ</td></tr>
+      <tr><td class="am">Delay (∝ CV/I)</td><td>1/κ</td></tr>
+      <tr><td class="vi">Power per gate (∝ CV²f)</td><td>1/κ²</td></tr>
+      <tr><td class="gr">Power density</td><td><b>constant</b></td></tr>
+    </table>
+    <div class="callout warn" style="margin-top:16px;"><b>Why this became famous:</b> "power density constant" was the whole promise of Dennard scaling — shrink the transistor, get it faster and lower power, for free. It broke down in the mid-2000s once leakage and voltage couldn't keep scaling down — that breakdown is exactly why high-k dielectrics and FinFETs became necessary rather than optional.</div>
+  </div>
+
+  <div class="two-col" style="margin-top:20px;">
+    <div class="panel">
+      <div class="panel-tag">4 · High-k dielectrics — the leakage fix</div>
+      <p class="sec-body" style="margin-top:14px; margin-bottom:0; font-size:14px;">As t_ox shrinks toward a handful of atomic layers, electrons start <b>quantum-mechanically tunnelling straight through</b> the gate oxide — gate leakage current, scaling exponentially with thickness. Swap SiO₂ (k≈3.9) for a high-k material (e.g. HfO₂, k≈20+) and you keep the same <b>Equivalent Oxide Thickness</b> — EOT = t_high-k · (3.9/k_high-k) — same C_ox, same V_th behaviour — while the physical layer stays thick enough to suppress tunnelling.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-tag">5 · FinFETs — the electrostatics fix</div>
+      <p class="sec-body" style="margin-top:14px; margin-bottom:0; font-size:14px;">A planar MOSFET's gate only controls the channel from <b>one side</b> — as channel length shrinks, the drain's field starts reaching the source and controlling the channel too (eroding V_th, increasing leakage). A FinFET wraps the gate around a thin vertical silicon "fin" on <b>three sides</b>, giving the gate far stronger control relative to the drain — this is what lets channel length keep shrinking without V_th collapsing.</p>
+    </div>
+  </div>
+
+  <div class="callout good"><b>How these five pieces connect for the exam:</b> V_th and subthreshold slope are the numbers you calculate; Dennard scaling is the historical narrative that explains why those numbers had to keep improving; high-k and FinFETs are the two specific engineering fixes that kept the narrative going once naive scaling broke. A strong answer on any one of these should reference where it sits in that chain.</div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 5.7 · END OF PART V</div>
+  <h2 class="outro-title">Seven modules, one shared instinct.</h2>
+  <p>Every chapter in Part V teaches a version of the same move: model the system, find the point where it breaks, and design so it doesn't. That's control theory, that's metastability, that's a PUF, that's a MOSFET past threshold — and it's the same instinct Part VI now applies to actual objects, starting with the raw ore they're built from.</p>
+  <div class="btn-row">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="26-secure-hardware.html">← Chapter 5.6</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 5.7 OF 35 · PART V: ADVANCED THEORY<br/>PART V PREPARED FROM MODULE SYLLABI: ELEC6228 · ELEC6243 · ELEC6240 · ELEC6236 · ELEC6234 · ELEC6237 · ELEC6256</footer>
+
+<script>
+(function(){
+  const Vth = 1.0, k = 0.5;
+  const xMax = 5, yMax = 1.8;
+  function idAt(Vgs, Vds){
+    const Vov = Vgs - Vth;
+    if(Vov <= 0) return 0;
+    if(Vds < Vov) return k*(Vov*Vds - Vds*Vds/2);
+    return (k/2)*Vov*Vov;
+  }
+  function curvePoints(Vgs){
+    let pts = [];
+    for(let i=0;i<=60;i++){
+      const vds = (i/60)*xMax;
+      const id = idAt(Vgs, vds);
+      const x = 50 + (vds/xMax)*550;
+      const y = 220 - (id/yMax)*200;
+      pts.push(x+','+Math.max(20,y));
+    }
+    return pts.join(' ');
+  }
+  document.getElementById('c7_ref1').setAttribute('points', curvePoints(1.5));
+  document.getElementById('c7_ref2').setAttribute('points', curvePoints(2.5));
+  document.getElementById('c7_ref3').setAttribute('points', curvePoints(3.0));
+
+  const vgsEl = document.getElementById('c7_vgs'), vdsEl = document.getElementById('c7_vds');
+  function render(){
+    const Vgs = (+vgsEl.value)/10, Vds = (+vdsEl.value)/10;
+    document.getElementById('c7_vgsval').textContent = Vgs.toFixed(1)+' V';
+    document.getElementById('c7_vdsval').textContent = Vds.toFixed(1)+' V';
+
+    document.getElementById('c7_active').setAttribute('points', curvePoints(Vgs));
+    const id = idAt(Vgs, Vds);
+    document.getElementById('c7_id').textContent = id.toFixed(3)+' mA';
+
+    const x = 50 + (Vds/xMax)*550;
+    const y = Math.max(20, 220 - (id/yMax)*200);
+    document.getElementById('c7_marker').setAttribute('cx', x);
+    document.getElementById('c7_marker').setAttribute('cy', y);
+
+    const Vov = Vgs - Vth;
+    const regionEl = document.getElementById('c7_region');
+    const callout = document.getElementById('c7_callout');
+    if(Vov <= 0){
+      regionEl.textContent = 'CUTOFF'; regionEl.style.color = 'var(--dim)';
+      callout.className = 'callout warn';
+      callout.innerHTML = `<b>Cutoff.</b> V_GS = ${Vgs.toFixed(1)}V is below V_th = 1.0V — the gate hasn't inverted the channel, so essentially no current flows regardless of V_DS.`;
+    } else if(Vds < Vov){
+      regionEl.textContent = 'TRIODE'; regionEl.style.color = 'var(--amber)';
+      callout.className = 'callout';
+      callout.innerHTML = `<b>Triode (linear) region.</b> V_DS = ${Vds.toFixed(1)}V is still below the overdrive V_GS−V_th = ${Vov.toFixed(1)}V, so the channel behaves roughly like a gate-controlled resistor — I_D rises close to linearly with V_DS here.`;
+    } else {
+      regionEl.textContent = 'SATURATION'; regionEl.style.color = 'var(--cyan)';
+      callout.className = 'callout good';
+      callout.innerHTML = `<b>Saturation.</b> V_DS has passed the pinch-off point (${Vov.toFixed(1)}V) — the curve has gone flat. I_D is now set almost entirely by V_GS, which is exactly the regime a switching digital gate wants to sit in.`;
+    }
+  }
+  [vgsEl, vdsEl].forEach(el=> el.addEventListener('input', render));
+  render();
+
+  document.querySelectorAll('#c7_quiz .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c7_quiz .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c7_quizfb').style.display='block';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

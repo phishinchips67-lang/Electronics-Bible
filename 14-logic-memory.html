@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>4.1 Logic & Memory — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,58px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--violet);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+
+  .three-col{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media(max-width:820px){.three-col{grid-template-columns:1fr;}}
+
+  .compare-table{width:100%; border-collapse:collapse; margin-top:20px; font-size:13.5px; max-width:940px; margin-left:auto; margin-right:auto;}
+  .compare-table th, .compare-table td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); }
+  .compare-table th{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.06em; color:var(--dim); text-transform:uppercase;}
+
+  .bit{
+    width:34px; height:34px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; border:1px solid var(--line);
+    background:var(--paper); color:var(--dim); flex-shrink:0; transition:all .2s;
+  }
+  .bit.hi{background:rgba(107,224,138,0.15); border-color:var(--green); color:var(--green);}
+  .bit.lo{background:rgba(255,107,107,0.1); border-color:var(--danger); color:var(--danger);}
+  .bitrow{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part IV · Digital & Microcontrollers · Chapter 4.1 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 4.1 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">From "yes or no"<br/>to <span class="hl">remembering</span>.</h1>
+  <p class="hero-sub">A logic gate answers one instant question about its inputs. Wire two gates into a loop and something new appears that no single gate has: memory. This chapter builds that up from scratch, then shows where a running program actually lives.</p>
+  <div class="hero-chip"><span class="pulse"></span> LOGIC GATES · FLIP-FLOPS · FLASH / SRAM / EEPROM</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#sec-gates">Logic Gates</a>
+    <a class="btn chip" href="#c5_sec-ff">Flip-Flops</a>
+    <a class="btn chip" href="#c3_sec-types">Flash, SRAM & EEPROM</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ LOGIC GATES ══════════════ -->
+<section class="section" id="sec-gates">
+  <div class="sec-label">01 · Logic Gates</div>
+  <h2 class="sec-title">Every decision a computer ever makes reduces to five of these.</h2>
+  <p class="sec-body">
+    A logic gate is a tiny circuit — a handful of transistors (3.2) — that outputs a single HIGH or LOW based purely on its
+    inputs, right now, with no memory of the past. <b>AND</b> only outputs 1 if every input is 1. <b>OR</b> outputs 1 if any
+    input is 1. <b>NOT</b> simply flips its one input. <b>XOR</b> outputs 1 only when its inputs <i>disagree</i>. Combine a
+    handful of these and you can build anything from a calculator to a CPU — and combined a very specific way, as the next
+    section shows, they can even remember.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Toggle the Inputs</div>
+    <svg viewBox="0 0 400 160" style="width:280px; height:auto; margin:0 auto; display:block;">
+      <circle id="gateA" cx="60" cy="55" r="20" fill="var(--paper)" stroke="var(--dim)" stroke-width="2" style="cursor:pointer;"/>
+      <text id="gateALbl" x="60" y="60" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="14">0</text>
+      <text x="60" y="90" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">A</text>
+      <circle id="gateB" cx="60" cy="115" r="20" fill="var(--paper)" stroke="var(--dim)" stroke-width="2" style="cursor:pointer;"/>
+      <text id="gateBLbl" x="60" y="120" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="14">0</text>
+      <text x="60" y="150" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">B</text>
+      <line x1="80" y1="55" x2="150" y2="70" stroke="var(--dim)" stroke-width="2"/>
+      <line x1="80" y1="115" x2="150" y2="100" stroke="var(--dim)" stroke-width="2"/>
+      <path d="M150 45 L150 125 Q210 125 210 85 Q210 45 150 45 Z" fill="none" stroke="var(--copper)" stroke-width="2" id="gateShapeAOG"/>
+      <path id="gateShapeNOT" d="M150 55 L150 115 L210 85 Z" fill="none" stroke="var(--copper)" stroke-width="2" style="display:none;"/>
+      <circle id="gateBubble" cx="222" cy="85" r="6" fill="none" stroke="var(--copper)" stroke-width="2" style="display:none;"/>
+      <text id="gateTypeLbl" x="180" y="90" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="11">AND</text>
+      <line x1="228" y1="85" x2="290" y2="85" stroke="var(--dim)" stroke-width="2"/>
+      <circle id="gateOut" cx="320" cy="85" r="22" fill="var(--dim)" opacity="0.3" stroke="var(--dim)" stroke-width="2"/>
+      <text id="gateOutLbl" x="320" y="90" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="14">0</text>
+    </svg>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn active" data-gate="AND">AND</button>
+      <button class="btn" data-gate="OR">OR</button>
+      <button class="btn" data-gate="NOT">NOT</button>
+      <button class="btn" data-gate="XOR">XOR</button>
+      <button class="btn" data-gate="NAND">NAND</button>
+    </div>
+    <p style="text-align:center; color:var(--dim); font-size:12px; margin-top:14px; font-family:'JetBrains Mono',monospace;">Click the A / B circles to toggle each input</p>
+    <div class="callout" id="gateCallout"><b>AND:</b> both inputs need to be 1 for the output to be 1 — think of two switches wired in series, both must close.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ FLIP-FLOPS ══════════════ -->
+<section class="section" id="c5_sec-ff">
+  <div class="sec-label">02 · Flip-Flops</div>
+  <h2 class="sec-title">The circuit that remembers what just happened.</h2>
+  <p class="sec-body">
+    Every gate above reacts to the present, instantly, with no history. A flip-flop is different — it's built from a couple of
+    cross-wired gates that <b>hold their state</b> even after the input that caused it disappears, like a
+    <span class="analogy">light switch</span> versus a <span class="analogy">doorbell button</span>: the button only does
+    something while you're pressing it, the switch stays wherever you last left it. This is literally what "memory" means at
+    the transistor level. There are four flavors — try each one below.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Pick a Flip-Flop</div>
+    <div class="btn-row">
+      <button class="btn active" id="c5_ffSR">SR Latch</button>
+      <button class="btn" id="c5_ffD">D Flip-Flop</button>
+      <button class="btn" id="c5_ffJK">JK Flip-Flop</button>
+      <button class="btn" id="c5_ffT">T Flip-Flop</button>
+    </div>
+
+    <svg viewBox="0 0 700 140" style="width:100%; height:auto; margin-top:24px;">
+      <rect x="280" y="30" width="140" height="80" rx="8" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <text id="c5_ffTypeLbl" x="350" y="75" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="14">SR LATCH</text>
+      <circle id="c5_qLamp" cx="560" cy="55" r="26" fill="var(--dim)" opacity="0.3" stroke="var(--dim)" stroke-width="2"/>
+      <text x="560" y="60" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="13" id="c5_qLampLbl">Q=0</text>
+      <text x="560" y="100" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">OUTPUT (Q)</text>
+      <line x1="420" y1="55" x2="534" y2="55" stroke="var(--dim)" stroke-width="2"/>
+    </svg>
+
+    <div id="c5_ffControlsSR" class="btn-row">
+      <button class="btn" id="c5_btnSet">S = 1 (SET)</button>
+      <button class="btn" id="c5_btnReset">R = 1 (RESET)</button>
+    </div>
+    <div id="c5_ffControlsD" class="btn-row" style="display:none;">
+      <button class="btn" id="c5_btnDVal">D = 0 (click to flip)</button>
+      <button class="btn" id="c5_btnClockD">⏱ CLOCK PULSE</button>
+    </div>
+    <div id="c5_ffControlsJK" class="btn-row" style="display:none;">
+      <button class="btn" id="c5_btnJVal">J = 0</button>
+      <button class="btn" id="c5_btnKVal">K = 0</button>
+      <button class="btn" id="c5_btnClockJK">⏱ CLOCK PULSE</button>
+    </div>
+    <div id="c5_ffControlsT" class="btn-row" style="display:none;">
+      <button class="btn" id="c5_btnTVal">T = 1 (toggle enabled)</button>
+      <button class="btn" id="c5_btnClockT">⏱ CLOCK PULSE</button>
+    </div>
+
+    <div class="callout" id="c5_ffCallout"><b>SR Latch:</b> press SET and Q locks to 1. Press RESET and Q locks to 0. Do nothing, and Q just... stays. That's memory.</div>
+  </div>
+
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">Truth Table</div>
+    <table class="compare-table" id="c5_truthTableSR">
+      <tr><th>S</th><th>R</th><th>Q(next)</th><th>Meaning</th></tr>
+      <tr><td>0</td><td>0</td><td>Q</td><td>Hold — no change</td></tr>
+      <tr><td>0</td><td>1</td><td>0</td><td>Reset</td></tr>
+      <tr><td>1</td><td>0</td><td>1</td><td>Set</td></tr>
+      <tr><td>1</td><td>1</td><td style="color:var(--danger);">Invalid</td><td>Both outputs fight — forbidden</td></tr>
+    </table>
+    <table class="compare-table" id="c5_truthTableD" style="display:none;">
+      <tr><th>D</th><th>CLK</th><th>Q(next)</th><th>Meaning</th></tr>
+      <tr><td>0</td><td>↑ (edge)</td><td>0</td><td>Captures D at the edge</td></tr>
+      <tr><td>1</td><td>↑ (edge)</td><td>1</td><td>Captures D at the edge</td></tr>
+      <tr><td>X</td><td>no edge</td><td>Q</td><td>Hold — ignores D entirely</td></tr>
+    </table>
+    <table class="compare-table" id="c5_truthTableJK" style="display:none;">
+      <tr><th>J</th><th>K</th><th>Q(next)</th><th>Meaning</th></tr>
+      <tr><td>0</td><td>0</td><td>Q</td><td>Hold</td></tr>
+      <tr><td>0</td><td>1</td><td>0</td><td>Reset</td></tr>
+      <tr><td>1</td><td>0</td><td>1</td><td>Set</td></tr>
+      <tr><td>1</td><td>1</td><td>Q'</td><td>Toggle — the fix for SR's invalid state</td></tr>
+    </table>
+    <table class="compare-table" id="c5_truthTableT" style="display:none;">
+      <tr><th>T</th><th>Q(next)</th><th>Meaning</th></tr>
+      <tr><td>0</td><td>Q</td><td>Hold</td></tr>
+      <tr><td>1</td><td>Q'</td><td>Toggle every clock edge</td></tr>
+    </table>
+  </div>
+
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">How It's Actually Built, Gate by Gate</div>
+    <p class="sec-body" style="margin-bottom:20px; font-size:14px;" id="c5_constructionIntro">
+      Every flip-flop above is built from the same tiny trick: two NOR gates, cross-wired so each one's output feeds the
+      other's input. That feedback loop is what creates memory out of ordinary logic gates that otherwise have no memory at all.
+    </p>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto;" id="c5_constructionSVG">
+      <text x="60" y="70" fill="var(--cyan)" font-family="JetBrains Mono" font-size="12">R</text>
+      <line x1="75" y1="70" x2="140" y2="70" stroke="var(--cyan)" stroke-width="2"/>
+      <path d="M140 50 L140 90 L190 90 L190 50 Z" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <path d="M190 60 a10 10 0 0 1 0 20" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <circle cx="204" cy="70" r="4" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <text x="165" y="75" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="10">NOR</text>
+      <text x="60" y="160" fill="var(--violet)" font-family="JetBrains Mono" font-size="12">S</text>
+      <line x1="75" y1="160" x2="140" y2="160" stroke="var(--violet)" stroke-width="2"/>
+      <path d="M140 140 L140 180 L190 180 L190 140 Z" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <path d="M190 150 a10 10 0 0 1 0 20" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <circle cx="204" cy="160" r="4" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <text x="165" y="165" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="10">NOR</text>
+      <line x1="208" y1="70" x2="500" y2="70" stroke="var(--green)" stroke-width="2"/>
+      <text x="510" y="75" fill="var(--green)" font-family="JetBrains Mono" font-size="12">Q</text>
+      <line x1="208" y1="160" x2="500" y2="160" stroke="var(--amber)" stroke-width="2"/>
+      <text x="510" y="165" fill="var(--amber)" font-family="JetBrains Mono" font-size="12">Q'</text>
+      <path d="M480 70 V 110 H 120 V 140" stroke="var(--green)" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/>
+      <path d="M480 160 V 120 H 120 V 90" stroke="var(--amber)" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/>
+      <text x="300" y="105" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">Q feeds back into the bottom gate</text>
+      <text x="300" y="128" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">Q' feeds back into the top gate</text>
+    </svg>
+    <div class="callout" id="c5_constructionCallout"><b>This cross-feedback is the entire secret.</b> Whichever gate's output goes low locks the other gate's output high, and that high output loops back to keep the first gate low — a stable state that persists with zero clock, zero memory chip, just two gates holding hands.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ MEMORY TYPES ══════════════ -->
+<section class="section" id="c3_sec-types">
+  <div class="sec-label">03 · Flash, SRAM &amp; EEPROM</div>
+  <h2 class="sec-title">Three memories, three completely different jobs.</h2>
+  <p class="sec-body">
+    <b>Flash</b> is non-volatile — it keeps its contents with zero power — and holds your compiled program itself, the exact bytes the CPU fetches every cycle. It's written in whole blocks (erase, then write) and wears out after roughly 10,000–100,000 erase cycles, which is why you don't rewrite it constantly. <b>SRAM</b> is volatile — it forgets everything the instant power drops — and holds your program's working data: variables, the call stack, anything that changes while running. It's fast, freely rewritable without limit, but usually far smaller than flash. <b>EEPROM</b>, where present, is non-volatile like flash but rewritable byte-by-byte, reserved for small amounts of data that need to survive a power cycle and change occasionally — a WiFi password, a calibration constant.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Pull the Power</div>
+    <div class="three-col" style="margin-top:16px;">
+      <div class="panel" style="padding:16px;" id="c3t_flashPanel">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--amber); text-align:center; margin-bottom:8px;">FLASH (non-volatile)</div>
+        <div id="c3t_flashContent" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--dim); text-align:center; line-height:1.8;">void loop() {<br/>&nbsp;digitalWrite(13,HIGH);<br/>}</div>
+      </div>
+      <div class="panel" style="padding:16px;" id="c3t_sramPanel">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green); text-align:center; margin-bottom:8px;">SRAM (volatile)</div>
+        <div id="c3t_sramContent" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--dim); text-align:center; line-height:1.8;">counter = 42<br/>ledState = 1<br/>stack: [0x1F, 0xA3]</div>
+      </div>
+      <div class="panel" style="padding:16px;" id="c3t_eepromPanel">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--violet); text-align:center; margin-bottom:8px;">EEPROM (non-volatile)</div>
+        <div id="c3t_eepromContent" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--dim); text-align:center; line-height:1.8;">wifi_ssid = "HomeNet"<br/>cal_offset = 17</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c3t_btnCut">🔌 Cut Power</button>
+      <button class="btn" id="c3t_btnRestore">⚡ Restore Power</button>
+    </div>
+    <div class="callout" id="c3t_powerCallout">Cut the power. Watch SRAM's contents vanish into random noise, while Flash and EEPROM come back exactly as they were.</div>
+  </div>
+  <div class="quiz" id="c3_quiz1">
+    <div class="quiz-q">A variable's value is lost every time the microcontroller loses power, but the program itself always comes back correctly. Where does each most likely live?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Both in Flash</button>
+      <button class="quiz-opt" data-correct="true">The variable is in SRAM (volatile); the program is in Flash (non-volatile)</button>
+      <button class="quiz-opt" data-correct="false">Both in SRAM</button>
+      <button class="quiz-opt" data-correct="false">The variable is in Flash; the program is in SRAM</button>
+    </div>
+    <div class="quiz-fb" id="c3_quiz1fb">This split is universal across essentially every microcontroller: code that must survive power loss goes in Flash, working data that's expected to reset each run goes in SRAM.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 4.1</div>
+  <h2 class="outro-title">Gates decide. Flip-flops remember. Memory chips remember at scale.</h2>
+  <p>Next: <b>4.2 — The CPU Core</b> — fetch, decode, execute, and how a whole computer fits on one chip.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="10-passives-deep-dive.html">← Chapter 3.1</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 4.1 OF 34 · PART IV: DIGITAL & MICROCONTROLLERS</footer>
+
+<script>
+(function(){
+
+  // ══════ LOGIC GATES ══════
+  let gateType = 'AND', aVal = 0, bVal = 0;
+  const gateInfo = {
+    AND: {text:"<b>AND:</b> both inputs need to be 1 for the output to be 1 — think of two switches wired in series, both must close.", fn:(a,b)=>a&&b},
+    OR:  {text:"<b>OR:</b> either input being 1 is enough — two switches wired in parallel, either one closes the circuit.", fn:(a,b)=>a||b},
+    NOT: {text:"<b>NOT:</b> a single input, simply flipped. This one ignores B entirely — it only has one input in real life.", fn:(a,b)=>a?0:1},
+    XOR: {text:"<b>XOR (Exclusive OR):</b> outputs 1 only when the inputs disagree. Two matching inputs, of either value, give 0.", fn:(a,b)=>(a!==b)?1:0},
+    NAND:{text:"<b>NAND:</b> AND, then flipped. NAND gates are special — wired cleverly enough, NAND alone can build every other gate on this list.", fn:(a,b)=>(a&&b)?0:1}
+  };
+  function updateGate(){
+    const out = gateInfo[gateType].fn(aVal, bVal) ? 1 : 0;
+    document.getElementById('gateALbl').textContent = aVal;
+    document.getElementById('gateBLbl').textContent = bVal;
+    document.getElementById('gateA').setAttribute('stroke', aVal ? 'var(--green)' : 'var(--dim)');
+    document.getElementById('gateB').setAttribute('stroke', bVal ? 'var(--green)' : 'var(--dim)');
+    document.getElementById('gateOutLbl').textContent = out;
+    document.getElementById('gateOut').setAttribute('fill', out ? 'var(--green)' : 'var(--dim)');
+    document.getElementById('gateOut').setAttribute('opacity', out ? 0.85 : 0.3);
+    document.getElementById('gateTypeLbl').textContent = gateType;
+    document.getElementById('gateCallout').innerHTML = gateInfo[gateType].text;
+    const isNot = gateType === 'NOT';
+    document.getElementById('gateShapeAOG').style.display = isNot ? 'none' : 'block';
+    document.getElementById('gateShapeNOT').style.display = isNot ? 'block' : 'none';
+    document.getElementById('gateBubble').style.display = (gateType==='NAND'||isNot) ? 'block' : 'none';
+    document.getElementById('gateB').style.opacity = isNot ? 0.3 : 1;
+  }
+  document.getElementById('gateA').onclick = ()=>{ aVal = aVal?0:1; updateGate(); };
+  document.getElementById('gateB').onclick = ()=>{ bVal = bVal?0:1; updateGate(); };
+  document.querySelectorAll('#sec-gates .btn-row .btn[data-gate]').forEach(btn=>{
+    btn.onclick = function(){
+      document.querySelectorAll('#sec-gates .btn-row .btn[data-gate]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      gateType = this.dataset.gate;
+      updateGate();
+    };
+  });
+  updateGate();
+
+  // ══════ FLIP-FLOPS ══════
+  let ffType = 'SR';
+  let Q = 0;
+  let dVal = 0, jVal = 0, kVal = 0, tVal = 1;
+
+  function setQ(newQ, msg){
+    Q = newQ;
+    const lamp = document.getElementById('c5_qLamp');
+    const lbl = document.getElementById('c5_qLampLbl');
+    lbl.textContent = 'Q='+Q;
+    lamp.setAttribute('fill', Q ? 'var(--green)' : 'var(--dim)');
+    lamp.setAttribute('opacity', Q ? 0.8 : 0.3);
+    if(msg) document.getElementById('c5_ffCallout').innerHTML = msg;
+  }
+
+  function selectFF(type){
+    ffType = type;
+    ['c5_ffSR','c5_ffD','c5_ffJK','c5_ffT'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    document.getElementById('c5_ff'+type).classList.add('active');
+    ['c5_ffControlsSR','c5_ffControlsD','c5_ffControlsJK','c5_ffControlsT'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('c5_ffControls'+type).style.display='flex';
+    const labels = {SR:'SR LATCH', D:'D FLIP-FLOP', JK:'JK FLIP-FLOP', T:'T FLIP-FLOP'};
+    document.getElementById('c5_ffTypeLbl').textContent = labels[type];
+    const intros = {
+      SR: "<b>SR Latch:</b> press SET and Q locks to 1. Press RESET and Q locks to 0. Do nothing, and Q just... stays. That's memory.",
+      D: "<b>D Flip-Flop:</b> toggle D freely — nothing happens to Q until you press CLOCK PULSE. It only 'photographs' D at that exact instant.",
+      JK: "<b>JK Flip-Flop:</b> J=1,K=0 sets Q; J=0,K=1 resets Q; J=0,K=0 holds; and J=1,K=1 does something SR can't — it toggles Q every pulse.",
+      T: "<b>T Flip-Flop:</b> with T=1, every single clock pulse flips Q to the opposite state. Wire the output back as the next stage's clock and you've built a frequency divider."
+    };
+    document.getElementById('c5_ffCallout').innerHTML = intros[type];
+    ['SR','D','JK','T'].forEach(t=> document.getElementById('c5_truthTable'+t).style.display = (t===type) ? 'table' : 'none');
+    const constructionText = {
+      SR: "Every flip-flop above is built from the same tiny trick: two NOR gates, cross-wired so each one's output feeds the other's input. That feedback loop is what creates memory out of ordinary logic gates that otherwise have no memory at all.",
+      D: "A D flip-flop is that same cross-coupled latch, but with an extra pair of AND gates in front of S and R that only let D through the instant the clock edge arrives — everywhere else in time, D is completely blocked, which is why Q only updates on that one edge instead of following D continuously like the raw SR latch would.",
+      JK: "A JK flip-flop reuses the identical latch core, but adds feedback wires from Q and Q' back into the input AND gates. That feedback is exactly what closes SR's forbidden hole: when J=K=1, the gate feeding S is blocked by whichever output is already high, forcing a clean toggle instead of a conflict.",
+      T: "A T flip-flop doesn't need new gates at all — it's just a JK flip-flop with J and K permanently wired together to the same T input. Tie them together and the JK truth table collapses to exactly two rows: hold (T=0) and toggle (T=1)."
+    };
+    document.getElementById('c5_constructionIntro').textContent = constructionText[type];
+    document.getElementById('c5_constructionCallout').innerHTML = type === 'SR'
+      ? "<b>This cross-feedback is the entire secret.</b> Whichever gate's output goes low locks the other gate's output high, and that high output loops back to keep the first gate low — a stable state that persists with zero clock, zero memory chip, just two gates holding hands."
+      : `<b>Underneath the extra gating, it's still the same two cross-coupled NOR gates from the SR latch.</b> Every flip-flop in this section is really just "SR latch + a bit more logic deciding when and how S and R are allowed to change."`;
+  }
+  document.getElementById('c5_ffSR').onclick = ()=>selectFF('SR');
+  document.getElementById('c5_ffD').onclick = ()=>selectFF('D');
+  document.getElementById('c5_ffJK').onclick = ()=>selectFF('JK');
+  document.getElementById('c5_ffT').onclick = ()=>selectFF('T');
+
+  document.getElementById('c5_btnSet').onclick = ()=> setQ(1, "<b>SET:</b> Q is now locked at 1. It will stay this way even after you stop pressing anything.");
+  document.getElementById('c5_btnReset').onclick = ()=> setQ(0, "<b>RESET:</b> Q is now locked at 0. It'll hold here until SET is pressed again.");
+
+  document.getElementById('c5_btnDVal').onclick = function(){
+    dVal = dVal ? 0 : 1;
+    this.textContent = `D = ${dVal} (click to flip)`;
+    document.getElementById('c5_ffCallout').innerHTML = `<b>D changed to ${dVal}, but Q hasn't moved.</b> Q only updates the moment you press CLOCK PULSE — that's the whole point of an edge-triggered flip-flop.`;
+  };
+  document.getElementById('c5_btnClockD').onclick = ()=> setQ(dVal, `<b>Clock edge!</b> Q just captured D's value (${dVal}) at this exact instant, like a camera shutter clicking.`);
+
+  document.getElementById('c5_btnJVal').onclick = function(){ jVal = jVal?0:1; this.textContent = `J = ${jVal}`; };
+  document.getElementById('c5_btnKVal').onclick = function(){ kVal = kVal?0:1; this.textContent = `K = ${kVal}`; };
+  document.getElementById('c5_btnClockJK').onclick = function(){
+    if(jVal===0 && kVal===0) setQ(Q, "<b>J=0, K=0:</b> hold — clock pulse arrived but nothing changes.");
+    else if(jVal===1 && kVal===0) setQ(1, "<b>J=1, K=0:</b> set — Q goes to 1.");
+    else if(jVal===0 && kVal===1) setQ(0, "<b>J=0, K=1:</b> reset — Q goes to 0.");
+    else setQ(Q?0:1, "<b>J=1, K=1:</b> toggle! This is the one mode a plain SR latch can't safely do — JK resolves the 'forbidden state' by toggling instead.");
+  };
+
+  document.getElementById('c5_btnTVal').onclick = function(){ tVal = tVal?0:1; this.textContent = `T = ${tVal} (toggle ${tVal?'enabled':'disabled'})`; };
+  document.getElementById('c5_btnClockT').onclick = function(){
+    if(tVal) setQ(Q?0:1, "<b>T=1:</b> toggled! Feed this Q into another T flip-flop's clock input and you've divided the frequency by 2 again — that's how digital clock dividers are built, stage after stage.");
+    else setQ(Q, "<b>T=0:</b> holds steady — toggling is disabled.");
+  };
+  setQ(0);
+
+  // ══════ MEMORY: PULL THE POWER ══════
+  function randomGarbage(){
+    let bytes = [];
+    for(let i=0; i<3; i++) bytes.push('0x'+Math.floor(Math.random()*256).toString(16).toUpperCase().padStart(2,'0'));
+    return bytes.join(' ')+' <span style="color:var(--dim)">(undefined)</span>';
+  }
+  document.getElementById('c3t_btnCut').onclick = function(){
+    document.getElementById('c3t_sramContent').innerHTML = randomGarbage();
+    document.getElementById('c3t_sramPanel').style.opacity = '0.45';
+    document.getElementById('c3t_powerCallout').innerHTML = "<b>Power cut.</b> SRAM's contents are gone — not necessarily zeroed, just meaninglessly random. Flash and EEPROM are completely unaffected; they don't need power to remember anything.";
+  };
+  document.getElementById('c3t_btnRestore').onclick = function(){
+    document.getElementById('c3t_sramContent').innerHTML = "counter = 0<br/>ledState = 0<br/>stack: [uninitialized]";
+    document.getElementById('c3t_sramPanel').style.opacity = '1';
+    document.getElementById('c3t_powerCallout').innerHTML = "<b>Power restored — but SRAM doesn't magically remember.</b> On startup, the runtime typically zeroes out global variables (the old counter = 42 is genuinely gone) before your program runs again and rebuilds its own state from scratch. Flash and EEPROM never needed rebuilding at all.";
+  };
+
+  // ══════ QUIZ ══════
+  document.querySelectorAll('#c3_quiz1 .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c3_quiz1 .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c3_quiz1fb').style.display='block';
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

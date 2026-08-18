@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>4.4 GPIO, ADC & PWM — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:52vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,54px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--green);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.r .rv{color:var(--copper);} .readout.b .rv{color:var(--violet);} .readout.p .rv{color:var(--green);} .readout.d .rv{color:var(--danger);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.warn{border-left-color:var(--danger);} .callout.warn b{color:var(--danger);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr;}}
+
+  .compare-table{width:100%; border-collapse:collapse; margin-top:20px; font-size:13.5px; max-width:940px; margin-left:auto; margin-right:auto;}
+  .compare-table th, .compare-table td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); }
+  .compare-table th{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.06em; color:var(--dim); text-transform:uppercase;}
+
+  .reg-bits{display:flex; gap:3px; flex-wrap:wrap; justify-content:center; margin:16px 0;}
+  .reg-bit{
+    width:34px; height:44px; border-radius:6px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; background:var(--paper); color:var(--dim); border:1px solid var(--line); transition:all .15s; cursor:pointer;
+  }
+  .reg-bit .bv{font-size:16px; font-weight:700; color:var(--dim); font-family:'JetBrains Mono',monospace;}
+  .reg-bit .bn{font-size:8px; color:var(--dim); margin-top:2px; font-family:'JetBrains Mono',monospace;}
+  .reg-bit.on{border-color:var(--green); background:rgba(107,224,138,0.1);}
+  .reg-bit.on .bv{color:var(--green);}
+
+  .eq{
+    font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.25); border:1px solid var(--line);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:14px; color:var(--white);
+    max-width:940px; margin-left:auto; margin-right:auto;
+  }
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part IV · Digital & Microcontrollers · Chapter 4.4 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 4.4 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">One pin, four completely<br/>different <span class="hl">personalities</span>.</h1>
+  <p class="hero-sub">GPIO — General Purpose Input/Output — is the whole reason a microcontroller can touch the physical world at all. Same physical pin, reconfigurable in software to be almost anything you need.</p>
+  <div class="hero-chip"><span class="pulse"></span> SFRs · BIT MANIPULATION · DDR/PORT/PIN · VOLTAGE LEVELS · PUSH-PULL/OPEN-DRAIN · ADC/PWM</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c5_sec-sfr">Special Function Registers</a>
+    <a class="btn chip" href="#c5_sec-bits">Bit Manipulation</a>
+    <a class="btn chip" href="#c5_sec-gpioregs">DDR / PORT / PIN</a>
+    <a class="btn chip" href="#c6_sec-modes">Pin Modes</a>
+    <a class="btn chip" href="#c6_sec-voltage">Voltage Thresholds</a>
+    <a class="btn chip" href="#c6_sec-drive">Push-Pull vs Open-Drain</a>
+    <a class="btn chip" href="#c6_sec-analog">ADC &amp; PWM</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ SFR ══════════════ -->
+<section class="section" id="c5_sec-sfr">
+  <div class="sec-label">01 · Special Function Registers</div>
+  <h2 class="sec-title">A register that isn't just storage — it's a control panel.</h2>
+  <p class="sec-body">
+    Recall 4.3: every peripheral gets addresses inside the same unified memory map as ordinary RAM. A <b>Special Function Register (SFR)</b> lives at one of those addresses, but reading or writing it doesn't just store a number — it directly controls, or directly reflects, real physical hardware. Flip one bit in the right register, and a real pin's voltage changes within nanoseconds. Peripherals typically expose a few different flavors of register for this:
+  </p>
+  <table class="compare-table">
+    <tr><th>Register type</th><th>Typical access</th><th>Job</th></tr>
+    <tr><td>Configuration</td><td>Read/write, set once</td><td>Choose a mode: input vs. output, which clock source, baud rate</td></tr>
+    <tr><td>Control</td><td>Read/write, changed often</td><td>Actively drive behavior: turn output high, start a conversion</td></tr>
+    <tr><td>Status</td><td>Read-only (mostly)</td><td>Report hardware state: is data ready, did an error occur</td></tr>
+  </table>
+  <div class="quiz" id="c5_quiz1">
+    <div class="quiz-q">What makes a Special Function Register different from an ordinary SRAM memory location?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Nothing — the CPU treats them identically in every way, including electrically</button>
+      <button class="quiz-opt" data-correct="true">Reading or writing it directly controls or reflects real hardware, not just an abstract stored value</button>
+      <button class="quiz-opt" data-correct="false">SFRs can only be read, never written</button>
+      <button class="quiz-opt" data-correct="false">SFRs exist outside the memory map entirely</button>
+    </div>
+    <div class="quiz-fb" id="c5_quiz1fb">The CPU's read/write mechanism is identical either way — that's the whole point of memory-mapped I/O (4.3) — but what's sitting on the other end of that address is completely different: real silicon that reacts, not passive storage.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ BIT MANIPULATION ══════════════ -->
+<section class="section" id="c5_sec-bits">
+  <div class="sec-label">02 · Bit-Level Register Manipulation</div>
+  <h2 class="sec-title">One register, many unrelated settings — so you never touch a byte, only a bit.</h2>
+  <p class="sec-body">
+    A single register often packs together several completely unrelated settings, one per bit — flip the wrong one and you can silently break something else entirely unrelated to what you meant to change. So embedded code almost never assigns a whole register a new value; it surgically sets, clears, or toggles one bit at a time, leaving every other bit exactly as it was.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Set / Clear / Toggle, Live</div>
+    <div class="reg-bits" id="c5b_regBits"></div>
+    <div class="controls">
+      <div class="ctrl"><label>Target bit <span class="val" id="c5b_bitVal">3</span></label><input type="range" id="c5b_bit" min="0" max="7" step="1" value="3"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c5b_btnSet">SET</button>
+      <button class="btn" id="c5b_btnClear">CLEAR</button>
+      <button class="btn" id="c5b_btnToggle">TOGGLE</button>
+      <button class="btn" id="c5b_btnReset">↺ Reset Register</button>
+    </div>
+    <div class="eq" id="c5b_codeOut">REG = 0b00000000;</div>
+    <div class="callout" id="c5b_bitCallout">Pick a bit and hit an action — the code line above shows exactly the C idiom real embedded firmware uses to do it, and only that one bit ever changes.</div>
+  </div>
+  <div class="quiz" id="c5_quiz2">
+    <div class="quiz-q">Why does embedded code almost always use `REG |= (1 << n)` instead of just `REG = someNewValue`?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It's faster to type</button>
+      <button class="quiz-opt" data-correct="true">It changes only the targeted bit, leaving every other unrelated setting packed into that same register untouched</button>
+      <button class="quiz-opt" data-correct="false">Assigning a whole value to a register is not physically possible</button>
+      <button class="quiz-opt" data-correct="false">There's no real difference</button>
+    </div>
+    <div class="quiz-fb" id="c5_quiz2fb">Overwriting the whole register risks silently resetting every other feature that register also controls. Bit-level operations are the safe, surgical way to change exactly one thing.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ DDR/PORT/PIN ══════════════ -->
+<section class="section" id="c5_sec-gpioregs">
+  <div class="sec-label">03 · A Real GPIO Register Set</div>
+  <h2 class="sec-title">Three registers, one pin: direction, output, and truth.</h2>
+  <p class="sec-body">
+    The classic, especially clear example (from the AVR family that powers the original Arduino Uno) uses three registers per port: <b>DDR</b> (Data Direction — 1 = output, 0 = input), <b>PORT</b> (when output: the driven level; when input: enables an internal pull-up resistor), and <b>PIN</b> (read-only — the pin's <i>actual, current, real-world</i> voltage, regardless of what you asked for). Every other architecture does the same three-way split with different register names — you'll meet ARM's version in 4.6.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Click Any Bit to Interact</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--amber); text-align:center; margin-top:16px;">DDR (1 = output, 0 = input)</div>
+    <div class="reg-bits" id="c5g_ddrBits"></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--cyan); text-align:center; margin-top:12px;">PORT (output level, or pull-up enable if input)</div>
+    <div class="reg-bits" id="c5g_portBits"></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green); text-align:center; margin-top:12px;">PIN (read-only — the real, physical voltage right now)</div>
+    <div class="reg-bits" id="c5g_pinBits"></div>
+    <div class="callout" id="c5g_gpioCallout">Click a DDR bit to flip that pin between input and output. In output mode, click PORT to drive it high/low — PIN just mirrors it instantly. In input mode, click PIN directly to simulate the outside world (a button, a sensor) changing that pin's real voltage.</div>
+  </div>
+  <div class="quiz" id="c5_quiz3">
+    <div class="quiz-q">A pin is configured as an input, and its DDR bit is 0. What determines the value read back from its PIN register bit?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Whatever value was last written to PORT</button>
+      <button class="quiz-opt" data-correct="true">Whatever real, external voltage is actually present on that physical pin right now</button>
+      <button class="quiz-opt" data-correct="false">It always reads zero when configured as input</button>
+      <button class="quiz-opt" data-correct="false">It's randomly generated each time it's read</button>
+    </div>
+    <div class="quiz-fb" id="c5_quiz3fb">This is exactly what makes PIN different from PORT: PORT is what you're asking for, PIN is the ground truth of what's actually happening electrically, whether that matches your request or not.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ PIN MODES ══════════════ -->
+<section class="section" id="c6_sec-modes">
+  <div class="sec-label">04 · Pin Modes</div>
+  <h2 class="sec-title">Every pin has an internal switchboard behind it.</h2>
+  <p class="sec-body">
+    A chip usually has far more internal peripheral signals — UART, SPI, I2C, PWM channels, ADC inputs — than it has physical pins to expose them on. So almost every pin sits behind a tiny internal multiplexer, letting software choose what that pin actually connects to: a plain digital input, a plain digital output, a direct line into the ADC, or one specific peripheral's "alternate function."
+  </p>
+  <div class="panel">
+    <div class="panel-tag">One Pin, Four Routes</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <circle cx="620" cy="100" r="16" fill="var(--copper)"/>
+      <text x="620" y="130" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="10">PHYSICAL PIN</text>
+      <rect x="480" y="70" width="90" height="60" rx="6" fill="var(--paper2)" stroke="var(--dim)" stroke-width="2"/>
+      <text x="525" y="105" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">MUX</text>
+      <line x1="570" y1="100" x2="604" y2="100" stroke="var(--copper)" stroke-width="2.5"/>
+      <g id="c6m_routes"></g>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" data-mode="in">Digital Input</button>
+      <button class="btn" data-mode="out">Digital Output</button>
+      <button class="btn" data-mode="analog">Analog Input (ADC)</button>
+      <button class="btn" data-mode="alt">Alternate Function (e.g. UART TX)</button>
+    </div>
+    <div class="callout" id="c6m_modeCallout">A single configuration register (Section 01's territory) tells the mux which internal path gets connected to the pin. Switch modes above and watch the routing change.</div>
+  </div>
+  <div class="quiz" id="c6_quiz1">
+    <div class="quiz-q">Why do most microcontroller pins support several "alternate functions" instead of each pin having one fixed job?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It's a firmware limitation with no hardware basis</button>
+      <button class="quiz-opt" data-correct="true">Chips usually have more internal peripheral signals than physical pins, so an internal mux lets software choose which one each pin exposes</button>
+      <button class="quiz-opt" data-correct="false">Alternate functions only exist on the cheapest chips</button>
+      <button class="quiz-opt" data-correct="false">Every pin is hardwired to every peripheral simultaneously</button>
+    </div>
+    <div class="quiz-fb" id="c6_quiz1fb">Pin count is expensive (bigger package, more board space), so chip designers give you flexibility instead — configure each pin, in software, for whichever one of its several possible jobs you actually need.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ VOLTAGE THRESHOLDS ══════════════ -->
+<section class="section" id="c6_sec-voltage">
+  <div class="sec-label">05 · Voltage Levels &amp; Logic Thresholds</div>
+  <h2 class="sec-title">"0" and "1" are ranges, not exact numbers — and that gap can destroy a chip.</h2>
+  <p class="sec-body">
+    Digital logic doesn't require one exact voltage for "1" and another for "0" — it defines <b>threshold bands</b>. Anything above V<sub>IH</sub> reads as HIGH, anything below V<sub>IL</sub> reads as LOW, and the gap between them is deliberately undefined — noise margin, protecting against small voltage wobble. Modern MCUs mostly run at <b>3.3V</b> logic (ESP32, STM32, Raspberry Pi); the classic 8-bit Arduino Uno runs its logic at <b>5V</b>. Wire a 5V output straight into a 3.3V-only input and you can exceed its absolute maximum rating — a genuinely common way to quietly kill a chip.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Where Does This Voltage Land?</div>
+    <svg viewBox="0 0 300 220" style="width:220px; height:auto; margin:0 auto; display:block;">
+      <rect x="100" y="20" width="60" height="180" fill="var(--paper2)" stroke="var(--line)" stroke-width="1"/>
+      <g id="c6v_zones"></g>
+      <line id="c6v_marker" x1="90" y1="0" x2="170" y2="0" stroke="var(--white)" stroke-width="2.5"/>
+      <circle id="c6v_markerDot" cx="180" cy="0" r="5" fill="var(--white)"/>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" data-logic="3.3">3.3V Logic</button>
+      <button class="btn" data-logic="5">5V Logic</button>
+    </div>
+    <div class="controls">
+      <div class="ctrl"><label>Applied voltage <span class="val" id="c6v_voltVal">1.65 V</span></label><input type="range" id="c6v_volt" min="0" max="5" step="0.05" value="1.65"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout d"><div class="rl">Reads as</div><div class="rv" id="c6v_readOut" style="font-size:15px;">UNDEFINED</div></div>
+    </div>
+    <div class="callout warn" id="c6v_voltCallout">This undefined band isn't a bug — it's intentional noise margin. A real signal should never be allowed to sit in it for long.</div>
+  </div>
+  <div class="quiz" id="c6_quiz2">
+    <div class="quiz-q">Why is it dangerous to connect a 5V-logic device's output pin directly to a 3.3V-only microcontroller's input pin?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It isn't — logic levels are universal and interchangeable</button>
+      <button class="quiz-opt" data-correct="true">5V can exceed the 3.3V chip's absolute maximum input rating, permanently damaging it</button>
+      <button class="quiz-opt" data-correct="false">It will simply be read as a slightly weak HIGH, with no risk</button>
+      <button class="quiz-opt" data-correct="false">It only matters for analog signals, never digital ones</button>
+    </div>
+    <div class="quiz-fb" id="c6_quiz2fb">Most 3.3V-only chips specify an absolute maximum input voltage not far above 3.3V. A level shifter or resistor divider is the correct fix — never assume "close enough."</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ PUSH-PULL VS OPEN-DRAIN ══════════════ -->
+<section class="section" id="c6_sec-drive">
+  <div class="sec-label">06 · Push-Pull, Open-Drain &amp; Pull Resistors</div>
+  <h2 class="sec-title">Two ways to output a HIGH — and why one of them refuses to.</h2>
+  <p class="sec-body">
+    A <b>push-pull</b> output actively drives both directions: an internal transistor connects the pin to VCC for HIGH, another connects it to GND for LOW — strong, fast, the default for most GPIO. An <b>open-drain</b> output can only actively pull LOW; for HIGH, it simply releases the pin (goes high-impedance) and relies on a <b>pull-up resistor</b> to passively raise it. This matters enormously on shared buses — I2C (4.7) uses open-drain specifically so multiple devices can share one wire without ever fighting: any device can assert LOW, and the line only floats HIGH when every device lets go.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Push-Pull vs. Open-Drain</div>
+    <svg viewBox="0 0 300 220" style="width:220px; height:auto; margin:0 auto; display:block;">
+      <line x1="150" y1="10" x2="150" y2="35" stroke="var(--dim)" stroke-width="2"/>
+      <text x="150" y="8" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">VCC</text>
+      <rect id="c6d_topTr" x="130" y="35" width="40" height="24" rx="3" fill="var(--paper2)" stroke="var(--dim)" stroke-width="2"/>
+      <text id="c6d_topTrLbl" x="150" y="51" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="8">OFF</text>
+      <line x1="150" y1="59" x2="150" y2="100" stroke="var(--copper)" stroke-width="2.5"/>
+      <circle cx="150" cy="105" r="6" fill="var(--copper)"/>
+      <text x="170" y="109" fill="var(--copper)" font-family="JetBrains Mono" font-size="9">PIN</text>
+      <line x1="150" y1="110" x2="150" y2="150" stroke="var(--dim)" stroke-width="2"/>
+      <rect x="130" y="150" width="40" height="24" rx="3" fill="var(--paper2)" stroke="var(--dim)" stroke-width="2" id="c6d_botTr"/>
+      <text id="c6d_botTrLbl" x="150" y="166" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="8">OFF</text>
+      <line x1="150" y1="174" x2="150" y2="200" stroke="var(--dim)" stroke-width="2"/>
+      <text x="150" y="212" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="9">GND</text>
+      <g id="c6d_pullupRes" opacity="0">
+        <line x1="220" y1="10" x2="220" y2="35" stroke="var(--dim)" stroke-width="2"/>
+        <rect x="205" y="35" width="30" height="18" fill="none" stroke="var(--amber)" stroke-width="2"/>
+        <text x="245" y="48" fill="var(--amber)" font-family="JetBrains Mono" font-size="8">pull-up</text>
+        <line x1="220" y1="53" x2="220" y2="105" stroke="var(--amber)" stroke-width="2" stroke-dasharray="3 3"/>
+        <line x1="220" y1="105" x2="156" y2="105" stroke="var(--amber)" stroke-width="2" stroke-dasharray="3 3"/>
+      </g>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" data-type="pushpull">Push-Pull</button>
+      <button class="btn" data-type="opendrain">Open-Drain</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="c6d_btnHigh">Drive HIGH</button>
+      <button class="btn" id="c6d_btnLow">Drive LOW</button>
+    </div>
+    <div class="callout" id="c6d_driveCallout">Pick Drive HIGH or Drive LOW to see which transistor(s) activate for a push-pull output.</div>
+  </div>
+  <div class="quiz" id="c6_quiz3">
+    <div class="quiz-q">Why does I2C specifically use open-drain outputs instead of push-pull?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Open-drain is simply faster than push-pull</button>
+      <button class="quiz-opt" data-correct="true">It lets multiple devices share one wire safely — any device can pull it low, and none can fight another by driving opposite levels</button>
+      <button class="quiz-opt" data-correct="false">Push-pull outputs cannot physically be wired to more than one device</button>
+      <button class="quiz-opt" data-correct="false">There's no real reason, it's a historical accident</button>
+    </div>
+    <div class="quiz-fb" id="c6_quiz3fb">If two push-pull outputs on the same wire tried to drive opposite levels, you'd get a direct short between VCC and GND through both chips. Open-drain sidesteps this entirely — the worst case is just "nobody's pulling it low," which the pull-up resolves peacefully.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ ADC & PWM ══════════════ -->
+<section class="section" id="c6_sec-analog">
+  <div class="sec-label">07 · Beyond Digital: ADC &amp; PWM</div>
+  <h2 class="sec-title">The real world is analog. The CPU only speaks in bits.</h2>
+  <p class="sec-body">
+    An <b>ADC (Analog-to-Digital Converter)</b> samples a continuous input voltage and reports back the closest of 2ᴺ discrete digital levels, where N is its resolution. A cheap trick for going the other way — output that <i>behaves</i> analog — is <b>PWM (Pulse Width Modulation)</b>: switch a digital pin on and off rapidly, and vary the fraction of time it spends HIGH (the duty cycle) to fake any average voltage you want, without needing a true DAC at all.
+  </p>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-tag">ADC</div>
+      <div class="controls" style="margin-top:16px;">
+        <div class="ctrl"><label>Input voltage (0–3.3V) <span class="val" id="c6a_voltVal">1.65 V</span></label><input type="range" id="c6a_volt" min="0" max="3.3" step="0.01" value="1.65"/></div>
+        <div class="ctrl"><label>Resolution <span class="val" id="c6a_resVal">10-bit</span></label><input type="range" id="c6a_res" min="8" max="12" step="2" value="10"/></div>
+      </div>
+      <div class="readout-row">
+        <div class="readout r"><div class="rl">Digital reading</div><div class="rv" id="c6a_digOut">512</div></div>
+        <div class="readout b"><div class="rl">Out of</div><div class="rv" id="c6a_maxOut">1023</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-tag">PWM</div>
+      <svg viewBox="0 0 300 100" style="width:100%; height:auto; margin-top:16px;">
+        <line x1="10" y1="80" x2="290" y2="80" stroke="var(--line)" stroke-width="1"/>
+        <polyline id="c6p_wave" points="" fill="none" stroke="var(--amber)" stroke-width="2.5"/>
+      </svg>
+      <div class="controls">
+        <div class="ctrl"><label>Duty cycle <span class="val" id="c6p_dutyVal">50%</span></label><input type="range" id="c6p_duty" min="0" max="100" step="1" value="50"/></div>
+      </div>
+      <div class="readout-row">
+        <div class="readout p"><div class="rl">Effective average voltage (of 3.3V)</div><div class="rv" id="c6p_avgOut">1.65 V</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz" id="c6_quiz4">
+    <div class="quiz-q">How does PWM make an LED appear dimmer without ever outputting a genuine "half-voltage" level?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">It reduces the microcontroller's supply voltage automatically</button>
+      <button class="quiz-opt" data-correct="true">It switches fully on and fully off rapidly, and a lower fraction of "on" time makes the average power delivered — and perceived brightness — lower</button>
+      <button class="quiz-opt" data-correct="false">It uses a hidden internal DAC that only activates for LEDs</button>
+      <button class="quiz-opt" data-correct="false">It's not possible — PWM only works for motors, not LEDs</button>
+    </div>
+    <div class="quiz-fb" id="c6_quiz4fb">The pin is only ever fully HIGH or fully LOW — but if it's switching fast enough, neither your eye nor most loads can tell the difference between "actually half voltage" and "full voltage half the time."</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 4.4</div>
+  <h2 class="outro-title">One pin, reconfigured entirely in software into whatever the job needs.</h2>
+  <p>Next: <b>4.5 — Clocks, Timers &amp; Interrupts</b> — where the heartbeat comes from, and how a chip drops everything the instant something urgent happens. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="16-memory-buses.html">← Chapter 4.3</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 4.4 OF 34 · PART IV: DIGITAL & MICROCONTROLLERS</footer>
+
+<script>
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+  function toBitsArray(n){
+    let bits = [];
+    for(let i=7; i>=0; i--) bits.push((n>>i)&1);
+    return bits;
+  }
+
+  // ══════ BIT MANIPULATION ══════
+  let regVal = 0;
+  function renderReg(){
+    const g = document.getElementById('c5b_regBits');
+    g.innerHTML = '';
+    toBitsArray(regVal).forEach((b,idx)=>{
+      const div = document.createElement('div');
+      div.className = 'reg-bit' + (b ? ' on' : '');
+      div.innerHTML = `<div class="bv">${b}</div><div class="bn">${7-idx}</div>`;
+      g.appendChild(div);
+    });
+  }
+  document.getElementById('c5b_bit').oninput = function(){
+    document.getElementById('c5b_bitVal').textContent = this.value;
+  };
+  document.getElementById('c5b_btnSet').onclick = function(){
+    const n = +document.getElementById('c5b_bit').value;
+    regVal |= (1<<n);
+    renderReg();
+    document.getElementById('c5b_codeOut').textContent = `REG |= (1 << ${n});  // sets bit ${n}, leaves the rest untouched`;
+    document.getElementById('c5b_bitCallout').innerHTML = `Bit ${n} is now 1. Every other bit kept whatever value it already had.`;
+  };
+  document.getElementById('c5b_btnClear').onclick = function(){
+    const n = +document.getElementById('c5b_bit').value;
+    regVal &= ~(1<<n);
+    renderReg();
+    document.getElementById('c5b_codeOut').textContent = `REG &= ~(1 << ${n});  // clears bit ${n}, leaves the rest untouched`;
+    document.getElementById('c5b_bitCallout').innerHTML = `Bit ${n} is now 0. The bitwise NOT (~) flips the mask so every OTHER bit stays a 1 in the AND — meaning only bit ${n} can ever change.`;
+  };
+  document.getElementById('c5b_btnToggle').onclick = function(){
+    const n = +document.getElementById('c5b_bit').value;
+    regVal ^= (1<<n);
+    renderReg();
+    document.getElementById('c5b_codeOut').textContent = `REG ^= (1 << ${n});  // flips bit ${n}, leaves the rest untouched`;
+    document.getElementById('c5b_bitCallout').innerHTML = `Bit ${n} just flipped to whatever it wasn't. XOR-with-1 is the standard toggle idiom.`;
+  };
+  document.getElementById('c5b_btnReset').onclick = function(){
+    regVal = 0; renderReg();
+    document.getElementById('c5b_codeOut').textContent = 'REG = 0b00000000;';
+    document.getElementById('c5b_bitCallout').innerHTML = 'Pick a bit and hit an action — the code line above shows exactly the C idiom real embedded firmware uses to do it, and only that one bit ever changes.';
+  };
+  renderReg();
+
+  // ══════ DDR / PORT / PIN ══════
+  let ddr = 0, port = 0, ext = 0;
+  function computePinDisplay(){
+    let pin = 0;
+    for(let i=0; i<8; i++){
+      const isOut = (ddr>>i)&1;
+      const val = isOut ? ((port>>i)&1) : ((ext>>i)&1);
+      pin |= (val<<i);
+    }
+    return pin;
+  }
+  function buildRow(containerId, value, onClickBit){
+    const g = document.getElementById(containerId);
+    g.innerHTML = '';
+    toBitsArray(value).forEach((b,idx)=>{
+      const i = 7-idx;
+      const div = document.createElement('div');
+      div.className = 'reg-bit' + (b ? ' on' : '');
+      div.innerHTML = `<div class="bv">${b}</div><div class="bn">${i}</div>`;
+      div.onclick = () => onClickBit(i);
+      g.appendChild(div);
+    });
+  }
+  function renderGpio(){
+    buildRow('c5g_ddrBits', ddr, (i)=>{
+      ddr ^= (1<<i);
+      renderGpio();
+      document.getElementById('c5g_gpioCallout').innerHTML = `Pin ${i} is now configured as ${((ddr>>i)&1) ? '<b>OUTPUT</b>' : '<b>INPUT</b>'}.`;
+    });
+    buildRow('c5g_portBits', port, (i)=>{
+      port ^= (1<<i);
+      const isOut = (ddr>>i)&1;
+      renderGpio();
+      document.getElementById('c5g_gpioCallout').innerHTML = isOut
+        ? `Pin ${i} (output) is now driven ${((port>>i)&1) ? 'HIGH' : 'LOW'} — PIN updates to match instantly.`
+        : `Pin ${i} (input) internal pull-up is now ${((port>>i)&1) ? 'ENABLED' : 'DISABLED'}.`;
+    });
+    buildRow('c5g_pinBits', computePinDisplay(), (i)=>{
+      const isOut = (ddr>>i)&1;
+      if(isOut){
+        document.getElementById('c5g_gpioCallout').innerHTML = `Pin ${i} is in OUTPUT mode — PIN is read-only here, it just mirrors whatever PORT is driving. Flip its DDR bit to input first.`;
+        return;
+      }
+      ext ^= (1<<i);
+      renderGpio();
+      document.getElementById('c5g_gpioCallout').innerHTML = `Simulated the outside world driving pin ${i} ${((ext>>i)&1) ? 'HIGH' : 'LOW'} — the PIN register instantly reflects it, completely independent of PORT.`;
+    });
+  }
+  renderGpio();
+
+  // ══════ PIN MODE MUX ══════
+  const dests = [
+    {key:'in',     label:'DIGITAL INPUT LOGIC',        y:20,  color:'var(--cyan)'},
+    {key:'out',    label:'OUTPUT DRIVER',               y:70,  color:'var(--amber)'},
+    {key:'analog', label:'ADC SAMPLE & HOLD',            y:120, color:'var(--violet)'},
+    {key:'alt',    label:'PERIPHERAL (UART/SPI/I2C)',    y:170, color:'var(--green)'}
+  ];
+  function buildRoutes(activeMode){
+    const g = document.getElementById('c6m_routes');
+    g.innerHTML = '';
+    dests.forEach(d=>{
+      const active = d.key === activeMode;
+      const line = document.createElementNS(svgNS,'line');
+      line.setAttribute('x1',180); line.setAttribute('y1',d.y+17); line.setAttribute('x2',480); line.setAttribute('y2',100);
+      line.setAttribute('stroke', active ? d.color : 'var(--line)');
+      line.setAttribute('stroke-width', active ? '2.5' : '1');
+      line.setAttribute('opacity', active ? '1' : '0.2');
+      g.appendChild(line);
+    });
+    dests.forEach(d=>{
+      const active = d.key === activeMode;
+      const rect = document.createElementNS(svgNS,'rect');
+      rect.setAttribute('x',20); rect.setAttribute('y',d.y); rect.setAttribute('width',160); rect.setAttribute('height',34);
+      rect.setAttribute('rx',4); rect.setAttribute('fill', active ? 'rgba(255,255,255,0.06)' : 'var(--paper)');
+      rect.setAttribute('stroke', active ? d.color : 'var(--line)'); rect.setAttribute('stroke-width', active ? '2.5' : '1.5');
+      g.appendChild(rect);
+      const text = document.createElementNS(svgNS,'text');
+      text.setAttribute('x',100); text.setAttribute('y',d.y+21); text.setAttribute('text-anchor','middle');
+      text.setAttribute('fill', active ? d.color : 'var(--dim)'); text.setAttribute('font-family','JetBrains Mono'); text.setAttribute('font-size','8.5');
+      text.textContent = d.label;
+      g.appendChild(text);
+    });
+  }
+  const modeMessages = {
+    in: "Routed to the digital input logic — a Schmitt-trigger buffer cleans up the incoming voltage into a crisp 0 or 1, which then shows up in the PIN register from Section 03.",
+    out: "Routed to the output driver — the PORT register's value now directly controls the pin's transistors, covered in Section 06.",
+    analog: "Routed straight to the ADC's sample-and-hold circuit, bypassing digital logic entirely — the pin now reads a continuous voltage instead of a clean 0/1.",
+    alt: "Routed to a specific peripheral's dedicated hardware — in this example, a UART transmitter shift register drives the pin directly, with the CPU only setting things up, not bit-banging every transition."
+  };
+  document.querySelectorAll('#c6_sec-modes .btn-row .btn[data-mode]').forEach(btn=>{
+    btn.onclick = function(){
+      document.querySelectorAll('#c6_sec-modes .btn-row .btn[data-mode]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      buildRoutes(this.dataset.mode);
+      document.getElementById('c6m_modeCallout').innerHTML = modeMessages[this.dataset.mode];
+    };
+  });
+  buildRoutes('in');
+
+  // ══════ VOLTAGE THRESHOLD ZONES ══════
+  function getThresholds(vcc){ return {vil: 0.3*vcc, vih: 0.7*vcc}; }
+  function buildZones(vcc){
+    const g = document.getElementById('c6v_zones');
+    g.innerHTML = '';
+    const {vil,vih} = getThresholds(vcc);
+    const yTop=20, yBot=200, h=yBot-yTop;
+    function yFor(v){ return yBot - (v/vcc)*h; }
+    const lowRect = document.createElementNS(svgNS,'rect');
+    lowRect.setAttribute('x',100); lowRect.setAttribute('y',yFor(vil)); lowRect.setAttribute('width',60); lowRect.setAttribute('height', yBot-yFor(vil));
+    lowRect.setAttribute('fill','var(--cyan)'); lowRect.setAttribute('opacity','0.18');
+    g.appendChild(lowRect);
+    const undefRect = document.createElementNS(svgNS,'rect');
+    undefRect.setAttribute('x',100); undefRect.setAttribute('y',yFor(vih)); undefRect.setAttribute('width',60); undefRect.setAttribute('height', yFor(vil)-yFor(vih));
+    undefRect.setAttribute('fill','var(--danger)'); undefRect.setAttribute('opacity','0.18');
+    g.appendChild(undefRect);
+    const highRect = document.createElementNS(svgNS,'rect');
+    highRect.setAttribute('x',100); highRect.setAttribute('y',yTop); highRect.setAttribute('width',60); highRect.setAttribute('height', yFor(vih)-yTop);
+    highRect.setAttribute('fill','var(--green)'); highRect.setAttribute('opacity','0.18');
+    g.appendChild(highRect);
+    [[0,'0V / GND',yBot],[vil,'VIL '+vil.toFixed(2)+'V',yFor(vil)],[vih,'VIH '+vih.toFixed(2)+'V',yFor(vih)],[vcc,vcc+'V / VCC',yTop]].forEach(entry=>{
+      const y = entry[2];
+      const t = document.createElementNS(svgNS,'text');
+      t.setAttribute('x',90); t.setAttribute('y',y+3); t.setAttribute('text-anchor','end');
+      t.setAttribute('fill','var(--dim)'); t.setAttribute('font-family','JetBrains Mono'); t.setAttribute('font-size','7.5');
+      t.textContent = entry[1];
+      g.appendChild(t);
+    });
+  }
+  function updateVoltageDemo(){
+    const vcc = +document.querySelector('#c6_sec-voltage .btn-row .btn.active').dataset.logic;
+    const v = +document.getElementById('c6v_volt').value;
+    document.getElementById('c6v_voltVal').textContent = v.toFixed(2)+' V';
+    buildZones(vcc);
+    const {vil,vih} = getThresholds(vcc);
+    const yTop=20, yBot=200, h=180;
+    const vClamped = Math.min(v, 5);
+    const y = yBot - (Math.min(vClamped,vcc*1.3)/vcc)*h;
+    document.getElementById('c6v_marker').setAttribute('y1', Math.max(yTop-6,y));
+    document.getElementById('c6v_marker').setAttribute('y2', Math.max(yTop-6,y));
+    document.getElementById('c6v_markerDot').setAttribute('cy', Math.max(yTop-6,y));
+    const readOut = document.getElementById('c6v_readOut');
+    const cal = document.getElementById('c6v_voltCallout');
+    const absMax = vcc + 0.5;
+    if(vcc < 5 && v > absMax){
+      readOut.textContent = '⚠ DAMAGE RISK'; readOut.style.color = 'var(--danger)';
+      cal.className = 'callout warn';
+      cal.innerHTML = `<b>${v.toFixed(2)}V exceeds a typical 3.3V chip's absolute maximum input rating (~${absMax.toFixed(1)}V).</b> This is exactly the "5V output into a 3.3V pin" mistake — real, permanent damage, not just a misread bit.`;
+    } else if(v <= vil){
+      readOut.textContent = 'LOW (0)'; readOut.style.color = 'var(--cyan)';
+      cal.className = 'callout';
+      cal.innerHTML = `At ${v.toFixed(2)}V, comfortably below V_IL (${vil.toFixed(2)}V) — a solid, reliable LOW.`;
+    } else if(v >= vih){
+      readOut.textContent = 'HIGH (1)'; readOut.style.color = 'var(--green)';
+      cal.className = 'callout good';
+      cal.innerHTML = `At ${v.toFixed(2)}V, comfortably above V_IH (${vih.toFixed(2)}V) — a solid, reliable HIGH.`;
+    } else {
+      readOut.textContent = 'UNDEFINED'; readOut.style.color = 'var(--danger)';
+      cal.className = 'callout warn';
+      cal.innerHTML = `At ${v.toFixed(2)}V, sitting in the forbidden zone between V_IL (${vil.toFixed(2)}V) and V_IH (${vih.toFixed(2)}V) — not guaranteed to read as either 0 or 1. A real circuit should never let a signal rest here.`;
+    }
+  }
+  document.getElementById('c6v_volt').oninput = updateVoltageDemo;
+  document.querySelectorAll('#c6_sec-voltage .btn-row .btn[data-logic]').forEach(btn=>{
+    btn.onclick = function(){
+      document.querySelectorAll('#c6_sec-voltage .btn-row .btn[data-logic]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      updateVoltageDemo();
+    };
+  });
+  updateVoltageDemo();
+
+  // ══════ PUSH-PULL VS OPEN-DRAIN ══════
+  let currentType = 'pushpull', currentLevel = null;
+  function updateDrive(){
+    const topTr = document.getElementById('c6d_topTr'), topLbl = document.getElementById('c6d_topTrLbl');
+    const botTr = document.getElementById('c6d_botTr'), botLbl = document.getElementById('c6d_botTrLbl');
+    const pullup = document.getElementById('c6d_pullupRes');
+    pullup.setAttribute('opacity', currentType === 'opendrain' ? '1' : '0');
+    topTr.setAttribute('stroke','var(--dim)'); topTr.setAttribute('fill','var(--paper2)'); topLbl.textContent='OFF'; topLbl.setAttribute('fill','var(--dim)');
+    botTr.setAttribute('stroke','var(--dim)'); botTr.setAttribute('fill','var(--paper2)'); botLbl.textContent='OFF'; botLbl.setAttribute('fill','var(--dim)');
+    const dimTop = currentType === 'opendrain';
+    topTr.setAttribute('opacity', dimTop ? '0.25' : '1');
+    topLbl.setAttribute('opacity', dimTop ? '0.25' : '1');
+    const cal = document.getElementById('c6d_driveCallout');
+    const typeLabel = currentType === 'pushpull' ? 'Push-pull' : 'Open-drain';
+    if(currentLevel === 'high'){
+      if(currentType === 'pushpull'){
+        topTr.setAttribute('stroke','var(--green)'); topTr.setAttribute('fill','rgba(107,224,138,0.15)');
+        topLbl.textContent = 'ON'; topLbl.setAttribute('fill','var(--green)');
+        cal.innerHTML = `${typeLabel}, drive HIGH: the top transistor actively connects the pin straight to VCC.`;
+      } else {
+        cal.innerHTML = `${typeLabel}, "drive HIGH": there's no top transistor at all — the pin just releases (goes high-impedance) and the external pull-up resistor passively raises it to VCC. This takes measurably longer than an active push-pull HIGH.`;
+      }
+    } else if(currentLevel === 'low'){
+      botTr.setAttribute('stroke','var(--green)'); botTr.setAttribute('fill','rgba(107,224,138,0.15)');
+      botLbl.textContent = 'ON'; botLbl.setAttribute('fill','var(--green)');
+      cal.innerHTML = `${typeLabel}, drive LOW: the bottom transistor actively connects the pin straight to GND. Both output types can do this identically — it's only HIGH that differs.`;
+    } else {
+      cal.innerHTML = `Pick Drive HIGH or Drive LOW to see which transistor(s) activate for a ${typeLabel.toLowerCase()} output.`;
+    }
+  }
+  document.getElementById('c6d_btnHigh').onclick = () => { currentLevel = 'high'; updateDrive(); };
+  document.getElementById('c6d_btnLow').onclick = () => { currentLevel = 'low'; updateDrive(); };
+  document.querySelectorAll('#c6_sec-drive .btn-row .btn[data-type]').forEach(btn=>{
+    btn.onclick = function(){
+      document.querySelectorAll('#c6_sec-drive .btn-row .btn[data-type]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      currentType = this.dataset.type;
+      currentLevel = null;
+      updateDrive();
+    };
+  });
+  updateDrive();
+
+  // ══════ ADC & PWM ══════
+  function updateADC(){
+    const v = +document.getElementById('c6a_volt').value;
+    const res = +document.getElementById('c6a_res').value;
+    document.getElementById('c6a_voltVal').textContent = v.toFixed(2)+' V';
+    document.getElementById('c6a_resVal').textContent = res+'-bit';
+    const maxVal = Math.pow(2,res)-1;
+    const reading = Math.round((v/3.3)*maxVal);
+    document.getElementById('c6a_digOut').textContent = reading;
+    document.getElementById('c6a_maxOut').textContent = maxVal;
+  }
+  document.getElementById('c6a_volt').oninput = updateADC;
+  document.getElementById('c6a_res').oninput = updateADC;
+  updateADC();
+
+  function updatePWM(){
+    const duty = +document.getElementById('c6p_duty').value;
+    document.getElementById('c6p_dutyVal').textContent = duty+'%';
+    const avg = (duty/100)*3.3;
+    document.getElementById('c6p_avgOut').textContent = avg.toFixed(2)+' V';
+    let pts = [];
+    const cycles = 3, periodPx = 280/cycles;
+    for(let c=0; c<cycles; c++){
+      const x0 = 10+c*periodPx;
+      const highLen = periodPx*(duty/100);
+      pts.push([x0,80]); pts.push([x0,20]); pts.push([x0+highLen,20]); pts.push([x0+highLen,80]); pts.push([x0+periodPx,80]);
+    }
+    document.getElementById('c6p_wave').setAttribute('points', pts.map(p=>p[0]+','+p[1]).join(' '));
+  }
+  document.getElementById('c6p_duty').oninput = updatePWM;
+  updatePWM();
+
+  // ══════ QUIZZES ══════
+  ['c5_quiz1','c5_quiz2','c5_quiz3','c6_quiz1','c6_quiz2','c6_quiz3','c6_quiz4'].forEach(qid=>{
+    document.querySelectorAll('#'+qid+' .quiz-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        document.querySelectorAll('#'+qid+' .quiz-opt').forEach(o=>o.disabled=true);
+        opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+        document.getElementById(qid+'fb').style.display='block';
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

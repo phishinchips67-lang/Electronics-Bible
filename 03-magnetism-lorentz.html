@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>1.3 Magnetism & the Lorentz Force — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,60px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:620px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+
+  .flow-dash{stroke-dasharray:2 10; animation:flowmove 1s linear infinite;}
+  @keyframes flowmove{to{stroke-dashoffset:-24;}}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part I · Foundations · Chapter 1.3 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 1.3 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Every magnet is just<br/><span class="hl">tiny electrons agreeing.</span></h1>
+  <p class="hero-sub">Magnetism isn't a separate force from electricity — it's the same force, seen from a different angle. Why magnets work, how current creates magnetism, and the one equation (the Lorentz force) that ties it all together and explains every motor, speaker, and CRT ever built.</p>
+  <div class="hero-chip"><span class="pulse"></span> DOMAINS · FIELD LINES · RIGHT-HAND RULE · F = qv×B · MOTORS</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#sec-domains">Why Magnets Work</a>
+    <a class="btn chip" href="#sec-fields">Field Lines</a>
+    <a class="btn chip" href="#sec-electromag">Electromagnetism</a>
+    <a class="btn chip" href="#sec-induction">Induction (preview)</a>
+    <a class="btn chip" href="#sec-lorentz">Lorentz Force</a>
+    <a class="btn chip" href="#sec-motor">The Motor Principle</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ WHY MAGNETS WORK ══════════════ -->
+<section class="section" id="sec-domains">
+  <div class="sec-label">01 · Why Magnets Work at All</div>
+  <h2 class="sec-title">A magnet is billions of tiny compass needles, all pointing the same way.</h2>
+  <p class="sec-body">
+    Every electron spinning inside every atom acts like an impossibly tiny magnet, with its own north and south pole — a
+    property called <b>spin</b>. In most materials, neighboring atoms' tiny magnetic fields point in random directions and
+    cancel each other out completely. In materials like iron, cobalt, and nickel, though, groups of atoms called
+    <span class="analogy">magnetic domains</span> naturally line up with their neighbors. An unmagnetized piece of iron still
+    has all these domains — they're just pointing every which way, like a <span class="analogy">crowd of compass needles
+    scattered randomly</span>, so their fields cancel out on average. Magnetize it, and every domain snaps into the same
+    direction — suddenly billions of tiny fields point one way and add up into one strong field you can feel.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Domain Alignment</div>
+    <svg viewBox="0 0 700 200" id="domainSvg" style="width:100%; height:auto; margin-top:20px;"></svg>
+    <div class="btn-row">
+      <button class="btn" id="btnRandomize">🌀 Unmagnetized (random domains)</button>
+      <button class="btn active" id="btnAlign">🧲 Magnetized (aligned domains)</button>
+    </div>
+    <div class="callout" id="domainCallout"><b>Every arrow above is a simplified magnetic domain.</b> Aligned, they reinforce each other into one strong net field — exactly what happens when you stroke a steel needle repeatedly with a magnet to make your own compass.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ FIELD LINES ══════════════ -->
+<section class="section" id="sec-fields">
+  <div class="sec-label">02 · Magnetic Field Lines</div>
+  <h2 class="sec-title">Invisible loops that always run from North back to South.</h2>
+  <p class="sec-body">
+    A magnetic field is easiest to picture as a set of loops flowing out of the North pole, curving through the space
+    around the magnet, and diving back in at the South pole — then continuing right through the inside of the magnet
+    to close the loop. A compass needle anywhere nearby just <b>rotates to align with whatever field line passes
+    through it</b>, exactly like a leaf caught in a stream orients itself with the current.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Compass Around a Bar Magnet</div>
+    <svg viewBox="0 0 700 260" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="300" y="100" width="100" height="60" fill="none" stroke="var(--line)" stroke-width="2"/>
+      <rect x="300" y="100" width="50" height="60" fill="var(--danger)" opacity="0.25"/>
+      <rect x="350" y="100" width="50" height="60" fill="var(--cyan)" opacity="0.25"/>
+      <text x="325" y="135" text-anchor="middle" fill="var(--danger)" font-family="JetBrains Mono" font-size="13">N</text>
+      <text x="375" y="135" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="13">S</text>
+
+      <g id="fieldLines" opacity="0"></g>
+      <g id="compassGroup"></g>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="btnShowCompasses">🧭 Show Compasses</button>
+      <button class="btn" id="btnShowFieldLines">➰ Reveal Field Lines</button>
+    </div>
+    <div class="callout" id="fieldCallout"><b>Every compass points along the local field direction.</b> Notice they all curve from N around to S — never the other way, and never crossing each other.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ ELECTROMAGNETISM ══════════════ -->
+<section class="section" id="sec-electromag">
+  <div class="sec-label">03 · Electromagnetism</div>
+  <h2 class="sec-title">Moving charge doesn't just flow — it radiates a magnetic field for free.</h2>
+  <p class="sec-body">
+    Here's the deep connection: <b>any moving electric charge creates a magnetic field around itself</b>, automatically, as
+    a direct consequence of relativity acting on electric fields (the full explanation is genuinely relativistic, but the
+    everyday rule of thumb is simpler). Current flowing through a straight wire creates field loops circling around it —
+    point your right thumb in the direction of current flow, and your curled fingers show the field's direction
+    (the <span class="analogy">right-hand rule</span>). Coil that wire into a loop, and all those circular fields stack up
+    inside the loop into one strong, directional field — you've just built an electromagnet.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Right-Hand Rule: Straight Wire</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="350" y1="20" x2="350" y2="180" stroke="var(--copper)" stroke-width="4"/>
+      <path id="wireCurrentFlow" d="M350 180 V 20" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <text x="380" y="30" fill="var(--amber)" font-family="JetBrains Mono" font-size="11" id="currentDirLbl">CURRENT ↑</text>
+      <g id="fieldRings"></g>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="btnCurrentUp">⬆ Current Flows Up</button>
+      <button class="btn" id="btnCurrentDown">⬇ Current Flows Down</button>
+    </div>
+    <div class="callout" id="wireCallout"><b>Point your right thumb up (the current's direction) and your fingers curl counter-clockwise viewed from above</b> — that's exactly the direction these field rings circle.</div>
+  </div>
+
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">Coil It Into a Solenoid</div>
+    <svg viewBox="0 0 700 160" style="width:100%; height:auto; margin-top:20px;">
+      <path d="M150 90 q15 -35 30 0 q15 -35 30 0 q15 -35 30 0 q15 -35 30 0 q15 -35 30 0 q15 -35 30 0" fill="none" stroke="var(--copper)" stroke-width="3"/>
+      <line x1="80" y1="90" x2="150" y2="90" stroke="var(--dim)" stroke-width="2"/>
+      <path id="coilFlow" d="M80 90 H 150" class="flow-dash" stroke="var(--amber)" stroke-width="2"/>
+      <line x1="390" y1="90" x2="460" y2="90" stroke="var(--dim)" stroke-width="2"/>
+      <path id="coilFlow2" d="M390 90 H 460" class="flow-dash" stroke="var(--amber)" stroke-width="2"/>
+      <path id="solenoidField" d="M150 90 H 390" stroke="var(--cyan)" stroke-width="2" fill="none" marker-end="url(#arrowhead)" opacity="0.7"/>
+      <defs><marker id="arrowhead" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="var(--cyan)"/></marker></defs>
+      <text x="270" y="60" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">FIELD INSIDE THE COIL</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Current through the coil <span class="val" id="solCurrentVal">2 A</span></label><input type="range" id="solCurrent" min="0" max="5" step="0.5" value="2"/></div>
+    </div>
+    <div class="readout-row"><div class="readout p"><div class="rl">Field strength (relative)</div><div class="rv" id="solFieldOut">2.0×</div></div></div>
+    <div class="callout"><b>More current, more turns, or an iron core inside — all three make the field stronger.</b> This is the exact same coil from Chapter 1.1's inductor section, just viewed from the magnetism side instead of the circuit side.</div>
+  </div>
+
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">Quick Check</div>
+    <div class="quiz">
+      <div class="quiz-q">Current flows straight up through a wire. Looking down at it from above, which way do the magnetic field loops circle around it?</div>
+      <div class="quiz-opts" id="quizRHR">
+        <button class="quiz-opt" data-correct="true">Counter-clockwise</button>
+        <button class="quiz-opt" data-correct="false">Clockwise</button>
+        <button class="quiz-opt" data-correct="false">They don't loop — the field radiates straight outward</button>
+      </div>
+      <div class="quiz-fb" id="quizRHRfb">Point your right thumb in the direction of current flow (up) and your fingers curl counter-clockwise when viewed from above — that curl direction is the field. Flip the current, flip the curl.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ INDUCTION (PREVIEW) ══════════════ -->
+<section class="section" id="sec-induction">
+  <div class="sec-label">04 · Electromagnetic Induction (a preview)</div>
+  <h2 class="sec-title">Run the whole idea backwards: a changing field creates current.</h2>
+  <p class="sec-body">
+    If current creates a magnetic field, the reverse is also true — a magnetic field that's <b>changing</b> near a wire
+    induces a voltage in that wire (Faraday's Law). Critically, it's the <i>change</i> that matters, not the field itself:
+    a magnet sitting still next to a coil, no matter how strong, induces nothing at all. Only a magnet moving relative to
+    the coil — its field strength at the coil changing moment to moment — pushes electrons into motion. This is the entire
+    principle behind generators, transformers, and regenerative braking. <b>Chapter 1.4 goes deep on this</b> — Faraday's Law properly stated, Lenz's Law, eddy currents, and hysteresis. This is just enough to finish the story of "moving charge ↔ magnetic field" before the Lorentz force ties both directions together below.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Push a Magnet Through a Coil</div>
+    <svg viewBox="0 0 700 180" style="width:100%; height:auto; margin-top:20px;">
+      <path d="M250 60 q15 -30 30 0 q15 -30 30 0 q15 -30 30 0 q15 -30 30 0" fill="none" stroke="var(--copper)" stroke-width="3"/>
+      <rect id="magnetSlider" x="180" y="60" width="60" height="30" fill="none" stroke="var(--line)" stroke-width="2"/>
+      <rect id="magnetN" x="180" y="60" width="30" height="30" fill="var(--danger)" opacity="0.3"/>
+      <rect id="magnetS" x="210" y="60" width="30" height="30" fill="var(--cyan)" opacity="0.3"/>
+      <text x="195" y="80" text-anchor="middle" fill="var(--danger)" font-family="JetBrains Mono" font-size="10">N</text>
+      <text x="225" y="80" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">S</text>
+      <line x1="410" y1="45" x2="410" y2="105" stroke="var(--dim)" stroke-width="2"/>
+      <circle cx="410" cy="45" r="22" fill="none" stroke="var(--green)" stroke-width="2"/>
+      <line id="meterNeedle" x1="410" y1="45" x2="410" y2="30" stroke="var(--green)" stroke-width="2"/>
+      <text x="410" y="20" text-anchor="middle" fill="var(--green)" font-family="JetBrains Mono" font-size="9">EMF</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Push speed <span class="val" id="pushSpeedVal">Medium</span></label><input type="range" id="pushSpeed" min="1" max="3" step="1" value="2"/></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="btnPush">👉 Push Magnet Through</button></div>
+    <div class="readout-row"><div class="readout p"><div class="rl">Induced EMF (peak)</div><div class="rv" id="emfOut">0.0 V</div></div></div>
+    <div class="callout" id="inductionCallout"><b>Try the slowest vs fastest push speed.</b> Notice the needle swings harder the faster you push — Faraday's Law literally says induced voltage is proportional to how <i>fast</i> the field is changing, not how strong the magnet is.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ LORENTZ FORCE ══════════════ -->
+<section class="section" id="sec-lorentz">
+  <div class="sec-label">05 · The Lorentz Force</div>
+  <h2 class="sec-title">The one equation that explains every motor, speaker, and CRT ever built.</h2>
+  <p class="sec-body">
+    A charged particle moving through a magnetic field feels a force — but a strange one: it doesn't push along the
+    direction of motion or along the field, it pushes <b>perpendicular to both at once</b>. This is the Lorentz force:
+  </p>
+  <p class="sec-body mono" style="font-size:18px; color:var(--white);">F = qv × B</p>
+  <p class="sec-body">
+    where <b>q</b> is the charge, <b>v</b> is its velocity, and <b>B</b> is the magnetic field. Because the force is always
+    perpendicular to the velocity, it never speeds the particle up or slows it down — it only <i>steers</i> it, bending
+    its path into a circle, like a ball on a string being swung around your head by a constant sideways pull.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Charged Particle in a Field</div>
+    <svg viewBox="0 0 700 260" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="40" y="20" width="620" height="220" fill="rgba(178,138,255,0.05)" stroke="var(--violet)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="60" y="40" fill="var(--violet)" font-family="JetBrains Mono" font-size="10" id="bFieldLbl">B FIELD: INTO THE PAGE (×)</text>
+      <g id="bFieldDots"></g>
+      <circle id="particle" cx="120" cy="130" r="8" fill="var(--amber)"/>
+      <path id="particleTrail" d="" fill="none" stroke="var(--amber)" stroke-width="2" opacity="0.6"/>
+      <line id="velocityArrow" x1="120" y1="130" x2="170" y2="130" stroke="var(--cyan)" stroke-width="2" marker-end="url(#arrowhead2)"/>
+      <defs><marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="var(--cyan)"/></marker></defs>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Charge sign <span class="val" id="chargeSignVal">+ (positive)</span></label><input type="range" id="chargeSign" min="0" max="1" step="1" value="1"/></div>
+      <div class="ctrl"><label>Field direction <span class="val" id="bDirVal">Into page</span></label><input type="range" id="bDir" min="0" max="1" step="1" value="0"/></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="btnRelease">🚀 Release Particle</button><button class="btn" id="btnResetParticle">↺ Reset</button></div>
+    <div class="callout" id="lorentzCallout"><b>Release the particle and watch it curve into a circle, not a straight line.</b> Flip the charge sign or the field direction and the circle bends the opposite way — that's the right-hand rule (or left-hand for negative charge) doing exactly what it does inside a CRT tube or a mass spectrometer.</div>
+  </div>
+  <div class="callout info"><b>This same equation, unmodified,</b> is what steers electron beams in an old CRT television (6.3), what focuses a mass spectrometer, and what confines plasma in a fusion reactor. One cross product, four very different machines.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ THE MOTOR PRINCIPLE ══════════════ -->
+<section class="section" id="sec-motor">
+  <div class="sec-label">06 · The Motor Principle</div>
+  <h2 class="sec-title">Zoom out from one charge to a whole wire, and you get a motor.</h2>
+  <p class="sec-body">
+    A current-carrying wire is just billions of moving charges, so the Lorentz force applies to the whole wire at once —
+    the field pushes the entire wire sideways with a force <b>F = BIL</b> (field × current × wire length). This is the
+    exact mechanism spinning every electric motor that exists — from a desk fan (6.7) to an EV drivetrain: current in a wire
+    sitting inside a magnetic field feels a sideways shove, and if that wire is wound around a rotor, the shove becomes
+    rotation.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Force on a Current-Carrying Wire</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="40" y="30" width="620" height="140" fill="rgba(178,138,255,0.05)" stroke="var(--violet)" stroke-width="1" stroke-dasharray="4 4"/>
+      <g id="motorBFieldDots"></g>
+      <line id="motorWire" x1="350" y1="60" x2="350" y2="140" stroke="var(--copper)" stroke-width="5"/>
+      <path id="motorWireFlow" d="M350 140 V 60" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <line id="motorForceArrow" x1="350" y1="100" x2="420" y2="100" stroke="var(--green)" stroke-width="3" marker-end="url(#arrowhead3)"/>
+      <defs><marker id="arrowhead3" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="var(--green)"/></marker></defs>
+      <text x="440" y="95" fill="var(--green)" font-family="JetBrains Mono" font-size="11">FORCE</text>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="btnMotorCurrentUp">⬆ Current Up</button>
+      <button class="btn" id="btnMotorCurrentDown">⬇ Current Down</button>
+    </div>
+    <div class="callout" id="motorCallout"><b>Flip the current direction</b> and watch the force arrow flip too — this single reversal, timed by the inverter in 2.3, is what keeps a motor's rotor continuously pushed in the direction it's already spinning.</div>
+  </div>
+
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">Quick Check</div>
+    <div class="quiz">
+      <div class="quiz-q">A charged particle moves in a straight line with no magnetic field present. A field is then switched on, aligned exactly parallel to its velocity. What happens?</div>
+      <div class="quiz-opts" id="quizLorentz">
+        <button class="quiz-opt" data-correct="false">It curves into a tight circle immediately</button>
+        <button class="quiz-opt" data-correct="true">Nothing — it keeps moving in a straight line</button>
+        <button class="quiz-opt" data-correct="false">It speeds up along the field direction</button>
+      </div>
+      <div class="quiz-fb" id="quizLorentzFb">Right — the Lorentz force depends on v × B, and the cross product of two parallel vectors is zero. A charge moving exactly along the field feels no force at all; only the velocity component perpendicular to the field gets deflected.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 1.3</div>
+  <h2 class="outro-title">Electricity and magnetism were never two separate things.</h2>
+  <p>Moving charge makes a field. A changing field pushes charge. Every motor, generator, speaker, and transformer later in this bible is just this one relationship, wired up in a particular shape. Next: <b>1.4 — Magnetic Fields &amp; Materials</b> — the Biot-Savart Law, why iron and copper respond to a field so differently, and what a Curie temperature is. Then <b>1.5</b> goes deep on induction properly. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="02-charge-fields-potential.html">← Chapter 1.2</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 1.3 OF 34 · PART I: FOUNDATIONS</footer>
+
+<script>
+(function(){
+// ══════ DOMAINS ══════
+const domainSvg = document.getElementById('domainSvg');
+const rows = 4, cols = 14;
+let domainAligned = true;
+function buildDomains(){
+  domainSvg.innerHTML = '';
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const x = 30 + c*48, y = 30 + r*45;
+      const angle = domainAligned ? 0 : Math.random()*360;
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', x); line.setAttribute('y1', y);
+      line.setAttribute('x2', x+20); line.setAttribute('y2', y);
+      line.setAttribute('stroke', domainAligned ? 'var(--copper)' : 'var(--dim)');
+      line.setAttribute('stroke-width', '3');
+      line.setAttribute('marker-end', 'url(#darrow)');
+      line.setAttribute('transform', `rotate(${angle} ${x+10} ${y})`);
+      domainSvg.appendChild(line);
+    }
+  }
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `<marker id="darrow" markerWidth="8" markerHeight="8" refX="4" refY="2" orient="auto"><polygon points="0 0, 4 2, 0 4" fill="${domainAligned?'var(--copper)':'var(--dim)'}"/></marker>`;
+  domainSvg.appendChild(defs);
+}
+buildDomains();
+document.getElementById('btnAlign').onclick = function(){
+  domainAligned = true; this.classList.add('active');
+  document.getElementById('btnRandomize').classList.remove('active');
+  buildDomains();
+  document.getElementById('domainCallout').innerHTML = "<b>Every arrow above is a simplified magnetic domain.</b> Aligned, they reinforce each other into one strong net field — exactly what happens when you stroke a steel needle repeatedly with a magnet to make your own compass.";
+};
+document.getElementById('btnRandomize').onclick = function(){
+  domainAligned = false; this.classList.add('active');
+  document.getElementById('btnAlign').classList.remove('active');
+  buildDomains();
+  document.getElementById('domainCallout').innerHTML = "<b>Randomized — this is unmagnetized iron.</b> Every domain is still a tiny magnet, but pointing every direction, their fields cancel almost entirely on average. This is why an ordinary nail isn't magnetic until you deliberately align its domains.";
+};
+
+// ══════ FIELD LINES ══════
+const fieldLines = document.getElementById('fieldLines');
+const compassGroup = document.getElementById('compassGroup');
+function fieldAngleAt(x,y){
+  const nx=325, ny=130;
+  const dxN = x-nx, dyN = y-ny;
+  const dxS = x-375, dyS = y-130;
+  const angN = Math.atan2(dyN,dxN);
+  const angS = Math.atan2(dyS,dxS);
+  const dN = Math.hypot(dxN,dyN), dS = Math.hypot(dxS,dyS);
+  const t = dN/(dN+dS);
+  let ang = angN*(1-t) + (angS+Math.PI)*t;
+  return ang;
+}
+function buildCompasses(){
+  compassGroup.innerHTML = '';
+  const pts = [];
+  for(let x=60; x<=640; x+=80){
+    for(let y=30; y<=230; y+=60){
+      if(x>290 && x<410 && y>80 && y<180) continue;
+      pts.push([x,y]);
+    }
+  }
+  pts.forEach(([x,y])=>{
+    const ang = fieldAngleAt(x,y) * 180/Math.PI;
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.innerHTML = `
+      <circle cx="${x}" cy="${y}" r="14" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="${x}" y1="${y}" x2="${x+11}" y2="${y}" stroke="var(--danger)" stroke-width="2" transform="rotate(${ang} ${x} ${y})"/>
+      <line x1="${x}" y1="${y}" x2="${x-11}" y2="${y}" stroke="var(--cyan)" stroke-width="2" transform="rotate(${ang} ${x} ${y})"/>
+    `;
+    compassGroup.appendChild(g);
+  });
+}
+buildCompasses();
+
+function buildFieldLines(){
+  fieldLines.innerHTML = '';
+  const offsets = [-60,-35,-15,15,35,60];
+  offsets.forEach(off=>{
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    const d = `M325,130 C ${325-Math.abs(off)*2},${130-off*2.2} ${375+Math.abs(off)*2},${130-off*2.2} 375,130`;
+    path.setAttribute('d', d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','var(--cyan)');
+    path.setAttribute('stroke-width','1.5');
+    path.setAttribute('opacity','0.6');
+    fieldLines.appendChild(path);
+  });
+}
+buildFieldLines();
+
+document.getElementById('btnShowCompasses').onclick = function(){
+  this.classList.add('active'); document.getElementById('btnShowFieldLines').classList.remove('active');
+  compassGroup.style.opacity = 1; fieldLines.setAttribute('opacity','0');
+  document.getElementById('fieldCallout').innerHTML = "<b>Every compass points along the local field direction.</b> Notice they all curve from N around to S — never the other way, and never crossing each other.";
+};
+document.getElementById('btnShowFieldLines').onclick = function(){
+  this.classList.add('active'); document.getElementById('btnShowCompasses').classList.remove('active');
+  compassGroup.style.opacity = 0.15; fieldLines.setAttribute('opacity','1');
+  document.getElementById('fieldCallout').innerHTML = "<b>These are the actual field lines the compasses were tracing.</b> They emerge from N, loop around through the space outside the magnet, and re-enter at S — then continue through the magnet's interior to close the loop completely.";
+};
+
+// ══════ ELECTROMAGNETISM: STRAIGHT WIRE ══════
+let currentUp = true;
+function buildFieldRings(){
+  const g = document.getElementById('fieldRings');
+  g.innerHTML = '';
+  [40,70,100].forEach((r,i)=>{
+    const ellipse = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    ellipse.setAttribute('cx','350'); ellipse.setAttribute('cy','100');
+    ellipse.setAttribute('rx', r); ellipse.setAttribute('ry', r*0.35);
+    ellipse.setAttribute('fill','none'); ellipse.setAttribute('stroke','var(--cyan)');
+    ellipse.setAttribute('stroke-width','1.5'); ellipse.setAttribute('opacity', 0.7-i*0.15);
+    ellipse.setAttribute('marker-end', currentUp ? 'url(#ringArrowCCW)' : 'url(#ringArrowCW)');
+    g.appendChild(ellipse);
+  });
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `
+    <marker id="ringArrowCCW" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="var(--cyan)"/></marker>
+    <marker id="ringArrowCW" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse"><polygon points="0 0, 6 3, 0 6" fill="var(--cyan)"/></marker>
+  `;
+  g.appendChild(defs);
+}
+buildFieldRings();
+document.getElementById('btnCurrentUp').onclick = function(){
+  currentUp = true; this.classList.add('active'); document.getElementById('btnCurrentDown').classList.remove('active');
+  document.getElementById('currentDirLbl').textContent = 'CURRENT ↑';
+  document.getElementById('wireCurrentFlow').setAttribute('d','M350 180 V 20');
+  buildFieldRings();
+  document.getElementById('wireCallout').innerHTML = "<b>Point your right thumb up (the current's direction) and your fingers curl counter-clockwise viewed from above</b> — that's exactly the direction these field rings circle.";
+};
+document.getElementById('btnCurrentDown').onclick = function(){
+  currentUp = false; this.classList.add('active'); document.getElementById('btnCurrentUp').classList.remove('active');
+  document.getElementById('currentDirLbl').textContent = 'CURRENT ↓';
+  document.getElementById('wireCurrentFlow').setAttribute('d','M350 20 V 180');
+  buildFieldRings();
+  document.getElementById('wireCallout').innerHTML = "<b>Flip the current, flip the field.</b> Point your right thumb down now and your fingers curl the opposite way — clockwise from above — exactly matching these reversed rings.";
+};
+
+// ══════ SOLENOID ══════
+const solCurrent = document.getElementById('solCurrent');
+function updateSolenoid(){
+  const I = +solCurrent.value;
+  document.getElementById('solCurrentVal').textContent = I+' A';
+  document.getElementById('solFieldOut').textContent = I.toFixed(1)+'×';
+  const speed = Math.max(0.1, 1.2/(I||0.1));
+  ['coilFlow','coilFlow2'].forEach(id=> document.getElementById(id).style.animation = `flowmove ${speed}s linear infinite`);
+  document.getElementById('solenoidField').setAttribute('opacity', Math.min(1, 0.2+I/5));
+  document.getElementById('solenoidField').setAttribute('stroke-width', 1+I*0.6);
+}
+solCurrent.oninput = updateSolenoid; updateSolenoid();
+
+// ══════ RIGHT-HAND-RULE QUIZ ══════
+document.querySelectorAll('#quizRHR .quiz-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('#quizRHR .quiz-opt').forEach(o=>o.disabled=true);
+    opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+    document.getElementById('quizRHRfb').style.display='block';
+  });
+});
+
+// ══════ INDUCTION ══════
+const pushSpeed = document.getElementById('pushSpeed');
+pushSpeed.oninput = ()=>{
+  const labels = {1:'Slow',2:'Medium',3:'Fast'};
+  document.getElementById('pushSpeedVal').textContent = labels[pushSpeed.value];
+};
+document.getElementById('btnPush').onclick = ()=>{
+  const speed = +pushSpeed.value;
+  const duration = 1600/speed;
+  const magnet = document.getElementById('magnetSlider');
+  const magnetN = document.getElementById('magnetN');
+  const magnetS = document.getElementById('magnetS');
+  const startX = 180, endX = 380;
+  const startTime = performance.now();
+  const peakEmf = speed*3.2;
+  document.getElementById('emfOut').textContent = peakEmf.toFixed(1)+' V';
+  function animate(now){
+    const t = Math.min(1, (now-startTime)/duration);
+    const x = startX + (endX-startX)*t;
+    magnet.setAttribute('x', x); magnetN.setAttribute('x', x); magnetS.setAttribute('x', x+30);
+    const distFromCenter = (x+30) - 335;
+    const deflect = Math.max(-35, Math.min(35, -distFromCenter*0.9*(speed/2)));
+    const needle = document.getElementById('meterNeedle');
+    const ang = Math.max(-60,Math.min(60, deflect));
+    needle.setAttribute('x2', 410+22*Math.sin(ang*Math.PI/180));
+    needle.setAttribute('y2', 45-22*Math.cos(ang*Math.PI/180));
+    if(t<1) requestAnimationFrame(animate);
+    else {
+      setTimeout(()=>{ needle.setAttribute('x2',410); needle.setAttribute('y2',30); }, 300);
+      document.getElementById('inductionCallout').innerHTML = `<b>Peak induced EMF: ${peakEmf.toFixed(1)}V at this speed.</b> Notice the needle swings one way as the magnet approaches, crosses zero right as it's centered in the coil, then swings the opposite way as it leaves — the field is increasing, then decreasing, and the induced voltage follows that rate of change.`;
+    }
+  }
+  requestAnimationFrame(animate);
+};
+
+// ══════ LORENTZ FORCE ══════
+function buildFieldDots(containerId, prefix){
+  const g = document.getElementById(containerId);
+  g.innerHTML = '';
+  for(let x=70;x<=650;x+=45){
+    for(let y=40;y<=210;y+=40){
+      const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',x); dot.setAttribute('cy',y); dot.setAttribute('r','2.5');
+      dot.setAttribute('fill','var(--violet)'); dot.setAttribute('opacity','0.5');
+      dot.classList.add(prefix+'dot');
+      g.appendChild(dot);
+    }
+  }
+}
+buildFieldDots('bFieldDots','lz_');
+buildFieldDots('motorBFieldDots','mt_');
+
+const chargeSign = document.getElementById('chargeSign');
+const bDir = document.getElementById('bDir');
+chargeSign.oninput = ()=> document.getElementById('chargeSignVal').textContent = (+chargeSign.value===1) ? '+ (positive)' : '− (negative)';
+bDir.oninput = ()=>{
+  const into = (+bDir.value===0);
+  document.getElementById('bDirVal').textContent = into ? 'Into page' : 'Out of page';
+  document.getElementById('bFieldLbl').textContent = into ? 'B FIELD: INTO THE PAGE (×)' : 'B FIELD: OUT OF THE PAGE (•)';
+  document.querySelectorAll('.lz_dot').forEach(d=>{
+    d.setAttribute('fill', into ? 'var(--violet)' : 'none');
+    d.setAttribute('stroke', into ? 'none' : 'var(--violet)');
+    d.setAttribute('r', into ? 2.5 : 3.5);
+  });
+};
+
+let particleAnim = null;
+document.getElementById('btnRelease').onclick = ()=>{
+  if(particleAnim) cancelAnimationFrame(particleAnim);
+  const q = (+chargeSign.value===1) ? 1 : -1;
+  const into = (+bDir.value===0) ? 1 : -1;
+  const curveSign = q*into;
+  let x=120, y=130, vx=2.6, vy=0;
+  const omega = 0.045*curveSign;
+  let trail = `M${x},${y}`;
+  const particle = document.getElementById('particle');
+  const trailPath = document.getElementById('particleTrail');
+  const velArrow = document.getElementById('velocityArrow');
+  let steps = 0;
+  function step(){
+    const newVx = vx*Math.cos(omega) - vy*Math.sin(omega);
+    const newVy = vx*Math.sin(omega) + vy*Math.cos(omega);
+    vx=newVx; vy=newVy;
+    x += vx; y += vy;
+    trail += ` L${x},${y}`;
+    particle.setAttribute('cx',x); particle.setAttribute('cy',y);
+    velArrow.setAttribute('x1',x); velArrow.setAttribute('y1',y);
+    velArrow.setAttribute('x2',x+vx*8); velArrow.setAttribute('y2',y+vy*8);
+    trailPath.setAttribute('d', trail);
+    steps++;
+    if(steps<260 && x>50 && x<660 && y>30 && y<230){
+      particleAnim = requestAnimationFrame(step);
+    }
+  }
+  step();
+  document.getElementById('lorentzCallout').innerHTML = `<b>Curving ${curveSign>0?'clockwise':'counter-clockwise'}.</b> With a ${q>0?'positive':'negative'} charge and the field ${into>0?'into':'out of'} the page, F=qv×B always points toward the center of this circle — that constant inward pull is what bends a straight-line path into a loop.`;
+};
+document.getElementById('btnResetParticle').onclick = ()=>{
+  if(particleAnim) cancelAnimationFrame(particleAnim);
+  document.getElementById('particle').setAttribute('cx',120); document.getElementById('particle').setAttribute('cy',130);
+  document.getElementById('particleTrail').setAttribute('d','');
+  document.getElementById('velocityArrow').setAttribute('x1',120); document.getElementById('velocityArrow').setAttribute('y1',130);
+  document.getElementById('velocityArrow').setAttribute('x2',170); document.getElementById('velocityArrow').setAttribute('y2',130);
+};
+
+// ══════ MOTOR PRINCIPLE ══════
+let motorCurrentUp = true;
+function updateMotorForce(){
+  const arrow = document.getElementById('motorForceArrow');
+  const flow = document.getElementById('motorWireFlow');
+  if(motorCurrentUp){
+    flow.setAttribute('d','M350 140 V 60');
+    arrow.setAttribute('x1','350'); arrow.setAttribute('y1','100'); arrow.setAttribute('x2','420'); arrow.setAttribute('y2','100');
+  } else {
+    flow.setAttribute('d','M350 60 V 140');
+    arrow.setAttribute('x1','350'); arrow.setAttribute('y1','100'); arrow.setAttribute('x2','280'); arrow.setAttribute('y2','100');
+  }
+}
+updateMotorForce();
+document.getElementById('btnMotorCurrentUp').onclick = function(){
+  motorCurrentUp = true; this.classList.add('active'); document.getElementById('btnMotorCurrentDown').classList.remove('active');
+  updateMotorForce();
+  document.getElementById('motorCallout').innerHTML = "<b>Current flowing up, field into the page → force pushes right.</b> Flip the current direction and watch the force arrow flip too — this single reversal, timed by the inverter in 2.3, is what keeps a motor's rotor continuously pushed in the direction it's already spinning.";
+};
+document.getElementById('btnMotorCurrentDown').onclick = function(){
+  motorCurrentUp = false; this.classList.add('active'); document.getElementById('btnMotorCurrentUp').classList.remove('active');
+  updateMotorForce();
+  document.getElementById('motorCallout').innerHTML = "<b>Reversed! Current down, same field → force now pushes left.</b> Nothing about the magnet changed — only the current direction did, and the force flipped completely, exactly per F = IL×B.";
+};
+
+// ══════ QUIZ ══════
+document.querySelectorAll('#quizLorentz .quiz-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('#quizLorentz .quiz-opt').forEach(o=>o.disabled=true);
+    opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+    document.getElementById('quizLorentzFb').style.display='block';
+  });
+});
+
+})();
+</script>
+
+</body>
+</html>

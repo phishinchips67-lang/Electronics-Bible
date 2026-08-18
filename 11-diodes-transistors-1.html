@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>3.2 Diodes, Transistors & Switching — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:56vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(30px,7vw,60px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--violet);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .chapter-toc{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:760px;}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel + .panel{margin-top:24px;}
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.i .rv{color:var(--amber);} .readout.r .rv{color:var(--copper);} .readout.p .rv{color:var(--green);} .readout.b .rv{color:var(--violet);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .chapter-toc .chip{font-size:10px; padding:8px 14px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+
+  .flow-dash{stroke-dasharray:2 10; animation:flowmove 1s linear infinite;}
+  @keyframes flowmove{to{stroke-dashoffset:-24;}}
+
+  .compare-table{width:100%; border-collapse:collapse; margin-top:20px; font-size:13.5px; max-width:940px; margin-left:auto; margin-right:auto;}
+  .compare-table th, .compare-table td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); }
+  .compare-table th{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.06em; color:var(--dim); text-transform:uppercase;}
+  .compare-table td.bjt{color:var(--cyan);} .compare-table td.mosfet{color:var(--amber);}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+    .compare-table{font-size:12px;}
+    .compare-table th, .compare-table td{padding:8px 6px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part III · Components & Devices · Chapter 3.2 of 34</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 3.2 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">One-way streets<br/>and <span class="hl">tiny levers</span>.</h1>
+  <p class="hero-sub">1.1 covered parts that just react. This chapter is about parts that <b>make decisions</b> — letting current through one way only, or using a whisper of signal to control a flood.</p>
+  <div class="hero-chip"><span class="pulse"></span> DIODE → ZENER → BJT → MOSFET</div>
+  <div class="btn-row chapter-toc">
+    <a class="btn chip" href="#c2_sec-diode">Diode</a>
+    <a class="btn chip" href="#c2_sec-zener">Zener</a>
+    <a class="btn chip" href="#c2_sec-bjt">BJT</a>
+    <a class="btn chip" href="#c2_sec-mosfet">MOSFET</a>
+    <a class="btn chip" href="#c2_sec-compare">BJT vs MOSFET</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ DIODE ══════════════ -->
+<section class="section" id="c2_sec-diode">
+  <div class="sec-label">01 · The Diode</div>
+  <h2 class="sec-title">A one-way check valve for electricity.</h2>
+  <p class="sec-body">
+    A diode lets current flow in exactly <b>one direction</b> and blocks it in the other — like a check valve in a water pipe
+    that flaps open under forward pressure and slams shut if the flow tries to reverse. Flip the battery around in the circuit below
+    and watch the current simply... stop.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Forward vs Reverse Bias</div>
+    <svg viewBox="0 0 700 160" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="40" y1="50" x2="40" y2="110" stroke="var(--line)" stroke-width="2"/>
+      <line x1="25" y1="65" x2="55" y2="65" stroke="var(--white)" stroke-width="4"/>
+      <line x1="30" y1="80" x2="50" y2="80" stroke="var(--white)" stroke-width="2"/>
+      <text id="c2_battPlus" x="65" y="70" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">+</text>
+      <path d="M40 50 H 300" stroke="var(--dim)" stroke-width="2"/>
+      <path id="c2_diodeFlow1" d="M40 50 H 300" class="flow-dash" stroke="var(--amber)" stroke-width="2"/>
+      <polygon id="c2_diodeTri" points="300,35 300,65 340,50" fill="var(--copper)"/>
+      <line id="c2_diodeBar" x1="340" y1="35" x2="340" y2="65" stroke="var(--copper)" stroke-width="4"/>
+      <text x="320" y="20" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="11">DIODE</text>
+      <path d="M340 50 H 600" stroke="var(--dim)" stroke-width="2"/>
+      <path id="c2_diodeFlow2" d="M340 50 H 600" class="flow-dash" stroke="var(--amber)" stroke-width="2"/>
+      <circle id="c2_ledDiode" cx="630" cy="50" r="24" fill="var(--amber)" opacity="0.15" stroke="var(--amber)" stroke-width="2"/>
+      <path d="M40 110 H 630" stroke="var(--dim)" stroke-width="2"/>
+      <text x="630" y="140" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">LED</text>
+    </svg>
+    <div class="btn-row">
+      <button class="btn active" id="c2_btnForward">✅ Forward Bias</button>
+      <button class="btn" id="c2_btnReverse">🚫 Reverse Bias</button>
+    </div>
+    <div class="callout" id="c2_diodeCallout"><b>Forward biased:</b> positive terminal pushes into the triangle side. Electrons flow easily, LED lights up. This is the "normal" way you'd wire a diode.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ ZENER ══════════════ -->
+<section class="section" id="c2_sec-zener">
+  <div class="sec-label">02 · The Zener Diode</div>
+  <h2 class="sec-title">A pressure-relief valve that clamps voltage on purpose.</h2>
+  <p class="sec-body">
+    A normal diode blocked in reverse just... blocks, forever, until it dies. A <b>zener</b> is a diode <i>engineered</i> to break down
+    at a precise reverse voltage and stay there safely — like a pressure relief valve on a boiler that pops open at exactly 5.1 bar
+    and holds the pressure there, no matter how hard you push past it. That's why zeners are used to create a stable reference voltage.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Voltage Clamp</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="60" y1="170" x2="640" y2="170" stroke="var(--line)" stroke-width="1"/>
+      <line x1="60" y1="20" x2="60" y2="170" stroke="var(--line)" stroke-width="1"/>
+      <text x="20" y="30" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">Vout</text>
+      <text x="600" y="190" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">Vin rising →</text>
+      <polyline id="c2_zenerLine" points="60,170 200,170" fill="none" stroke="var(--violet)" stroke-width="3"/>
+      <line x1="60" y1="90" x2="640" y2="90" stroke="var(--copper-dim)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="645" y="94" fill="var(--copper)" font-family="JetBrains Mono" font-size="11">Vz = 5.1V</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Input voltage (rising) <span class="val" id="c2_zinval">2 V</span></label><input type="range" id="c2_zin" min="0" max="12" step="0.5" value="2"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout v"><div class="rl">Input</div><div class="rv" id="c2_zro-in">2 V</div></div>
+      <div class="readout r"><div class="rl">Output (clamped)</div><div class="rv" id="c2_zro-out">2 V</div></div>
+    </div>
+    <div class="callout" id="c2_zenerCallout"><b>Below 5.1V:</b> the zener behaves like an ordinary blocked diode — output just follows input.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ BJT ══════════════ -->
+<section class="section" id="c2_sec-bjt">
+  <div class="sec-label">03 · The BJT Transistor</div>
+  <h2 class="sec-title">A tiny valve that controls a much bigger one.</h2>
+  <p class="sec-body">
+    A BJT (Bipolar Junction Transistor) has three legs: <b>base</b>, <b>collector</b>, <b>emitter</b>. A <i>small current</i> into
+    the base controls a <i>much larger current</i> flowing from collector to emitter — like a small pilot valve on a garden tap
+    that, when you nudge it slightly, opens a massive main valve behind it. The ratio between them is called <b>gain (β)</b>, often 100–300×.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Base Current → Collector Current</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="40" y1="60" x2="180" y2="60" stroke="var(--dim)" stroke-width="2"/>
+      <path id="c2_baseFlow" d="M40 60 H 180" class="flow-dash" stroke="var(--cyan)" stroke-width="2"/>
+      <text x="90" y="45" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">BASE (small)</text>
+      <circle cx="220" cy="110" r="55" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <line x1="180" y1="60" x2="205" y2="95" stroke="var(--copper)" stroke-width="3"/>
+      <line x1="205" y1="95" x2="205" y2="140" stroke="var(--copper)" stroke-width="4"/>
+      <line x1="205" y1="95" x2="245" y2="70" stroke="var(--copper)" stroke-width="3"/>
+      <line x1="205" y1="140" x2="245" y2="165" stroke="var(--copper)" stroke-width="3"/>
+      <text x="220" y="185" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="11">BJT</text>
+      <line x1="245" y1="70" x2="500" y2="70" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c2_collFlow" d="M245 70 H 500" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <text x="330" y="55" fill="var(--amber)" font-family="JetBrains Mono" font-size="11">COLLECTOR (big)</text>
+      <circle id="c2_bulbBjt" cx="540" cy="70" r="30" fill="var(--amber)" opacity="0.15" stroke="var(--amber)" stroke-width="2"/>
+      <line x1="245" y1="165" x2="500" y2="165" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c2_emitFlow" d="M245 165 H 500" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <text x="330" y="185" fill="var(--dim)" font-family="JetBrains Mono" font-size="11">EMITTER</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Base current (the nudge) <span class="val" id="c2_ibval">0.2 mA</span></label><input type="range" id="c2_ib" min="0" max="1" step="0.05" value="0.2"/></div>
+      <div class="ctrl"><label>Gain β (transistor's amplification) <span class="val" id="c2_betaval">150×</span></label><input type="range" id="c2_beta" min="50" max="300" step="10" value="150"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout b"><div class="rl">Base current</div><div class="rv" id="c2_bro-ib">0.2 mA</div></div>
+      <div class="readout i"><div class="rl">Collector current</div><div class="rv" id="c2_bro-ic">30 mA</div></div>
+    </div>
+    <div class="callout" id="c2_bjtCallout"><b>This is amplification.</b> A tiny 0.2mA signal is controlling a 30mA current — 150× bigger. This is exactly how a microphone's weak signal ends up driving a loud speaker.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ MOSFET ══════════════ -->
+<section class="section" id="c2_sec-mosfet">
+  <div class="sec-label">04 · The MOSFET</div>
+  <h2 class="sec-title">A switch flipped by voltage, not current.</h2>
+  <p class="sec-body">
+    A MOSFET also has three legs — <b>gate</b>, <b>drain</b>, <b>source</b> — but works differently from a BJT: the gate needs
+    <b>almost zero current</b>, just a voltage above a threshold, to open a conducting channel between drain and source. Think of it
+    like a motion-sensor door: you don't need to physically push it, just being present (a voltage) is enough to swing it open.
+    This is why MOSFETs dominate modern digital electronics — they waste almost no power just sitting there "listening."
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Gate Voltage → Channel</div>
+    <svg viewBox="0 0 700 200" style="width:100%; height:auto; margin-top:20px;">
+      <rect x="260" y="60" width="180" height="90" rx="6" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <text x="350" y="45" text-anchor="middle" fill="var(--copper)" font-family="JetBrains Mono" font-size="11">MOSFET</text>
+      <rect id="c2_channelBar" x="270" y="130" width="160" height="8" fill="var(--line)" />
+      <text x="350" y="120" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">CHANNEL</text>
+      <line x1="350" y1="20" x2="350" y2="60" stroke="var(--cyan)" stroke-width="3"/>
+      <text x="350" y="15" text-anchor="middle" fill="var(--cyan)" font-family="JetBrains Mono" font-size="11">GATE</text>
+      <line x1="60" y1="80" x2="260" y2="80" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c2_drainFlow" d="M60 80 H 260" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <text x="150" y="65" fill="var(--amber)" font-family="JetBrains Mono" font-size="11">DRAIN</text>
+      <circle id="c2_bulbMosfet" cx="30" cy="80" r="26" fill="var(--amber)" opacity="0.15" stroke="var(--amber)" stroke-width="2"/>
+      <line x1="440" y1="80" x2="640" y2="80" stroke="var(--dim)" stroke-width="3"/>
+      <path id="c2_sourceFlow" d="M440 80 H 640" class="flow-dash" stroke="var(--amber)" stroke-width="3"/>
+      <text x="560" y="65" fill="var(--dim)" font-family="JetBrains Mono" font-size="11">SOURCE</text>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Gate voltage <span class="val" id="c2_vgval">0 V</span></label><input type="range" id="c2_vg" min="0" max="5" step="0.1" value="0"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout v"><div class="rl">Gate voltage</div><div class="rv" id="c2_mro-vg">0.0 V</div></div>
+      <div class="readout i"><div class="rl">Gate current</div><div class="rv">≈ 0 mA</div></div>
+      <div class="readout p"><div class="rl">Channel state</div><div class="rv" id="c2_mro-state">OFF</div></div>
+    </div>
+    <div class="callout" id="c2_mosfetCallout"><b>Threshold ≈ 2V.</b> Below it the channel doesn't exist and no current flows, no matter what's on the drain side. Push past it and the channel opens — and notice the gate current stays basically zero the whole time.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ BJT vs MOSFET ══════════════ -->
+<section class="section" id="c2_sec-compare">
+  <div class="sec-label">05 · BJT vs MOSFET</div>
+  <h2 class="sec-title">Same job, two completely different control styles.</h2>
+  <p class="sec-body">
+    Both are switches/amplifiers built from the same three ideas as everything before this — but one is controlled by
+    <span class="analogy">current</span>, the other by <span class="analogy">voltage</span>. Here's the practical difference that actually matters when you pick one for a project.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Head to Head</div>
+    <table class="compare-table">
+      <tr><th>Property</th><th>BJT</th><th>MOSFET</th></tr>
+      <tr><td>Controlled by</td><td class="bjt">Base current</td><td class="mosfet">Gate voltage</td></tr>
+      <tr><td>Control-pin power draw</td><td class="bjt">Noticeable (mA)</td><td class="mosfet">Nearly zero</td></tr>
+      <tr><td>Switching speed</td><td class="bjt">Slower</td><td class="mosfet">Very fast</td></tr>
+      <tr><td>Good for</td><td class="bjt">Simple analog amplification</td><td class="mosfet">Digital logic, power switching</td></tr>
+      <tr><td>Found in</td><td class="bjt">Audio amps, older analog gear</td><td class="mosfet">CPUs, power supplies, motor drivers</td></tr>
+    </table>
+    <div class="callout"><b>Rule of thumb:</b> if you're switching something with a microcontroller pin (like an Arduino), reach for a MOSFET — the pin can barely supply a BJT's base current, but it can easily supply the voltage a MOSFET's gate needs.</div>
+  </div>
+  <div class="panel" style="margin-top:24px;">
+    <div class="panel-tag">Quick Check</div>
+    <div class="quiz">
+      <div class="quiz-q">You want to switch a 12V motor on/off using a Raspberry Pi GPIO pin (which supplies very little current). Which is the better choice?</div>
+      <div class="quiz-opts" id="c2_quiz2">
+        <button class="quiz-opt" data-correct="false">BJT</button>
+        <button class="quiz-opt" data-correct="true">MOSFET</button>
+      </div>
+      <div class="quiz-fb" id="c2_quiz2fb">Right — a GPIO pin struggles to supply the base current a BJT needs for a 12V motor's load, but easily supplies the voltage a MOSFET's gate wants.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 3.2</div>
+  <h2 class="outro-title">You now understand every switch inside every computer ever built.</h2>
+  <p>Next: <b>3.3 — Op-Amps & Analog Building Blocks</b> — the "magic subtracter" chip, tamed with feedback into an amplifier, a follower, and a mixer. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 3.2 OF 34 · PART III: COMPONENTS & DEVICES</footer>
+
+<script>
+(function(){
+
+  // ── DIODE ──
+  let diodeForward = true;
+  function updateDiode(){
+    const f1 = document.getElementById('c2_diodeFlow1');
+    const f2 = document.getElementById('c2_diodeFlow2');
+    const led = document.getElementById('c2_ledDiode');
+    if(diodeForward){
+      f1.style.animation = 'flowmove 0.8s linear infinite';
+      f2.style.animation = 'flowmove 0.8s linear infinite';
+      f1.style.opacity = 1; f2.style.opacity = 1;
+      led.setAttribute('opacity', 0.9);
+      document.getElementById('c2_diodeCallout').innerHTML = "<b>Forward biased:</b> positive terminal pushes into the triangle side. Electrons flow easily, LED lights up. This is the normal way you'd wire a diode.";
+    } else {
+      f1.style.animation = 'none';
+      f2.style.animation = 'none';
+      f1.style.opacity = 0.15; f2.style.opacity = 0.15;
+      led.setAttribute('opacity', 0.1);
+      document.getElementById('c2_diodeCallout').innerHTML = "<b>Reverse biased:</b> flip the battery and the diode's flap slams shut. Zero current gets through (up to its breakdown voltage) — this is what protects circuits from a battery inserted backwards.";
+    }
+  }
+  document.getElementById('c2_btnForward').onclick = function(){
+    diodeForward = true; this.classList.add('active');
+    document.getElementById('c2_btnReverse').classList.remove('active'); updateDiode();
+  };
+  document.getElementById('c2_btnReverse').onclick = function(){
+    diodeForward = false; this.classList.add('active');
+    document.getElementById('c2_btnForward').classList.remove('active'); updateDiode();
+  };
+  updateDiode();
+
+  // ── ZENER ──
+  const zin = document.getElementById('c2_zin');
+  function updateZener(){
+    const Vin = +zin.value;
+    const Vz = 5.1;
+    const Vout = Math.min(Vin, Vz);
+    document.getElementById('c2_zinval').textContent = Vin+' V';
+    document.getElementById('c2_zro-in').textContent = Vin+' V';
+    document.getElementById('c2_zro-out').textContent = Vout.toFixed(1)+' V';
+    let pts;
+    if(Vin <= Vz){
+      pts = `60,170 ${60+Vin*48},${170-Vin*16}`;
+    } else {
+      pts = `60,170 ${60+Vz*48},${170-Vz*16} ${60+Vin*48},${170-Vz*16}`;
+    }
+    document.getElementById('c2_zenerLine').setAttribute('points', pts);
+    const cal = document.getElementById('c2_zenerCallout');
+    if(Vin < Vz){
+      cal.innerHTML = `<b>Below 5.1V:</b> the zener behaves like an ordinary blocked diode — output just follows input.`;
+    } else {
+      cal.innerHTML = `<b>Clamped at 5.1V.</b> No matter how much higher you push the input, the zener holds output steady — this is exactly how cheap voltage references and overvoltage protection circuits work.`;
+    }
+  }
+  zin.oninput = updateZener; updateZener();
+
+  // ── BJT ──
+  const ib = document.getElementById('c2_ib'), beta = document.getElementById('c2_beta');
+  function updateBjt(){
+    const Ib = +ib.value, B = +beta.value;
+    const Ic = Ib*B;
+    document.getElementById('c2_ibval').textContent = Ib.toFixed(2)+' mA';
+    document.getElementById('c2_betaval').textContent = B+'×';
+    document.getElementById('c2_bro-ib').textContent = Ib.toFixed(2)+' mA';
+    document.getElementById('c2_bro-ic').textContent = Ic.toFixed(0)+' mA';
+    const baseSpeed = Math.max(0.1, 0.5/(Ib||0.01));
+    const collSpeed = Math.max(0.05, 40/(Ic||1));
+    document.getElementById('c2_baseFlow').style.animation = Ib>0 ? `flowmove ${baseSpeed}s linear infinite` : 'none';
+    document.getElementById('c2_collFlow').style.animation = Ic>0 ? `flowmove ${collSpeed}s linear infinite` : 'none';
+    document.getElementById('c2_emitFlow').style.animation = Ic>0 ? `flowmove ${collSpeed}s linear infinite` : 'none';
+    document.getElementById('c2_bulbBjt').setAttribute('opacity', Math.min(1, 0.1+Ic/150));
+    document.getElementById('c2_bjtCallout').innerHTML = `<b>This is amplification.</b> A tiny ${Ib.toFixed(2)}mA signal is controlling a ${Ic.toFixed(0)}mA current — ${B}× bigger. This is exactly how a microphone's weak signal ends up driving a loud speaker.`;
+  }
+  ib.oninput = updateBjt; beta.oninput = updateBjt; updateBjt();
+
+  // ── MOSFET ──
+  const vg = document.getElementById('c2_vg');
+  const THRESHOLD = 2;
+  function updateMosfet(){
+    const Vg = +vg.value;
+    document.getElementById('c2_vgval').textContent = Vg.toFixed(1)+' V';
+    document.getElementById('c2_mro-vg').textContent = Vg.toFixed(1)+' V';
+    const on = Vg >= THRESHOLD;
+    document.getElementById('c2_mro-state').textContent = on ? 'ON' : 'OFF';
+    document.getElementById('c2_mro-state').style.color = on ? 'var(--green)' : 'var(--danger)';
+    const channel = document.getElementById('c2_channelBar');
+    channel.setAttribute('fill', on ? 'var(--cyan)' : 'var(--line)');
+    const speed = on ? Math.max(0.1, 1/(Vg-THRESHOLD+0.2)) : 0;
+    ['c2_drainFlow','c2_sourceFlow'].forEach(id=>{
+      document.getElementById(id).style.animation = on ? `flowmove ${speed}s linear infinite` : 'none';
+      document.getElementById(id).style.opacity = on ? 1 : 0.15;
+    });
+    document.getElementById('c2_bulbMosfet').setAttribute('opacity', on ? Math.min(1,0.3+(Vg-THRESHOLD)*0.25) : 0.1);
+    const cal = document.getElementById('c2_mosfetCallout');
+    cal.innerHTML = on
+      ? `<b>Channel is open.</b> Gate voltage (${Vg.toFixed(1)}V) is past the ~2V threshold, so current now flows drain→source freely — and the gate itself is still barely drawing any current.`
+      : `<b>Threshold ≈ 2V.</b> Below it the channel doesn't exist and no current flows, no matter what's on the drain side. Push past it and the channel opens — and notice the gate current stays basically zero the whole time.`;
+  }
+  vg.oninput = updateMosfet; updateMosfet();
+
+  // ── QUIZ ──
+  document.querySelectorAll('#c2_quiz2 .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c2_quiz2 .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c2_quiz2fb').style.display='block';
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

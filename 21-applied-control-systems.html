@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>5.1 Applied Control Systems — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:52vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 50px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,54px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--cyan);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-chip{
+    margin-top:28px; display:inline-flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+    color:var(--dim); border:1px solid var(--line); padding:8px 16px; border-radius:20px; max-width:640px;
+  }
+  .hero-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  .section{padding:70px 24px 60px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,38px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:32px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:28px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:24px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.r .rv{color:var(--copper);} .readout.d .rv{color:var(--danger);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn.active{background:rgba(224,150,90,0.12); border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+
+  .callout{
+    margin-top:22px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.warn{border-left-color:var(--danger);} .callout.warn b{color:var(--danger);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+
+  .eq{
+    font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.25); border:1px solid var(--line);
+    border-radius:8px; padding:14px 18px; margin:18px 0; font-size:15px; color:var(--white); text-align:center;
+    max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .eq .lbl{display:block; font-size:10px; letter-spacing:.1em; color:var(--dim); margin-top:8px; text-transform:uppercase;}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:90px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .readout-row{gap:10px;}
+    .readout{min-width:44%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part V · Advanced Theory · Chapter 5.1 of 35</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 5.1 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">Every controller is<br/>a thermostat with <span class="hl">opinions</span>.</h1>
+  <p class="hero-sub">Real hardware has delay — a sensor takes time to report, an actuator takes time to respond. This module is about what that delay does to a feedback loop that looked perfectly stable on paper.</p>
+  <div class="hero-chip"><span class="pulse"></span> THE FEEDBACK LOOP · DAMPING · TIME DELAY</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ THE FEEDBACK LOOP ══════════════ -->
+<section class="section" id="c1_sec-loop">
+  <div class="sec-label">01 · The Feedback Loop</div>
+  <h2 class="sec-title">Measure, compare, correct, repeat — with real-world lag baked in.</h2>
+  <p class="sec-body">
+    A feedback controller measures the current state, compares it against a target, and pushes a correction proportional to the
+    error — the simplest version, <b>proportional control</b>, is just <b>u = K<sub>p</sub>(target − measured)</b>. On paper,
+    cranking K<sub>p</sub> up always makes the system correct faster. In reality, every sensor and actuator has some delay —
+    and once that delay is in the loop, "faster correction" can start correcting error that's already stale, pushing the
+    system the wrong way entirely.
+  </p>
+  <div class="panel">
+    <div class="panel-tag">Step Response, With Real Loop Delay</div>
+    <svg viewBox="0 0 700 220" style="width:100%; height:auto; margin-top:20px;">
+      <line x1="40" y1="190" x2="660" y2="190" stroke="var(--line)" stroke-width="1"/>
+      <line x1="40" y1="20" x2="40" y2="200" stroke="var(--line)" stroke-width="1"/>
+      <line x1="40" y1="120" x2="660" y2="120" stroke="var(--copper-dim)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="665" y="124" fill="var(--copper)" font-family="JetBrains Mono" font-size="9">target</text>
+      <polyline id="c1_curve" points="" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
+      <circle id="c1_dot" cx="660" cy="120" r="5" fill="var(--amber)"/>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Gain K<sub>p</sub> <span class="val" id="c1_kpval">8</span></label><input type="range" id="c1_kp" min="1" max="40" step="1" value="8"/></div>
+      <div class="ctrl"><label>Loop delay <span class="val" id="c1_dval">0 ms</span></label><input type="range" id="c1_delay" min="0" max="15" step="1" value="0"/></div>
+    </div>
+    <div class="readout-row">
+      <div class="readout v"><div class="rl">Damping ratio ζ</div><div class="rv" id="c1_zeta">0.71</div></div>
+      <div class="readout r"><div class="rl">Overshoot</div><div class="rv" id="c1_over">15%</div></div>
+      <div class="readout d"><div class="rl">Status</div><div class="rv" id="c1_status" style="font-size:15px;">STABLE</div></div>
+    </div>
+    <div class="callout good" id="c1_callout"><b>Well behaved.</b> ζ keeps this near critically damped — fast without much overshoot. Now add delay and watch the same K<sub>p</sub> stop being safe.</div>
+  </div>
+  <div class="callout"><b>The exam-relevant takeaway:</b> a controller gain that's stable in simulation (zero delay assumed) can be genuinely unstable on real hardware purely from sensor/actuator lag — this is why control system designers care about phase margin, not just gain margin, and why "just increase Kp" is dangerous advice on a real system.</div>
+  <div class="quiz" id="c1_quiz">
+    <div class="quiz-q">Increasing Kp on a real (non-zero-delay) control loop makes the correction stronger. Why can this push the system toward instability instead of just making it settle faster?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Higher gain always makes any real system more stable</button>
+      <button class="quiz-opt" data-correct="true">A larger correction is now being applied based on measurement data that's already out of date, so the system can overcorrect based on where it *was*, not where it *is*</button>
+      <button class="quiz-opt" data-correct="false">Gain has no relationship to stability, only to speed</button>
+      <button class="quiz-opt" data-correct="false">Delay only affects steady-state error, never stability</button>
+    </div>
+    <div class="quiz-fb" id="c1_quizfb">This is the core reason real control system design can't treat gain tuning in isolation from the plant's actual delay characteristics — a textbook-stable Kp on paper can genuinely oscillate or diverge once real sensor/actuator lag enters the loop.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 5.1</div>
+  <h2 class="outro-title">Feedback works — until the loop itself starts lying about the present.</h2>
+  <p>Next: <b>5.2 — Control System Design</b> — instead of hoping Kp lands somewhere safe, choosing exactly where the poles go. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="20-protocols-uart-spi-i2c-modbus.html">← Chapter 4.7</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 5.1 OF 35 · PART V: ADVANCED THEORY</footer>
+
+<script>
+(function(){
+  const kpEl = document.getElementById('c1_kp'), delayEl = document.getElementById('c1_delay');
+  const curve = document.getElementById('c1_curve'), dot = document.getElementById('c1_dot');
+  function simulate(Kp, delaySteps){
+    const a = 4, dt = 0.02, N = 320;
+    let theta = 0, thetaDot = 0;
+    let hist = [0];
+    let pts = [];
+    for(let i=0;i<N;i++){
+      const delayedTheta = hist[Math.max(0, hist.length-1-delaySteps)];
+      const err = 1 - delayedTheta;
+      const alpha = Kp*err - a*thetaDot;
+      thetaDot += alpha*dt;
+      theta += thetaDot*dt;
+      theta = Math.max(-3, Math.min(4, theta));
+      hist.push(theta);
+      pts.push(theta);
+    }
+    return pts;
+  }
+  function render(){
+    const Kp = +kpEl.value, delaySteps = +delayEl.value;
+    document.getElementById('c1_kpval').textContent = Kp;
+    document.getElementById('c1_dval').textContent = (delaySteps*20) + ' ms';
+    const a = 4;
+    const zeta = a/(2*Math.sqrt(Kp));
+    document.getElementById('c1_zeta').textContent = zeta.toFixed(2);
+
+    const pts = simulate(Kp, delaySteps);
+    const N = pts.length;
+    const svgPts = pts.map((y,i)=>{
+      const x = 40 + (i/(N-1))*620;
+      const py = 190 - y*70;
+      return x+','+py;
+    }).join(' ');
+    curve.setAttribute('points', svgPts);
+    const lastX = 40 + 620;
+    const lastY = 190 - pts[N-1]*70;
+    dot.setAttribute('cx', lastX); dot.setAttribute('cy', Math.max(5,Math.min(200,lastY)));
+
+    const maxVal = Math.max(...pts);
+    const overshoot = Math.max(0, Math.round((maxVal-1)*100));
+    document.getElementById('c1_over').textContent = overshoot + '%';
+
+    const third = Math.floor(N/3);
+    const seg = arr => Math.max(...arr) - Math.min(...arr);
+    const midAmp = seg(pts.slice(third, 2*third));
+    const lastAmp = seg(pts.slice(2*third));
+    const statusEl = document.getElementById('c1_status');
+    const calloutEl = document.getElementById('c1_callout');
+    if(lastAmp > midAmp*1.15 && lastAmp > 0.3){
+      statusEl.textContent = 'UNSTABLE'; statusEl.style.color = 'var(--danger)';
+      calloutEl.className = 'callout warn';
+      calloutEl.innerHTML = `<b>Unstable.</b> With ${delaySteps*20}ms of loop delay, the controller is correcting error that's already ${delaySteps*20}ms stale. That stale correction now pushes the system further from target instead of toward it — classic sampled-data instability, not a plant problem.`;
+    } else if(overshoot > 25){
+      statusEl.textContent = 'OSCILLATORY'; statusEl.style.color = 'var(--amber)';
+      calloutEl.className = 'callout';
+      calloutEl.innerHTML = `<b>Underdamped.</b> ζ = ${zeta.toFixed(2)} — comfortably below 1 means overshoot and ringing before settling. Still stable, but a real actuator would be straining on every swing.`;
+    } else {
+      statusEl.textContent = 'STABLE'; statusEl.style.color = 'var(--green)';
+      calloutEl.className = 'callout good';
+      calloutEl.innerHTML = `<b>Well behaved.</b> ζ = ${zeta.toFixed(2)} keeps this near critically damped — fast without much overshoot. Now add delay and watch the same Kp stop being safe.`;
+    }
+  }
+  [kpEl, delayEl].forEach(el=> el.addEventListener('input', render));
+  render();
+
+  document.querySelectorAll('#c1_quiz .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c1_quiz .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c1_quizfb').style.display='block';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

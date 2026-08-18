@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>5.4 Digital System Design — From Rock to Radio</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:   #0c1a2e;
+    --paper2:  #102341;
+    --grid:    rgba(94,153,200,0.10);
+    --line:    #3d6a94;
+    --white:   #eef4f8;
+    --dim:     #93a9c2;
+    --copper:  #e0965a;
+    --copper-dim:#8a5a35;
+    --cyan:    #5ecbe0;
+    --amber:   #ffc35c;
+    --danger:  #ff6b6b;
+    --green:   #6be08a;
+    --violet:  #b28aff;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--copper);color:#0c1a2e;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px;}
+
+  .chapter-nav-top{
+    max-width:940px; margin:0 auto; padding:22px 24px 0;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .back-link{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim);
+    display:inline-flex; align-items:center; gap:6px; transition:color .15s; text-decoration:none;
+  }
+  .back-link:hover{color:var(--copper);}
+  .chapter-position{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; opacity:.75;}
+
+  .hero{
+    min-height:46vh; display:flex; flex-direction:column; justify-content:center;
+    align-items:center; text-align:center; padding:40px 24px 20px; position:relative;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,6.5vw,54px); line-height:1.08; letter-spacing:-0.01em;
+  }
+  .hero-title .hl{color:var(--green);}
+  .hero-sub{margin-top:20px; max-width:640px; color:var(--dim); font-size:16px;}
+  .hero-sub b{color:var(--white);}
+  .hero-meta{margin-top:18px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim);}
+  .hero-meta span{border:1px solid var(--line); border-radius:14px; padding:5px 12px;}
+
+  .wrap-narrow{max-width:940px; margin:0 auto; padding:0 24px 20px;}
+  .callout{
+    margin-top:16px; padding:14px 16px; border-left:3px solid var(--amber);
+    background:rgba(255,195,92,0.06); border-radius:0 8px 8px 0; font-size:14px; color:var(--dim);
+  }
+  .callout b{color:var(--amber);}
+  .callout.info{border-left-color:var(--cyan);} .callout.info b{color:var(--cyan);}
+  .callout.good{border-left-color:var(--green);} .callout.good b{color:var(--green);}
+  .callout.warn{border-left-color:var(--danger);} .callout.warn b{color:var(--danger);}
+
+  .section{padding:50px 24px 50px; max-width:940px; margin:0 auto;}
+  .sec-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em;
+    color:var(--copper); text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .sec-label::after{content:'';flex:1;max-width:70px;height:1px;background:var(--copper-dim);}
+  .sec-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(24px,4vw,36px); line-height:1.15; margin-bottom:18px;
+  }
+  .sec-body{color:var(--dim); font-size:15.5px; max-width:700px; margin-bottom:26px;}
+  .sec-body b{color:var(--white);}
+  .sec-body .analogy{color:var(--cyan);}
+
+  .divider{height:1px;max-width:940px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+
+  .panel{
+    background:var(--paper2); border:1px solid var(--line); border-radius:10px;
+    padding:24px; position:relative; overflow:hidden; max-width:940px; margin-left:auto; margin-right:auto;
+  }
+  .panel-tag{
+    position:absolute; top:14px; left:18px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.15em; color:var(--dim); text-transform:uppercase;
+  }
+  .panel-tag::before{content:'◈ ';color:var(--copper);}
+
+  .controls{display:flex; flex-wrap:wrap; gap:24px; margin-top:20px;}
+  .ctrl{flex:1; min-width:200px;}
+  .ctrl label{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; text-transform:uppercase;
+  }
+  .ctrl label .val{color:var(--amber); font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--copper); cursor:pointer; border:2px solid var(--paper2); box-shadow:0 0 0 1px var(--copper);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; background:var(--copper); cursor:pointer; border:2px solid var(--paper2);
+  }
+
+  .readout-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:20px;}
+  .readout{flex:1; min-width:110px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; padding:12px 14px;}
+  .readout .rl{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:var(--dim); text-transform:uppercase;}
+  .readout .rv{font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:700; margin-top:4px;}
+  .readout.v .rv{color:var(--cyan);} .readout.b .rv{color:var(--violet);}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid var(--line); background:var(--paper); color:var(--white); padding:10px 18px;
+    border-radius:8px; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn:hover{border-color:var(--copper); color:var(--copper);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+
+  .quiz{margin-top:20px;}
+  .quiz-q{font-weight:600; margin-bottom:12px; font-size:15px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--white); font-size:14px; cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--cyan);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-opt.correct{border-color:var(--green); background:rgba(107,224,138,0.1); color:var(--green);}
+  .quiz-opt.wrong{border-color:var(--danger); background:rgba(255,107,107,0.1); color:var(--danger);}
+  .quiz-fb{margin-top:10px; font-size:13.5px; color:var(--dim); display:none;}
+
+  .outro{padding:80px 24px 100px; text-align:center;}
+  .outro-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); margin-bottom:14px;}
+  .outro p{color:var(--dim); max-width:560px; margin:0 auto 28px;}
+  footer{text-align:center; padding:40px 24px 60px; color:var(--dim); font-size:12px; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<div class="chapter-nav-top">
+  <a class="back-link" href="00-hub.html">← Bible Hub</a>
+  <span class="chapter-position">Part V · Advanced Theory · Chapter 5.4 of 35</span>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">CHAPTER 5.4 · FROM ROCK TO RADIO</div>
+  <h1 class="hero-title">This is the toolkit<br/>module — the <span class="hl">hands</span> part.</h1>
+  <p class="hero-sub">Everything you build here — states, registers, timing discipline — is what 5.5 (Embedded Processors) assumes you already have wired into your hands.</p>
+  <div class="hero-meta"><span>7.5 ECTS</span><span>SystemVerilog · RTL · FPGA</span><span>feeds 5.5</span></div>
+</section>
+<div class="wrap-narrow">
+  <div class="callout info"><b>How this is graded:</b> a mix of FPGA lab coursework (functional verification, synthesis, design-for-test exercises) and a written exam covering RTL design theory, clock-domain crossing, and BIST — treat the labs as exam prep, not a separate task, since the same SystemVerilog constructs show up in both.</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════ FSM ══════════════ -->
+<section class="section" id="c4_fsm">
+  <div class="sec-label">01 · A Controller Is Just a State Machine</div>
+  <h2 class="sec-title">Feed it bits. Watch the controller think.</h2>
+  <p class="sec-body">A digital <span class="analogy">controller</span> is a state machine reacting to inputs one clock edge at a time — no different in spirit from a vending machine tracking how many coins you've inserted. Below is a classic "101" sequence detector (overlap allowed). Feed it bits one at a time and watch which state lights up.</p>
+  <div class="panel">
+    <div class="panel-tag">Moore FSM — detect "101"</div>
+    <svg viewBox="0 0 640 190" style="width:100%; margin-top:10px;">
+      <circle id="c4_s0" cx="90" cy="95" r="34" fill="var(--paper)" stroke="var(--line)" stroke-width="2"/>
+      <text x="90" y="100" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="12">S0</text>
+      <circle id="c4_s1" cx="270" cy="95" r="34" fill="var(--paper)" stroke="var(--line)" stroke-width="2"/>
+      <text x="270" y="100" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="12">S1</text>
+      <circle id="c4_s2" cx="450" cy="95" r="34" fill="var(--paper)" stroke="var(--line)" stroke-width="2"/>
+      <text x="450" y="100" text-anchor="middle" fill="var(--white)" font-family="JetBrains Mono" font-size="12">S2</text>
+      <circle id="c4_s3" cx="580" cy="95" r="30" fill="var(--paper)" stroke="var(--green)" stroke-width="2"/>
+      <text x="580" y="100" text-anchor="middle" fill="var(--green)" font-family="JetBrains Mono" font-size="10">MATCH</text>
+      <text x="180" y="70" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">1</text>
+      <text x="360" y="70" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">0</text>
+      <text x="515" y="70" text-anchor="middle" fill="var(--dim)" font-family="JetBrains Mono" font-size="10">1</text>
+    </svg>
+    <div class="btn-row">
+      <button class="btn" id="c4_bit0">Feed bit 0</button>
+      <button class="btn" id="c4_bit1">Feed bit 1</button>
+      <button class="btn" id="c4_reset">Reset</button>
+    </div>
+    <div class="readout-row">
+      <div class="readout v"><div class="rl">Bits fed</div><div class="rv mono" id="c4_seq">—</div></div>
+      <div class="readout b"><div class="rl">Current state</div><div class="rv" id="c4_state">S0</div></div>
+    </div>
+    <div class="callout" id="c4_fsmCallout"><b>This</b> is the "controller" half of controller/datapath partitioning — the datapath would be the register holding the shift-in bits; the controller is purely this state graph. In SystemVerilog you'd write this as a case statement inside an <span class="mono">always_ff</span> block, synthesised straight onto FPGA flip-flops and LUTs.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════ METASTABILITY ══════════════ -->
+<section class="section" id="c4_meta">
+  <div class="sec-label">02 · Metastability</div>
+  <h2 class="sec-title">A flip-flop, caught mid-decision, can't be rushed.</h2>
+  <p class="sec-body">Every flip-flop needs its input to be stable for a <span class="analogy">setup/hold window</span> around the clock edge. Violate that window and the output doesn't cleanly resolve to 0 or 1 — it can hover, unresolved, for an unpredictable extra stretch of time. That's metastability, and it's <b>why every clock-domain crossing gets its own synchroniser.</b></p>
+  <div class="panel">
+    <div class="panel-tag">Setup/hold margin</div>
+    <svg viewBox="0 0 640 160" style="width:100%; margin-top:6px;">
+      <line x1="20" y1="80" x2="620" y2="80" stroke="var(--line)" stroke-width="1"/>
+      <line x1="320" y1="20" x2="320" y2="140" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <text x="326" y="30" fill="var(--cyan)" font-family="JetBrains Mono" font-size="10">clock edge</text>
+      <path id="c4_metaPath" d="" fill="none" stroke="var(--amber)" stroke-width="2.2"/>
+    </svg>
+    <div class="controls">
+      <div class="ctrl"><label>Data change vs. clock edge <span class="val" id="c4_marginval">40 ns before</span></label>
+        <input type="range" id="c4_margin" min="-30" max="60" step="2" value="40"/></div>
+    </div>
+    <div class="callout" id="c4_metaCallout"><b>Comfortable margin.</b> Data settles well before the setup window — the flip-flop samples a clean, stable 1.</div>
+  </div>
+  <div class="quiz" id="c4_quiz">
+    <div class="quiz-q">Why can't you just add more logic to "fix" a metastable output on the very next clock edge?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">You can — any combinational gate resolves it instantly</button>
+      <button class="quiz-opt" data-correct="true">A metastable signal can still be unresolved when the next flip-flop samples it — you need extra clock cycles (a synchroniser chain) for the probability of resolution to become negligible</button>
+      <button class="quiz-opt" data-correct="false">Metastability only affects simulation, never real silicon</button>
+    </div>
+    <div class="quiz-fb" id="c4_quizfb">Right — resolution time is probabilistic, not instant. A two- or three-flop synchroniser doesn't eliminate metastability, it just makes the probability of it surviving long enough to cause a problem astronomically small.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="outro">
+  <div class="sec-label" style="justify-content:center;">END OF CHAPTER 5.4</div>
+  <h2 class="outro-title">States and timing discipline — now hardwired into your hands.</h2>
+  <p>Next: <b>5.5 — Embedded Processors</b> — build a processor, prove it on an FPGA, and get real intuition for why running several instructions at once means they sometimes trip over each other. Queued, not yet built.</p>
+  <div class="btn-row" style="justify-content:center;">
+    <a class="btn" href="00-hub.html">← Back to the Bible Hub</a>
+    <a class="btn" href="23-digital-control-systems.html">← Chapter 5.3</a>
+  </div>
+</section>
+
+<footer>FROM ROCK TO RADIO · CHAPTER 5.4 OF 35 · PART V: ADVANCED THEORY</footer>
+
+<script>
+(function(){
+  // ---- FSM: "101" overlap-allowed sequence detector ----
+  const states = ['S0','S1','S2'];
+  let state = 'S0', seq = [];
+  const transitions = {
+    S0: {0:'S0', 1:'S1'},
+    S1: {0:'S2', 1:'S1'},
+    S2: {0:'S0', 1:'MATCH'}
+  };
+  function paintState(){
+    ['c4_s0','c4_s1','c4_s2','c4_s3'].forEach(id=>{
+      const el = document.getElementById(id);
+      el.setAttribute('stroke', id==='c4_s3' ? 'var(--green)' : 'var(--line)');
+      el.setAttribute('stroke-width','2');
+    });
+    const activeMap = {S0:'c4_s0', S1:'c4_s1', S2:'c4_s2', MATCH:'c4_s3'};
+    const activeId = activeMap[state === 'MATCH' ? 'MATCH' : state];
+    const el = document.getElementById(activeId);
+    el.setAttribute('stroke', 'var(--amber)');
+    el.setAttribute('stroke-width','4');
+    document.getElementById('c4_state').textContent = state;
+    document.getElementById('c4_seq').textContent = seq.length ? seq.join('') : '—';
+  }
+  function feedBit(b){
+    const prevState = state;
+    const next = transitions[state === 'MATCH' ? 'S2' : state][b];
+    seq.push(b);
+    state = next;
+    paintState();
+    const callout = document.getElementById('c4_fsmCallout');
+    if(state === 'MATCH'){
+      callout.className = 'callout good';
+      callout.innerHTML = `<b>Match!</b> The last three bits fed complete "101". Notice the FSM stayed in S1 (not back to S0) so it can catch overlapping matches like "1011010...101" without missing one.`;
+    } else {
+      callout.className = 'callout';
+      callout.innerHTML = `<b>${prevState} → ${state}</b> on input ${b}. This is a Moore machine: the output ("match found") depends only on which state you're in, not on the input that got you there.`;
+    }
+  }
+  document.getElementById('c4_bit0').addEventListener('click', ()=> feedBit(0));
+  document.getElementById('c4_bit1').addEventListener('click', ()=> feedBit(1));
+  document.getElementById('c4_reset').addEventListener('click', ()=>{
+    state='S0'; seq=[]; paintState();
+    document.getElementById('c4_fsmCallout').className='callout';
+    document.getElementById('c4_fsmCallout').innerHTML = `<b>Reset.</b> Back to S0 — feed bits to walk the state graph again.`;
+  });
+  paintState();
+
+  // ---- Metastability margin visual ----
+  const marginEl = document.getElementById('c4_margin');
+  function renderMeta(){
+    const margin = +marginEl.value;
+    document.getElementById('c4_marginval').textContent = margin>=0 ? `${margin} ns before` : `${Math.abs(margin)} ns after (violation)`;
+    const path = document.getElementById('c4_metaPath');
+    const callout = document.getElementById('c4_metaCallout');
+    const clockX = 320;
+    const transitionX = clockX - margin*3;
+    let d = `M20,20 L${Math.max(20,transitionX-4)},20 `;
+    if(margin > 15){
+      d += `L${transitionX},140 L620,140`;
+      callout.className='callout good';
+      callout.innerHTML = `<b>Comfortable margin.</b> Data settles ${margin}ns before the clock edge — well outside the setup window. The flip-flop samples a clean, stable 1.`;
+    } else if(margin > 0){
+      d += `L${transitionX},20 C${transitionX+30},20 ${transitionX+50},140 ${transitionX+80},140 L620,140`;
+      callout.className='callout';
+      callout.innerHTML = `<b>Cutting it close.</b> Only ${margin}ns of setup margin left — inside real silicon's guard band. Still resolves correctly here, but timing closure at this margin is exactly what STA (static timing analysis) is meant to catch before fabrication.`;
+    } else {
+      const settleX = transitionX + 140;
+      d += `L${transitionX},20 C${transitionX+40},20 ${transitionX+90},80 ${transitionX+90},80 C${transitionX+110},95 ${settleX},135 ${settleX},140 L620,140`;
+      callout.className='callout warn';
+      callout.innerHTML = `<b>Setup violation.</b> Data changes ${Math.abs(margin)}ns after the clock edge should've already captured it. The output hovers indeterminately before eventually resolving — sometimes to 0, sometimes to 1 — and it may take longer than one clock period to settle. This is exactly what a 2-3 stage synchroniser exists to absorb on a clock-domain crossing.`;
+    }
+    path.setAttribute('d', d);
+  }
+  marginEl.addEventListener('input', renderMeta);
+  renderMeta();
+
+  document.querySelectorAll('#c4_quiz .quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#c4_quiz .quiz-opt').forEach(o=>o.disabled=true);
+      opt.classList.add(opt.dataset.correct==='true' ? 'correct':'wrong');
+      document.getElementById('c4_quizfb').style.display='block';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
