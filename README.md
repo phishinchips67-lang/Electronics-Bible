@@ -1,3 +1,5 @@
+QUICKNOTE: THE FULL MERGER FOR A FILE OF SUCH SCALE KEEPS FAILING. I WILL NEED SOME TIME LATER TO HANDLE THIS. TILL THEN, YOU CAN ALWAYS ACCESS INDIVIDUAL CHAPTERS FROM THE my-resources BRANCH. THANKS!
+
 # From Rock to Radio: The Electronics Bible
 
 A complete interactive guide to electronics, from first principles to advanced theory. Built for hobbyists and engineers alike.
